@@ -1,16 +1,16 @@
 {
-This file is part of the apiUi project
-Copyright (c) 2009-2021 by Jan Bouwman
+ This file is part of the apiUi project
+ Copyright (c) 2009-2021 by Jan Bouwman
 
-See the file COPYING, included in this distribution,
-for details about the copyright.
+ See the file COPYING, included in this distribution,
+ for details about the copyright.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <https://www.gnu.org/licenses/>.
 }
 unit ShowLogDifferencesUnit;
 
@@ -568,16 +568,35 @@ begin
 end;
 
 procedure TShowLogDifferencesForm.CompareAB(xData: PVSTreeRec);
+  function HeadersAsXml (aName, aHeaders: String): TXml;
+  var
+    x: Integer;
+  begin
+    result := TXml.CreateAsString(aName, '');
+    with TJBStringList.Create do
+    try
+      NameValueSeparator := ':';
+      Text := aHeaders;
+      for x := 0 to Count - 1 do
+        result.AddXml (TXml.CreateAsString (Names[x], ValueFromIndex[x]));
+    finally
+      Free;
+    end;
+  end;
 var
   aXml, bXml: TXml;
 begin
   aXml := xData.aLog.requestAsXml;
   aXml.SeparateNsPrefixes;
   aXml.ResolveNameSpaces;
+  if xData.aLog.RequestHeaders <> '' then
+    aXml.Items.InsertObject(0, '', HeadersAsXml('requestHeaders', xData.aLog.RequestHeaders));
   a2bExpandWhenValueIsJsonOrYaml(aXml);
   bXml := xData.bLog.requestAsXml;
   bXml.SeparateNsPrefixes;
   bXml.ResolveNameSpaces;
+  if xData.bLog.RequestHeaders <> '' then
+    bXml.Items.InsertObject(0, '', HeadersAsXml('requestHeaders', xData.bLog.RequestHeaders));
   a2bExpandWhenValueIsJsonOrYaml(bXml);
   xData.reqA2B := TA2BXml.CreateA2B(xData.aLog.OperationName, '', aXml, bXml, ignoreOrderOn, checkValueAgainst);
   xData.reqA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);
@@ -586,10 +605,16 @@ begin
   aXml := xData.aLog.replyAsXml;
   aXml.SeparateNsPrefixes;
   aXml.ResolveNameSpaces;
+  if xData.aLog.ReplyHeaders <> '' then
+    aXml.Items.InsertObject(0, '', HeadersAsXml('responseHeaders', xData.aLog.ReplyHeaders));
+  aXml.Items.InsertObject(0, '', TXml.CreateAsInteger('Status', xData.aLog.httpResponseCode));
   a2bExpandWhenValueIsJsonOrYaml(aXml);
   bXml := xData.bLog.replyAsXml;
   bXml.SeparateNsPrefixes;
   bXml.ResolveNameSpaces;
+  if xData.bLog.ReplyHeaders <> '' then
+    bXml.Items.InsertObject(0, '', HeadersAsXml('responseHeaders', xData.bLog.ReplyHeaders));
+  bXml.Items.InsertObject(0, '', TXml.CreateAsInteger('Status', xData.bLog.httpResponseCode));
   a2bExpandWhenValueIsJsonOrYaml(bXml);
   xData.rpyA2B := TA2BXml.CreateA2B(xData.aLog.OperationName, '', aXml, bXml, ignoreOrderOn, checkValueAgainst);
   xData.rpyA2B.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn);

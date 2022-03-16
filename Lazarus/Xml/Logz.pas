@@ -1595,7 +1595,13 @@ begin
                     xXml.LoadFromString(self.RequestBody, nil)
                   else
                     if Pos ('json', self.RequestContentType) > 0 then
+                      xXml.LoadJsonFromString(self.RequestBody, nil)
+                    else
+                    try
                       xXml.LoadJsonFromString(self.RequestBody, nil);
+                    except
+                      xXml.LoadFromString(self.RequestBody, nil);
+                    end;
               xXml.Name := XmlItems[x].Name;
               XmlItems[x].LoadValues (xXml, true, False, True, False);
             finally
@@ -1716,24 +1722,41 @@ begin
   xXml := TXml.Create;
   try
     if pos('xml', LowerCase(self.ReplyContentType)) > 0 then
-      xXml.LoadFromString(self.ReplyBody, nil);
-    if pos('json', LowerCase(self.ReplyContentType)) > 0 then
-    try
-      xXml.LoadJsonFromString(self.ReplyBody, nil);
-      xXml.Name := 'body';
-    except
-      on e: sysUtils.Exception do
-      begin
-        xXml.Items.Clear;
-        xXml.Name := 'unknown';
-        xXml.Value := e.Message;
-      end;
+      xXml.LoadFromString(self.ReplyBody, nil)
+    else
+    begin
+      if pos('json', LowerCase(self.ReplyContentType)) > 0 then
+      try
+        xXml.LoadJsonFromString(self.ReplyBody, nil);
+        xXml.Name := 'body';
+      except
+        on e: sysUtils.Exception do
+        begin
+          xXml.Items.Clear;
+          xXml.Name := 'unknown';
+          xXml.Value := e.Message;
+        end;
+      end
+      else
+      try
+        xXml.LoadJsonFromString(self.ReplyBody, nil);
+        xXml.Name := 'body';
+      except
+        xXml.LoadJsonFromString(self.ReplyBody, nil);
+        if xXml.Name <> '' then
+          xXml.Name := 'body';
+      end
     end;
     if xXml.Name = '' then
       xXml.Name := 'unknown';
     dXml := nil;
     try
       dXml := aOperation.rpyXml.ItemByTag['rspns' + IntToStr(self.httpResponseCode)];
+    except
+    end;
+    if not Assigned (dXml) then
+    try
+      dXml := aOperation.rpyXml.ItemByTag['rspnsdefault'];
     except
     end;
     if Assigned(dXml) then

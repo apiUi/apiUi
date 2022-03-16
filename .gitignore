@@ -11,3 +11,5 @@ lib
 /Lazarus/Xml/backup/*.bak
 /Lazarus/apiUi_Linux.tar.gz
 files
+/Lazarus/Utils/a2bStringList/backup/*.bak
+*.bak

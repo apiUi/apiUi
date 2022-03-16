@@ -1,0 +1,175 @@
+  <Message>
+    <Name>Default</Name>
+    <SequenceNr>0</SequenceNr>
+    <stateMachineScenarioName>.*</stateMachineScenarioName>
+    <stateMachineRequiredState>.*</stateMachineRequiredState>
+    <stateMachineNextState>.*</stateMachineNextState>
+    <Patterns></Patterns>
+    <Reply>
+      <getBasisprofielByKvkNummer checked__="true">
+        <rspnsdefault checked__="true">
+          <hal_json checked__="true">
+            <kvkNummer checked__="true">kvkNummer</kvkNummer>
+            <indNonMailing checked__="true">indNonMailing</indNonMailing>
+            <naam checked__="true">naam</naam>
+            <formeleRegistratiedatum checked__="true">formeleRegistratiedatum</formeleRegistratiedatum>
+            <materieleRegistratie checked__="true">
+              <datumAanvang checked__="true">datumAanvang</datumAanvang>
+              <datumEinde checked__="true">datumEinde</datumEinde>
+            </materieleRegistratie>
+            <totaalWerkzamePersonen checked__="true">642</totaalWerkzamePersonen>
+            <statutaireNaam checked__="true">statutaireNaam</statutaireNaam>
+            <handelsnamen checked__="true">
+              <_ checked__="true">
+                <naam checked__="true">naam</naam>
+                <volgorde checked__="true">642</volgorde>
+              </_>
+            </handelsnamen>
+            <sbiActiviteiten checked__="true">
+              <_ checked__="true">
+                <sbiCode checked__="true">sbiCode</sbiCode>
+                <sbiOmschrijving checked__="true">sbiOmschrijving</sbiOmschrijving>
+                <indHoofdactiviteit checked__="true">indHoofdactiviteit</indHoofdactiviteit>
+              </_>
+            </sbiActiviteiten>
+            <links checked__="true">
+              <_ checked__="true">
+                <rel checked__="true">rel</rel>
+                <href checked__="true">href</href>
+                <hreflang checked__="true">hreflang</hreflang>
+                <media checked__="true">media</media>
+                <title checked__="true">title</title>
+                <type checked__="true">type</type>
+                <deprecation checked__="true">deprecation</deprecation>
+                <profile checked__="true">profile</profile>
+                <name checked__="true">name</name>
+              </_>
+            </links>
+            <_embedded checked__="true">
+              <hoofdvestiging checked__="true">
+                <vestigingsnummer checked__="true">vestigingsnummer</vestigingsnummer>
+                <kvkNummer checked__="true">kvkNummer</kvkNummer>
+                <rsin checked__="true">rsin</rsin>
+                <indNonMailing checked__="true">indNonMailing</indNonMailing>
+                <formeleRegistratiedatum checked__="true">formeleRegistratiedatum</formeleRegistratiedatum>
+                <materieleRegistratie checked__="true">
+                  <datumAanvang checked__="true">datumAanvang</datumAanvang>
+                  <datumEinde checked__="true">datumEinde</datumEinde>
+                </materieleRegistratie>
+                <eersteHandelsnaam checked__="true">eersteHandelsnaam</eersteHandelsnaam>
+                <indHoofdvestiging checked__="true">indHoofdvestiging</indHoofdvestiging>
+                <indCommercieleVestiging checked__="true">indCommercieleVestiging</indCommercieleVestiging>
+                <voltijdWerkzamePersonen checked__="true">642</voltijdWerkzamePersonen>
+                <totaalWerkzamePersonen checked__="true">642</totaalWerkzamePersonen>
+                <deeltijdWerkzamePersonen checked__="true">642</deeltijdWerkzamePersonen>
+                <adressen checked__="true">
+                  <_ checked__="true">
+                    <type checked__="true">type</type>
+                    <indAfgeschermd checked__="true">indAfgeschermd</indAfgeschermd>
+                    <volledigAdres checked__="true">volledigAdres</volledigAdres>
+                    <straatnaam checked__="true">straatnaam</straatnaam>
+                    <huisnummer checked__="true">642</huisnummer>
+                    <huisnummerToevoeging checked__="true">huisnummerToevoeging</huisnummerToevoeging>
+                    <huisletter checked__="true">huisletter</huisletter>
+                    <aanduidingBijHuisnummer checked__="true">aanduidingBijHuisnummer</aanduidingBijHuisnummer>
+                    <toevoegingAdres checked__="true">toevoegingAdres</toevoegingAdres>
+                    <postcode checked__="true">postcode</postcode>
+                    <postbusnummer checked__="true">642</postbusnummer>
+                    <plaats checked__="true">plaats</plaats>
+                    <straatHuisnummer checked__="true">straatHuisnummer</straatHuisnummer>
+                    <postcodeWoonplaats checked__="true">postcodeWoonplaats</postcodeWoonplaats>
+                    <regio checked__="true">regio</regio>
+                    <land checked__="true">land</land>
+                    <geoData checked__="true">
+                      <addresseerbaarObjectId checked__="true">addresseerbaarObjectId</addresseerbaarObjectId>
+                      <nummerAanduidingId checked__="true">nummerAanduidingId</nummerAanduidingId>
+                      <gpsLatitude checked__="true">122.745</gpsLatitude>
+                      <gpsLongitude checked__="true">122.745</gpsLongitude>
+                      <rijksdriehoekX checked__="true">122.745</rijksdriehoekX>
+                      <rijksdriehoekY checked__="true">122.745</rijksdriehoekY>
+                      <rijksdriehoekZ checked__="true">122.745</rijksdriehoekZ>
+                    </geoData>
+                  </_>
+                </adressen>
+                <websites checked__="true">
+                  <_ checked__="true">_</_>
+                </websites>
+                <sbiActiviteiten checked__="true">
+                  <_ checked__="true">
+                    <sbiCode checked__="true">sbiCode</sbiCode>
+                    <sbiOmschrijving checked__="true">sbiOmschrijving</sbiOmschrijving>
+                    <indHoofdactiviteit checked__="true">indHoofdactiviteit</indHoofdactiviteit>
+                  </_>
+                </sbiActiviteiten>
+                <links checked__="true">
+                  <_ checked__="true">
+                    <rel checked__="true">rel</rel>
+                    <href checked__="true">href</href>
+                    <hreflang checked__="true">hreflang</hreflang>
+                    <media checked__="true">media</media>
+                    <title checked__="true">title</title>
+                    <type checked__="true">type</type>
+                    <deprecation checked__="true">deprecation</deprecation>
+                    <profile checked__="true">profile</profile>
+                    <name checked__="true">name</name>
+                  </_>
+                </links>
+              </hoofdvestiging>
+              <eigenaar checked__="true">
+                <rsin checked__="true">rsin</rsin>
+                <rechtsvorm checked__="true">rechtsvorm</rechtsvorm>
+                <uitgebreideRechtsvorm checked__="true">uitgebreideRechtsvorm</uitgebreideRechtsvorm>
+                <adressen checked__="true">
+                  <_ checked__="true">
+                    <type checked__="true">type</type>
+                    <indAfgeschermd checked__="true">indAfgeschermd</indAfgeschermd>
+                    <volledigAdres checked__="true">volledigAdres</volledigAdres>
+                    <straatnaam checked__="true">straatnaam</straatnaam>
+                    <huisnummer checked__="true">642</huisnummer>
+                    <huisnummerToevoeging checked__="true">huisnummerToevoeging</huisnummerToevoeging>
+                    <huisletter checked__="true">huisletter</huisletter>
+                    <aanduidingBijHuisnummer checked__="true">aanduidingBijHuisnummer</aanduidingBijHuisnummer>
+                    <toevoegingAdres checked__="true">toevoegingAdres</toevoegingAdres>
+                    <postcode checked__="true">postcode</postcode>
+                    <postbusnummer checked__="true">642</postbusnummer>
+                    <plaats checked__="true">plaats</plaats>
+                    <straatHuisnummer checked__="true">straatHuisnummer</straatHuisnummer>
+                    <postcodeWoonplaats checked__="true">postcodeWoonplaats</postcodeWoonplaats>
+                    <regio checked__="true">regio</regio>
+                    <land checked__="true">land</land>
+                    <geoData checked__="true">
+                      <addresseerbaarObjectId checked__="true">addresseerbaarObjectId</addresseerbaarObjectId>
+                      <nummerAanduidingId checked__="true">nummerAanduidingId</nummerAanduidingId>
+                      <gpsLatitude checked__="true">122.745</gpsLatitude>
+                      <gpsLongitude checked__="true">122.745</gpsLongitude>
+                      <rijksdriehoekX checked__="true">122.745</rijksdriehoekX>
+                      <rijksdriehoekY checked__="true">122.745</rijksdriehoekY>
+                      <rijksdriehoekZ checked__="true">122.745</rijksdriehoekZ>
+                    </geoData>
+                  </_>
+                </adressen>
+                <links checked__="true">
+                  <_ checked__="true">
+                    <rel checked__="true">rel</rel>
+                    <href checked__="true">href</href>
+                    <hreflang checked__="true">hreflang</hreflang>
+                    <media checked__="true">media</media>
+                    <title checked__="true">title</title>
+                    <type checked__="true">type</type>
+                    <deprecation checked__="true">deprecation</deprecation>
+                    <profile checked__="true">profile</profile>
+                    <name checked__="true">name</name>
+                  </_>
+                </links>
+              </eigenaar>
+            </_embedded>
+          </hal_json>
+        </rspnsdefault>
+      </getBasisprofielByKvkNummer>
+    </Reply>
+    <Request>
+      <getBasisprofielByKvkNummer checked__="false"></getBasisprofielByKvkNummer>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>
