@@ -1367,7 +1367,8 @@ uses
 
 type
   TLogColumnEnum =
-    ( logRemarksColumn
+    ( logFromRemoteColumn
+    , logRemarksColumn
     , logExceptionColumn
     , logRequestTreeColumn
     , logReplyTreeColumn
@@ -7804,6 +7805,14 @@ var
 begin
   try
     case TLogColumnEnum(Column) of
+      logFromRemoteColumn:
+        begin
+          xLog := NodeToMsgLog(False,Sender as TVirtualStringTree, Node);
+          if Assigned(xLog) and (xLog.fromRemoteServer) then
+            ImageIndex := 117
+          else
+            ImageIndex := -1;
+        end;
       logRemarksColumn:
         begin
           xLog := NodeToMsgLog(False,Sender as TVirtualStringTree, Node);
@@ -13509,6 +13518,15 @@ begin
   s1 := '';
   s2 := '';
   case TLogColumnEnum(Column) of
+    logFromRemoteColumn:
+      begin
+        log1 := NodeToMsgLog(False,Sender as TVirtualStringTree, Node1);
+        if Assigned (log1) then
+          s1 := IfThen(log1.fromRemoteServer, '1', '0');
+        log2 := NodeToMsgLog(False,Sender as TVirtualStringTree, Node2);
+        if Assigned (log2) then
+          s2 := IfThen(log2.fromRemoteServer, '1', '0');
+      end;
     logRemarksColumn:
       begin
         log1 := NodeToMsgLog(False,Sender as TVirtualStringTree, Node1);

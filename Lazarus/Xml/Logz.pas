@@ -1,16 +1,16 @@
 {
-This file is part of the apiUi project
-Copyright (c) 2009-2021 by Jan Bouwman
+ This file is part of the apiUi project
+ Copyright (c) 2009-2021 by Jan Bouwman
 
-See the file COPYING, included in this distribution,
-for details about the copyright.
+ See the file COPYING, included in this distribution,
+ for details about the copyright.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <https://www.gnu.org/licenses/>.
 }
 unit Logz;
 
@@ -53,6 +53,7 @@ type
   public
     doSuppressLog: Boolean;
     onSnapshot: Boolean;
+    fromRemoteServer: Boolean;
     displayRef: PDisplayRef;
     DisplayedColumnsValid: Boolean;
     DisplayedColumns: TJBStringList;
@@ -1182,6 +1183,7 @@ begin
     AddXml (Txml.CreateAsInteger('TransportType', Ord (Self.TransportType)));
     AddXml (TXml.CreateAsString('StubAction', IntToStr(Ord(Self.StubAction))));
     AddXml (Txml.CreateAsString('CorrelationId', Self.CorrelationId));
+    AddXml (Txml.CreateAsBoolean ('fromRemoteServer', Self.fromRemoteServer));
     if Assigned (Self.Operation) then
     begin
       xBodiesAsBase64 := (Self.Operation.WsdlService.DescriptionType in [ipmDTCobol]);
