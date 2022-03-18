@@ -7434,6 +7434,7 @@ begin
             xLog.OutboundTimeStamp := EncodeTime(0,0,0,0);
           end;
           xBodiesAsBase64 := Items.XmlBooleanByTag['BodiesAsBase64'];
+          xLog.fromRemoteServer := Items.XmlCheckedBooleanByTagDef['fromRemoteServer', False];
           xLog.DelayTimeMs := Items.XmlIntegerByTagDef['DelayTimeMs', 0];
           xLog.OperationCount := Items.XmlIntegerByTagDef['OperationCount', 0];
           xLog.TransportType := TTransportType (StrToIntDef (Items.XmlValueByTag ['TransportType'], 0));
@@ -9376,6 +9377,7 @@ begin
       end;
       for x := 0 to xLogList.Count - 1 do
       begin
+        xLogList.LogItems[x].fromRemoteServer := True;
         DisplayLog('', xLogList.LogItems[x]);
       end;
     finally
