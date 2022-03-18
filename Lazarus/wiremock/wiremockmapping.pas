@@ -193,7 +193,7 @@ begin
     end;
     AddXml (TXml.CreateAsString('name', aMessage.Name));
     if aOperation.doUseStateMachine
-    and (xIndex > 0) then
+    and (not xDefaultMessage) then
     begin
       AddXml (TXml.CreateAsString('scenarioName', aMessage.stateMachineScenarioName));
       AddXml (TXml.CreateAsString('requiredScenarioState', aMessage.stateMachineRequiredState));
@@ -229,7 +229,7 @@ begin
           AddXml (TXml.CreateAsString('urlPathPattern', xPath));
         end
         else
-          AddXml (TXml.CreateAsString('urlPath', aOperation.WsdlService.openApiPath));
+          AddXml (TXml.CreateAsString('urlPath', xPath));
         if (not xDefaultMessage)
         and aOperation.hasHeaderCorrelation then
         begin
@@ -379,6 +379,8 @@ begin
           end;
         end;
       end;
+      if rXml.Items.Count = 0 then
+        rXml.AddXml(TXml.CreateAsInteger('status', 200)); // avoid WireMock complaining; same as default WireMock behaviour
     end;
     if aOperation.isSoapService then
     begin

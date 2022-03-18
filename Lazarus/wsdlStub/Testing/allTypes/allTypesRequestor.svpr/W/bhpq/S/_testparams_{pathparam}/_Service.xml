@@ -1,5 +1,5 @@
   <Service>
-    <Name>CreateServiceRequest</Name>
+    <Name>/testparams/{pathparam}</Name>
     <serviceOptions>
       <general>
         <suppressXmlComment>false</suppressXmlComment>

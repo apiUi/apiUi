@@ -7,10 +7,13 @@
     </Listeners>
     <remoteServerConnection>
       <Enabled>true</Enabled>
-      <Address>${Address}</Address>
+      <Address>http://localhost:7778</Address>
       <type>
         <WireMock></WireMock>
       </type>
+      <allowedActions>
+        <pushDesign>true</pushDesign>
+      </allowedActions>
     </remoteServerConnection>
     <projectOptions>
       <General>
