@@ -9694,6 +9694,16 @@ end;
 
 procedure TMainForm.PasteGridFromPasteBoard;
   function TabSepLineToStringGrid(aLine: String): TJBStringList;
+    function _dequote(s: string): string;
+    begin
+      if (Length (s) > 1)
+      and ((s[1] = '''') or (s[1] = '"'))
+      and (s[1] = s[Length(s)])
+      then
+        result := Copy (s, 2, Length (s) - 2)
+      else
+        result := s;
+    end;
   var
     c: Integer;
     col: String;
@@ -9704,14 +9714,14 @@ procedure TMainForm.PasteGridFromPasteBoard;
     begin
       if aLine[c] = #9 then
       begin
-        result.Add(col);
+        result.Add(_dequote(col));
         col := '';
       end
       else
         col := col + aLine[c];
     end;
     if Length(aLine) > 0 then
-      result.Add(col);
+      result.Add(_dequote(col));
   end;
 
 var
@@ -9727,12 +9737,18 @@ begin
     copyColumns := TabSepLineToStringGrid(copyLines.Strings[0]);
     c := 0;
     column := c + nMessageButtonColumns;
+    while (column < GridView.Header.Columns.Count)
+    and (not (coVisible in GridView.Header.Columns.Items[column].Options)) do
+      Inc (Column);
     while (c < copyColumns.Count) and (column < GridView.Header.Columns.Count) do
     begin
       if (copyColumns.Strings[c] <> GridView.Header.Columns.Items[column].Text) then
         raise Exception.Create('Columnheaders do not match, Operation aborted');
       Inc(c);
       Inc(column);
+      while (column < GridView.Header.Columns.Count)
+      and (not (coVisible in GridView.Header.Columns.Items[column].Options)) do
+        Inc (Column);
     end;
 
     l := 1; // line zero contains columnheaders
@@ -9746,6 +9762,9 @@ begin
       try
         c := 0;
         column := c + nMessageButtonColumns;
+        while (column < GridView.Header.Columns.Count)
+        and (not (coVisible in GridView.Header.Columns.Items[column].Options)) do
+          Inc (Column);
         while (c < copyColumns.Count) and (column < GridView.Header.Columns.Count) do
         begin
           // OnNewText (aVst, xNode, c, copyColumns.Strings[c]);
@@ -9838,6 +9857,9 @@ begin
           end;
           Inc(c);
           Inc(column);
+          while (column < GridView.Header.Columns.Count)
+          and (not (coVisible in GridView.Header.Columns.Items[column].Options)) do
+            Inc (Column);
         end;
       finally
         FreeAndNil(copyColumns);

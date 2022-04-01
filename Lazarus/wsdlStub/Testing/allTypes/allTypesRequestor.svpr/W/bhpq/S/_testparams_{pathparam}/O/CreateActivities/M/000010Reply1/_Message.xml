@@ -1,6 +1,9 @@
   <Message>
     <Name>Reply1</Name>
     <SequenceNr>10</SequenceNr>
+    <stateMachineScenarioName>sampleScenario</stateMachineScenarioName>
+    <stateMachineRequiredState>Started</stateMachineRequiredState>
+    <stateMachineNextState>nxtstate</stateMachineNextState>
     <Patterns>
       <Pattern>b.*</Pattern>
       <Pattern>h.*</Pattern>
@@ -15,7 +18,7 @@
             <headerparam checked__="true">:=Req.bhpq1.headerparam</headerparam>
             <pathparam checked__="true">:=Req.bhpq1.pathparam</pathparam>
             <queryparam checked__="true">:=Req.bhpq1.queryparam</queryparam>
-            <noparam checked__="true">novalue</noparam>
+            <noparam checked__="true">{{now}}</noparam>
           </body>
         </rspns200>
       </bhpq1>

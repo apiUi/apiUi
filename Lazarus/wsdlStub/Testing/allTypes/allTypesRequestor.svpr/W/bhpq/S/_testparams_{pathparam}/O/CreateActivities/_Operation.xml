@@ -3,6 +3,7 @@
     <Action>0</Action>
     <Alias>bhpq1</Alias>
     <HiddenFromUI>false</HiddenFromUI>
+    <doUseStateMachine>true</doUseStateMachine>
     <wsaEnabled>false</wsaEnabled>
     <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
     <wsaMustUnderstand>false</wsaMustUnderstand>
