@@ -3035,17 +3035,17 @@ begin
       if Items.XmlItems[x].Name = 'securityDefinitions' then with Items.XmlItems[x] do
       begin
         sl.Add (Name);
-        SjowMessage ('to be implemented: ' + Name + ': ' + Value);
+//      SjowMessage ('to be implemented: ' + Name + ': ' + Value);
       end;
       if Items.XmlItems[x].Name = 'security' then with Items.XmlItems[x] do
       begin
         sl.Add (Name);
-        SjowMessage ('to be implemented: ' + Name + ': ' + Value);
+//      SjowMessage ('to be implemented: ' + Name + ': ' + Value);
       end;
       if Items.XmlItems[x].Name = 'tags' then with Items.XmlItems[x] do
       begin
         sl.Add (Name);
-        SjowMessage ('to be implemented: ' + Name + ': ' + Value);
+//      SjowMessage ('to be implemented: ' + Name + ': ' + Value);
       end;
     end;
 
@@ -3153,7 +3153,7 @@ begin
         end;
       end;
     end;
-    ValidateEvaluatedTags (xRootXml, sl);
+//  ValidateEvaluatedTags (xRootXml, sl);
     sl.Clear;
     _resolveDollarRefs;
     with XsdDescr.TypeDefs do
