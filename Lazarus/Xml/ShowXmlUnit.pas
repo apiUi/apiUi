@@ -1836,10 +1836,7 @@ begin
       begin
         if hasValidationMessage then
         begin
-          if ValidationMesssage <> '' then
-            XmlUtil.ShowInfoForm (Name, ValidationMesssage)
-          else
-            XmlUtil.ShowInfoForm (FullIndexCaption, AllValidationsMessage);
+          XmlUtil.ShowInfoForm (FullIndexCaption, AllValidationsMessage);
         end
       end;
     end;
