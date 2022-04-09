@@ -6586,10 +6586,8 @@ object MainForm: TMainForm
       object Displayedcolumns1: TMenuItem
         Action = LogDisplayedColumnsAction
       end
-      object Comparewithfile1: TMenuItem
-        Caption = 'Compare with file... '
-        Hint = 'Show differences with a previous run'
-        ImageIndex = 43
+      object MenuItem49: TMenuItem
+        Caption = '-'
       end
       object LogCoverageReportAction1: TMenuItem
         Action = LogCoverageReportAction

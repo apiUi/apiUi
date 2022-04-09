@@ -132,19 +132,12 @@ Only relevant for stub operation. </xs:documentation>
 			</xs:element>
 			<xs:element name="reqRecognition" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Specifies the way apiUi can determine that a service call is for this specific operation. Relevant for stub operation and reading logfiles.
+					<xs:documentation>Only relevant for inbound operation.  
+Specifies the way apiUi can determine that a service call is for this specific operation. Relevant for stub operation and reading logfiles.
 
-In case your records do not have any identifying string for operation (listeners that will only receive requests for one specific operation) specify one substring with a value of '.*'  (dot star), the regular expression that matches any string.</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="SubStrings" type="SubStringsType"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="rpyRecognition" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Specifies the way apiUi can recognise a record as a response to a specific operation. Relevant for reading logfiles.</xs:documentation>
+  
+In case your records do not have any identifying string for operation (listeners that will only receive requests for one specific operation) specify one substring with a value of '.*'  (dot star), the regular expression that matches any string.  
+ </xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
@@ -169,16 +162,6 @@ Specify a name for the operation.</xs:documentation>
 					<xs:documentation>Specifies the way apiUi can determine that a service call is for this specific operation. Relevant for stub operation and reading logfiles.
 
 In case your records do not have any identifying string for operation (listeners that will only receive requests for one specific operation) specify one substring with a value of '.*'  (dot star), the regular expression that matches any string.</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="SubStrings" type="SubStringsType"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="rpyRecognition" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Specifies the way apiUi can recognise a record as a response to a specific operation. Relevant for reading logfiles.</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
@@ -489,7 +472,10 @@ Visit http://en.wikipedia.org/wiki/Regular_expression for more information</xs:d
 									</xs:element>
 									<xs:element name="SampleFile" type="FileNameType" minOccurs="0">
 										<xs:annotation>
-											<xs:documentation>Name of the sample request file</xs:documentation>
+											<xs:documentation>Name of the sample request file.  
+If the filename has extention '.XML' (case ignored) then it is assumed to be an XML file,  
+otherwise it is asumed to be a JSON file.  
+</xs:documentation>
 										</xs:annotation>
 									</xs:element>
 								</xs:sequence>
@@ -514,7 +500,10 @@ Visit http://en.wikipedia.org/wiki/Regular_expression for more information</xs:d
 												</xs:element>
 												<xs:element name="SampleFile" type="FileNameType" minOccurs="0">
 													<xs:annotation>
-														<xs:documentation>Name of the sample response file</xs:documentation>
+														<xs:documentation>Name of the sample response file.  
+If the filename has extention '.XML' (case ignored) then it is assumed to be an XML file,  
+otherwise it is asumed to be a JSON file.  
+</xs:documentation>
 													</xs:annotation>
 												</xs:element>
 											</xs:sequence>
@@ -1488,9 +1477,9 @@ The name you use here will be the name of the menu-item added to the script menu
 	</xs:element>
 	<xs:element name="Options">
 		<xs:annotation>
-			<xs:documentation>apiUi options;
+			<xs:documentation>apiUi options.  
 
-For an overview of all options visit: doc://apiUi_Options_hlp.htm </xs:documentation>
+On closing apiUi with changed options, apiUi will prompt you to save the changed options.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>

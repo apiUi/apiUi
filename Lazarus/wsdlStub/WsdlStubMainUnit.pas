@@ -91,6 +91,7 @@ type
     MenuItem39: TMenuItem;
     MenuItem40: TMenuItem;
     MenuItem48: TMenuItem;
+    MenuItem49: TMenuItem;
     ResetCloudStateMachine: TAction;
     MenuItem20: TMenuItem;
     MenuItem36: TMenuItem;
@@ -494,7 +495,6 @@ type
     ExecuteRequestAction: TAction;
     ExecuteAllRequestsAction: TAction;
     LogMenuItem: TMenuItem;
-    Comparewithfile1: TMenuItem;
     N7: TMenuItem;
     ClearExceptionsAction1: TMenuItem;
     MessagesMenuItem: TMenuItem;
