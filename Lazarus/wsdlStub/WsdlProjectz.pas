@@ -4742,13 +4742,6 @@ procedure TWsdlProject.ApiByExampleOperationsUpdate(aXml: TXml; aMainFileName: S
         Result.jsonType := jsonObject;
     end;
   end;
-  function _LoadApiByExampleFlt (aLabel: String): TXml;
-  begin
-    result := TXml.Create;
-    result.Checked := True;
-    result.jsonType := jsonObject;
-    result.Name := aLabel;
-  end;
 var
   sList, oList: TJBStringList;
   sXml, oXml, xXml: TXml;
@@ -4884,7 +4877,6 @@ begin
               and Assigned (rpyXml.xsd) then
                 for x := 0 to rpyXml.Items.Count - 1 do
                   rpyXml.Items.XmlItems[x].Xsd.MediaType := xOperation.Accept;
-              fltBind := _LoadApiByExampleFlt('Flt');
               if Alias <> reqTagName then
               begin
                 if Assigned (reqBind) then reqBind.Name := Alias;
@@ -8976,7 +8968,7 @@ begin
     Services.Services[0].Name := Name;
     Services.Services[0].DescriptionType := ipmDTCobol;
   end;
-  FreeAndNil(ApiByExampleWsdl);
+  try FreeAndNil(ApiByExampleWsdl) except ApiByExampleWsdl := nil end;
   ApiByExampleWsdl := TWsdl.Create(EnvVars, False);
   with ApiByExampleWsdl do
   begin

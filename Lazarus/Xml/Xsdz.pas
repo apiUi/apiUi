@@ -276,7 +276,6 @@ type
     TargetNSPrefix: String;
     NamespaceURI: String;
     TypeDefs: TXsdDataTypeList;
-    FileContents: TJBStringList;
     NameSpaceList: TJBStringList;
     ReadFileNames: TJBStringList;
     TypeDef: TXsdDataType;
@@ -614,7 +613,6 @@ begin
   TypeDefs := TXsdDataTypeList.Create;
   TypeDefs.Sorted := True;
   TypeDefs.CaseSensitive := True;
-  FileContents := TJBStringList.Create;
   Garbage := TJBStringList.Create;
   ReadFileNames := TXsdList.Create;
   ReadFileNames.Sorted := True;
@@ -633,7 +631,6 @@ begin
   Clear;
   FreeAndNil(TypeDefs);
   FreeAndNil(TypeDef);
-  FreeAndNil(FileContents);
   FreeAndNil(Garbage);
   FreeAndNil(DescrFileNames);
   FreeAndNil(ReadFileNames);
@@ -1441,6 +1438,7 @@ function TXsdDescr.LoadXsdFromXmlSampleFile (aFileName: String; ErrorFound: TOnE
 var
   xXml: TXml;
 begin
+  result := nil;
   xXml := TXml.Create;
   try
     xXml.LoadFromFile(aFileName,nil, aOnbeforeRead);
@@ -1460,6 +1458,7 @@ function TXsdDescr.LoadXsdFromJsonSampleFile (aFileName: String; ErrorFound: TOn
 var
   xXml: TXml;
 begin
+  result := nil;
   xXml := TXml.Create;
   try
     try
@@ -3556,7 +3555,7 @@ begin
   if Assigned (NameSpaceList) then
     NameSpaceList.Clear;
   if Assigned (TypeDef) then
-    TypeDef.ElementDefs.Clear;
+    try TypeDef.ElementDefs.Clear except end;
   if Assigned (TypeDefs) then
     TypeDefs.Clear;
 end;
