@@ -150,6 +150,8 @@ type
     procedure SQLConnectorLog(Sender: TSQLConnection; EventType: TDBEventType;
       const Msg: String);
     procedure ToggleStateMachineActionExecute(Sender: TObject);
+    procedure ToggleStateMachineActionHint(var HintStr: string;
+      var CanShow: Boolean);
     procedure TreeViewColumnClick(Sender: TBaseVirtualTree;
       Column: TColumnIndex; Shift: TShiftState);
   private
@@ -12689,6 +12691,14 @@ procedure TMainForm.ToggleStateMachineActionExecute(Sender: TObject);
 begin
   doUseStateMachine := not doUseStateMachine;
   stubChanged := True;
+end;
+
+procedure TMainForm.ToggleStateMachineActionHint(var HintStr: string;
+  var CanShow: Boolean);
+begin
+  if Assigned (FocusedOperation)
+  and (FocusedOperation.StubAction = saRequest) then
+    HintStr := HintStr + ' (disabled on outbound operations)'
 end;
 
 procedure TMainForm.TreeViewColumnClick(Sender: TBaseVirtualTree;
