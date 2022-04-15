@@ -1229,11 +1229,12 @@ function TXsdDescr.AddTypeDefFromJsonXml (aFileName, aNameSpace: String; aXml: T
         end;
         if xXml.Name = S_DOLLARREF then
         begin
-          result.dollarRef := xXml.Value;
-          if result.dollarRef[1] = '#' then
-            result.dollarRef := aFileName + Copy (result.dollarRef, 2, 10000)
+          dollarRef := xXml.Value;
+          if dollarRef[1] = '#' then
+            dollarRef := aFileName + Copy (dollarRef, 2, 10000)
           else
-            result.dollarRef := ExpandRelativeFileName(aFileName, result.dollarRef);
+            dollarRef := ExpandRelativeFileName(aFileName, dollarRef);
+          _scan (FindReferencedXml(dollarRef) as TXml);
         end;
         if xXml.Name = 'type' then
         begin

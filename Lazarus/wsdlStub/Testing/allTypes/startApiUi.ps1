@@ -1,1 +1,1 @@
-powershell ..\..\..\apiUi\apiUi --project=.\allTypesRequestor.svpr
+powershell ..\..\..\apiUi\apiUi --project=.\allTypesRequestor.svpr --port=7776

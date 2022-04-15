@@ -20,10 +20,11 @@ docker run -dit --rm --name=apiuirequestor `
 	       apiui/apiuiserver `
 	       --project=/proj/allTypesRequestor.svpr `
 	       --context=dockernet `
-           --script=runTests
+           --script=runTests `
+		   --port=7776
 
 echo "retrieve regression"
-<# #>
+<# 
 $Body = @{name = "testRun"}
 $Params = @{
     Method = "Post"
@@ -32,8 +33,11 @@ $Params = @{
     ContentType = "application/json"
 }
 Invoke-RestMethod @Params
-<# #>
 
+#>
+curl.exe -X POST -H 'Content-Type: application/json' `
+     -d '{\"name\": \"testrun\"}' `
+     http://localhost:7776/apiUi/api/snapshot/checkregression
 echo "Sleep..."
 Start-Sleep -Seconds 10
 
