@@ -2796,6 +2796,24 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
     end;
   end;
 
+  function _resolvetopdollarref (aType: TXsdDataType): TXsdDataType;
+  var
+    f: Integer;
+  begin
+    result := aType;
+    if aType._Processed then Exit;
+    if aType.dollarRef = '' then Exit;
+    aType._Processed := True;
+    try
+      if self.XsdDescr.TypeDefs.Find(aType.dollarRef, f) then
+      begin
+        result := _resolvetopdollarref(self.XsdDescr.TypeDefs.XsdDataTypes[f]);
+      end;
+    finally
+      aType._Processed := False;;
+    end;
+  end;
+
   procedure _ReadDefinitions (sl: TJBStringList);
   var
     x, y: Integer;
@@ -2936,6 +2954,13 @@ begin
     XsdDescr.DescrFileNames.Add (aFileName);
     _ReadDollarReferencedFiles (aFileName, xRootXml);
     _ReadDefinitions (sl);
+    {}
+    for x := 0 to XsdDescr.TypeDefs.Count - 1 do
+    begin
+      if (XsdDescr.TypeDefs.XsdDataTypes[x].dollarRef <> '') then
+        XsdDescr.TypeDefs.Objects[x] := _resolvetopdollarref (XsdDescr.TypeDefs.XsdDataTypes[x]); // dataleak......
+    end;
+    {}
     for x := 0 to Items.Count - 1 do
     begin
       if Items.XmlItems[x].Name = 'swagger' then
