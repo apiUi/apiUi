@@ -159,7 +159,20 @@ begin
           or (AnsiStartsText('APIARY://', OpenWsdlForm.WsdlLocationEdit.Text)) then
             Wsdl.LoadFromJsonYamlFile (OpenWsdlForm.WsdlLocationEdit.Text, nil, nil)
           else
-            wsdl.LoadFromSchemaFile(OpenWsdlForm.WsdlLocationEdit.Text, nil, nil);
+          begin
+            if xExt = '' then
+            begin
+              try
+                Wsdl.LoadFromJsonYamlFile (OpenWsdlForm.WsdlLocationEdit.Text, nil, nil)
+              except
+                FreeAndNil (Wsdl);
+                Wsdl := TWsdl.Create(EnvVars, ShowOperationsWithEndpointOnly);
+                wsdl.LoadFromSchemaFile(OpenWsdlForm.WsdlLocationEdit.Text, nil, nil);
+              end;
+            end
+            else
+              wsdl.LoadFromSchemaFile(OpenWsdlForm.WsdlLocationEdit.Text, nil, nil);
+          end;
           Wsdl.XsdDescr.Finalise;
         except
           Wsdl.Free;
