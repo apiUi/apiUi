@@ -107,7 +107,7 @@ public
   Level88Values: TJBStringList;
   SkipOnXmlBuild: Boolean;
   {$ifndef NoGUI}
-  function bgColor (aReadOnly: Boolean; aColumn: Integer): TColor; Override;
+  function bgValueColor (aReadOnly: Boolean): TColor; Override;
   {$endif}
   procedure Populate(aViewType: TxvViewType); Override;
   function Children: TBindableList; Override;
@@ -2581,7 +2581,7 @@ begin
 end;
 
 {$ifndef NoGUI}
-function TIpmItem.bgColor (aReadOnly: Boolean; aColumn: Integer): TColor;
+function TIpmItem.bgValueColor (aReadOnly: Boolean): TColor;
 begin
   if aReadOnly or Group then
     result := clBtnFace

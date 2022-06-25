@@ -59,7 +59,7 @@ public
   function IsRequired: Boolean; Override;
 {$ifndef NoGUI}
   procedure Font (aFont: TFont); Override;
-  function bgColor (aReadOnly: Boolean; aColumn: Integer): TColor; Override;
+  function bgValueColor (aReadOnly: Boolean): TColor; Override;
 {$endif}
   procedure MoveUp;
   procedure MoveDown;
@@ -275,7 +275,7 @@ type
     function IsMoveDownPossible: Boolean;
     {$ifndef NoGUI}
     procedure Font (aFont: TFont); Override;
-    function bgColor (aReadOnly: Boolean; aColumn: Integer): TColor; Override;
+    function bgValueColor (aReadOnly: Boolean): TColor; Override;
     {$endif}
     procedure XsdCreate (aLevel: Integer; aXsd: TXsd; aParent: TXml = nil);
     procedure MoveUp;
@@ -4291,67 +4291,45 @@ begin
 end;
 
 {$ifndef NoGUI}
-function TXml.bgColor(aReadOnly: Boolean; aColumn: Integer): TColor;
+function TXml.bgValueColor(aReadOnly: Boolean): TColor;
 begin
   result := bgElementValueColor;
   if aReadOnly
   or (    Assigned (Xsd)
       and (Xsd.isReadOnly)
-      and (aColumn = treeValueColumn)
      ) then
-    result := clBtnFace
-  else
   begin
-    if aColumn = treeValueColumn then
-    begin
-      if not CheckedAllUp then
-      begin
-        result := bgNilValueColor;
-        Exit;
-      end;
-      if (Group)
-      or (    Assigned (Xsd)
-          and (TypeDef.ContentModel = 'Empty')
-         )
-      then
-      begin
-        result := clBtnFace;
-        exit;
-      end;
-    end;
-    if aColumn = treeTagColumn then
-    begin
-      result := clWhite;
-      exit;
-    end;
+    result := clBtnFace;
+    Exit;
+  end;
+  if not CheckedAllUp then
+  begin
+    result := bgNilValueColor;
+    Exit;
+  end;
+  if (Group)
+  or (    Assigned (Xsd)
+      and (TypeDef.ContentModel = 'Empty')
+     )
+  then
+  begin
+    result := clBtnFace;
+    exit;
   end;
 end;
 {$endif}
 
 {$ifndef NoGUI}
-function TXmlAttribute.bgColor(aReadOnly: Boolean; aColumn: Integer): TColor;
+function TXmlAttribute.bgValueColor(aReadOnly: Boolean): TColor;
 begin
   result := clWhite;
   if aReadOnly then
     result := clBtnFace
   else
-  begin
-    if aColumn = treeValueColumn then
-    begin
-      if not CheckedAllUp then
-      begin
-        result := bgNilValueColor;
-        Exit;
-      end;
+    if not CheckedAllUp then
+      result := bgNilValueColor
+    else
       result := bgElementValueColor;
-      Exit;
-    end;
-    if aColumn = treeTagColumn then
-    begin
-      result := clWhite;
-      exit;
-    end;
-  end;
 end;
 {$endif}
 {$ifndef NoGUI}

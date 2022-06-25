@@ -1776,10 +1776,17 @@ begin
     and (refBind <> Bind)
     and (refBind.Value = Bind.Value)
     and (refBind.Value <> '') then
-      Brush.Color := clLime
-    else
-      Brush.Color := NodeToBind(Node).bgColor(isReadOnly, Column);
-    FillRect(CellRect);
+    begin
+      Brush.Color := clLime;
+      FillRect(CellRect);
+      exit;
+    end;
+    if (Column = treeValueColumn) then
+    begin
+      Brush.Color := Bind.bgValueColor(isReadOnly);
+      FillRect(CellRect);
+      exit;
+    end;
   end;
 end;
 
@@ -1834,7 +1841,8 @@ begin
         ShowMessage (FullIndexCaption + ': not validated')
       else
       begin
-        if hasValidationMessage then
+        if (hasValidationMessage)
+        or (ValidationMesssage <> '') then
         begin
           XmlUtil.ShowInfoForm (FullIndexCaption, AllValidationsMessage);
         end
