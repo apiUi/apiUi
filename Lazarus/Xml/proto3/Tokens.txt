@@ -1,0 +1,25 @@
+*      03 VV-OVK-STRUCT               OCCURS 0 TO 200 TIMES
+*                                     DEPENDING ON AANTAL OF
+*                                            IPM03472-ARRAY-VV-OVKS OF IPM03472
+*                                     INDEXED BY IPM03472-INDEX.
+
+*          07 ORGAN-EENH-CD                          PIC  9(06) DISPLAY.
+
+BY
+COMP
+DEPENDING
+DISPLAY
+INDEXED
+INTEGER
+IS
+LEADING 
+OCCURS
+ON
+PIC
+REDEFINES
+SEPARATE
+SIGN 
+TIMES
+TERMINATOR
+TO
+VALUE

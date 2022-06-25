@@ -2948,7 +2948,16 @@ begin
     then
       LoadYamlFromFile(aFileName, aOnError, aOnbeforeRead)
     else
-      LoadJsonFromFile(aFileName, aOnError, aOnbeforeRead);
+    begin
+      if xExt = '' then
+      try
+        LoadYamlFromFile(aFileName, aOnError, aOnbeforeRead)
+      except
+        LoadJsonFromFile(aFileName, aOnError, aOnbeforeRead)
+      end
+      else
+        LoadJsonFromFile(aFileName, aOnError, aOnbeforeRead);
+    end;
     xRootXml.Name := '#';
     XsdDescr.ReadFileNames.AddObject(aFileName, xRootXml);
     XsdDescr.DescrFileNames.Add (aFileName);

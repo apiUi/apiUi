@@ -1239,22 +1239,25 @@ begin
       if aMainFileName [x] = '\' then
         aMainFileName [x] := '/';
     httpPath := _ExtractHttpPath(aMainFileName);
+    for x := 1 to Length (aToRelateFileName) do
+      if aToRelateFileName [x] = '\' then
+        aToRelateFileName [x] := '/';
     if (AnsiRightStr(httpPath, 1) = '/')
     and (AnsiLeftStr(aToRelateFileName, 1) = '/') then
       httpPath := AnsiLeftStr(httpPath, Length(httpPath) - 1);
     result := _ExpandFolderName (httpPath + aToRelateFileName, '/');
-  end
-  else
-    DoDirSeparators (aMainfileName);
-    DoDirSeparators (aToRelateFileName);
-    aMainFileName := ExtractFilePath(aMainFileName);
-    if (AnsiRightStr(aMainfileName, 1) = '/')
-    and (AnsiLeftStr(aToRelateFileName, 1) = '/') then
-      SetLength(aMainfileName, Length(aMainfileName) - 1);
-    result := _ExpandFolderName ( ExtractFilePath(aMainFileName)
-                                + aToRelateFileName
-                                , DirectorySeparator
-                                );
+    exit;
+  end;
+  DoDirSeparators (aMainfileName);
+  DoDirSeparators (aToRelateFileName);
+  aMainFileName := ExtractFilePath(aMainFileName);
+  if (AnsiRightStr(aMainfileName, 1) = '/')
+  and (AnsiLeftStr(aToRelateFileName, 1) = '/') then
+    SetLength(aMainfileName, Length(aMainfileName) - 1);
+  result := _ExpandFolderName ( aMainFileName
+                              + aToRelateFileName
+                              , DirectorySeparator
+                              );
 end;
 
 function ExtractRelativeFileName(aMainFileName,

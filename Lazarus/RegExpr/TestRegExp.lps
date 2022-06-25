@@ -2,9 +2,9 @@
 <CONFIG>
   <ProjectSession>
     <PathDelim Value="\"/>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <BuildModes Active="Default"/>
-    <Units Count="31">
+    <Units Count="32">
       <Unit0>
         <Filename Value="TestRegExp.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -17,7 +17,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TestForm"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <TopLine Value="13"/>
         <CursorPos Y="60"/>
         <UsageCount Value="57"/>
@@ -27,7 +27,7 @@
       <Unit2>
         <Filename Value="Source\RegExpr.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <TopLine Value="208"/>
         <CursorPos X="2" Y="186"/>
         <UsageCount Value="57"/>
@@ -37,8 +37,7 @@
         <Filename Value="..\Utils\forminifilez.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="FormIniFilez"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="48"/>
+        <TopLine Value="46"/>
         <CursorPos X="15" Y="59"/>
         <UsageCount Value="57"/>
         <Loaded Value="True"/>
@@ -185,8 +184,16 @@
         <Filename Value="..\Xml\xmlExplorerUnit.pas"/>
         <UsageCount Value="10"/>
       </Unit30>
+      <Unit31>
+        <Filename Value="C:\lazarus\components\synedit\syneditsearch.pp"/>
+        <UnitName Value="SynEditSearch"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit31>
     </Units>
-    <JumpHistory Count="18" HistoryIndex="17">
+    <JumpHistory Count="23" HistoryIndex="22">
       <Position1>
         <Filename Value="..\Utils\forminifilez.pas"/>
         <Caret Line="18" Column="8"/>
@@ -259,7 +266,30 @@
         <Filename Value="testform.pas"/>
         <Caret Line="57" Column="42" TopLine="49"/>
       </Position18>
+      <Position19>
+        <Filename Value="..\Utils\forminifilez.pas"/>
+        <Caret Line="59" Column="15" TopLine="46"/>
+      </Position19>
+      <Position20>
+        <Filename Value="C:\lazarus\components\synedit\syneditsearch.pp"/>
+      </Position20>
+      <Position21>
+        <Filename Value="C:\lazarus\components\synedit\syneditsearch.pp"/>
+        <Caret Line="9" Column="53"/>
+      </Position21>
+      <Position22>
+        <Filename Value="Source\RegExpr.pas"/>
+        <Caret Line="186" Column="2" TopLine="208"/>
+      </Position22>
+      <Position23>
+        <Filename Value="C:\lazarus\components\synedit\syneditsearch.pp"/>
+        <Caret Line="9" Column="53"/>
+      </Position23>
     </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="0" ActiveMode="default"/>
+    </RunParams>
   </ProjectSession>
   <Debugging>
     <Watches Count="1">

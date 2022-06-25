@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="11"/>
+    <BuildModes Active="Default"/>
+    <Units Count="47">
+      <Unit0>
+        <Filename Value="Test.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="yamlTest"/>
+        <TopLine Value="7"/>
+        <CursorPos X="52" Y="24"/>
+        <UsageCount Value="169"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="testunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TestUnit"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="90"/>
+        <CursorPos X="15" Y="101"/>
+        <UsageCount Value="169"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\..\..\Xpress\ParserClasses.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="99"/>
+        <CursorPos X="38" Y="112"/>
+        <UsageCount Value="168"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\Xml\parser.def"/>
+        <UsageCount Value="6"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\wsdlStub\EditRegExpUnit.pas"/>
+        <HasResources Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="80"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="yamlTest.lpr"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <CursorPos X="43"/>
+        <UsageCount Value="143"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="yamltestunit.pas"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="yamlTestUnit"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="13"/>
+        <UsageCount Value="143"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="..\Xml\yaml\parser.def"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="31"/>
+        <UsageCount Value="129"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="..\Xml\yaml\yamlAnalyser.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="375"/>
+        <CursorPos Y="400"/>
+        <UsageCount Value="59"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="..\Xml\yaml\YAMLSCANNER.PAS"/>
+        <UnitName Value="yamlScanner"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1719"/>
+        <CursorPos X="41" Y="49"/>
+        <UsageCount Value="56"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="..\Xml\yaml\YAMLPARSER.PAS"/>
+        <UnitName Value="yamlParser"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="19"/>
+        <CursorPos X="7" Y="30"/>
+        <UsageCount Value="58"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="..\Xpress\ParserClasses.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="40"/>
+        <CursorPos X="33" Y="133"/>
+        <UsageCount Value="14"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="..\Xml\xmlzconsts.pas"/>
+        <UnitName Value="xmlzConsts"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="8"/>
+        <UsageCount Value="4"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="..\Xpress\CustScanner.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="69"/>
+        <CursorPos X="12" Y="78"/>
+        <UsageCount Value="5"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="C:\lazarus\components\synedit\synedit.pp"/>
+        <UnitName Value="SynEdit"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2652"/>
+        <CursorPos Y="2663"/>
+        <UsageCount Value="4"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="..\Xml\yaml\yamlScanner.l"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="17" Y="7"/>
+        <UsageCount Value="62"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="..\Xml\yaml\yamlParser.y"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="144"/>
+        <CursorPos X="15" Y="163"/>
+        <UsageCount Value="58"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="..\Xpress\CustParser.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="344"/>
+        <CursorPos Y="360"/>
+        <UsageCount Value="10"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="..\Xml\Xmlz.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="669"/>
+        <CursorPos X="3" Y="672"/>
+        <UsageCount Value="15"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="..\Xml\xmlUtilz.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="155"/>
+        <CursorPos X="19" Y="177"/>
+        <UsageCount Value="26"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="..\Xml\Xsdz.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="19"/>
+        <CursorPos X="30" Y="29"/>
+        <UsageCount Value="10"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="..\Xpress\CustAnalyser.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="186"/>
+        <CursorPos X="30" Y="197"/>
+        <UsageCount Value="6"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="..\Utils\stdvcl.pas"/>
+        <UnitName Value="StdVCL"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="250"/>
+        <UsageCount Value="3"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="..\proto3Analyser.pas"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="429"/>
+        <CursorPos X="18" Y="439"/>
+        <UsageCount Value="84"/>
+        <Loaded Value="True"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="..\..\xmlio.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="38"/>
+        <CursorPos Y="52"/>
+        <UsageCount Value="17"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="..\proto3Scanner.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="78"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="..\proto3Scanner.l"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="53"/>
+        <CursorPos Y="31"/>
+        <UsageCount Value="79"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="..\proto3Parser.PAS"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="119"/>
+        <CursorPos Y="124"/>
+        <UsageCount Value="79"/>
+        <Loaded Value="True"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="..\proto3Parser.y"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="189"/>
+        <CursorPos X="66" Y="201"/>
+        <UsageCount Value="78"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="..\Yyparse.cod"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="17"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="..\..\IpmScanner\IpmAnalyser.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="338"/>
+        <CursorPos Y="359"/>
+        <UsageCount Value="34"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="..\..\..\Xpress\Express.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1209"/>
+        <CursorPos X="19" Y="1221"/>
+        <UsageCount Value="39"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="..\..\yaml\yamlAnalyser.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="247"/>
+        <CursorPos X="16" Y="259"/>
+        <UsageCount Value="74"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="C:\lazarus\fpc\3.2.0\source\rtl\inc\objpash.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="193"/>
+        <CursorPos X="23" Y="206"/>
+        <UsageCount Value="17"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="..\..\XmlScanner.l"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="71"/>
+        <CursorPos Y="97"/>
+        <UsageCount Value="2"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="..\..\..\Xpress\parser.y"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1022"/>
+        <CursorPos Y="1415"/>
+        <UsageCount Value="57"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="..\proto3Parser.lst"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="19" Y="14"/>
+        <UsageCount Value="72"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="..\proto3parser.def"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="98"/>
+        <CursorPos Y="126"/>
+        <UsageCount Value="65"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="..\..\yaml\parser.def"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="1"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="..\..\..\Xpress\CustAnalyser.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="14"/>
+        <CursorPos X="16" Y="30"/>
+        <UsageCount Value="34"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="..\..\..\Xpress\CustScanner.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="124"/>
+        <CursorPos X="6" Y="127"/>
+        <UsageCount Value="4"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="C:\lazarus\fpc\3.2.0\source\rtl\objpas\math.pp"/>
+        <UnitName Value="Math"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="236"/>
+        <CursorPos X="15" Y="252"/>
+        <UsageCount Value="33"/>
+      </Unit41>
+      <Unit42>
+        <Filename Value="..\..\..\Utils\igGlobals.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="20"/>
+      </Unit42>
+      <Unit43>
+        <Filename Value="..\..\..\Xpress\CustParser.pas"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="354"/>
+        <CursorPos X="3" Y="362"/>
+        <UsageCount Value="17"/>
+        <Loaded Value="True"/>
+      </Unit43>
+      <Unit44>
+        <Filename Value="C:\lazarus\fpc\3.2.0\source\rtl\inc\objpas.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="327"/>
+        <CursorPos X="9" Y="329"/>
+        <UsageCount Value="17"/>
+      </Unit44>
+      <Unit45>
+        <Filename Value="..\..\Wsdlz.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="74"/>
+        <CursorPos X="22" Y="102"/>
+        <UsageCount Value="17"/>
+      </Unit45>
+      <Unit46>
+        <Filename Value="..\..\XmlParser.y"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="97"/>
+        <CursorPos X="14" Y="121"/>
+        <UsageCount Value="15"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit46>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="..\..\..\Xpress\CustParser.pas"/>
+        <Caret Line="362" TopLine="350"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\..\..\Xpress\CustParser.pas"/>
+        <Caret Line="363" TopLine="350"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\..\..\Xpress\CustParser.pas"/>
+        <Caret Line="367" TopLine="350"/>
+      </Position3>
+      <Position4>
+        <Filename Value="..\proto3Parser.y"/>
+        <Caret Line="134" Column="17" TopLine="123"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\proto3Parser.y"/>
+        <Caret Line="108" TopLine="116"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\proto3Parser.PAS"/>
+        <Caret Line="170" TopLine="159"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\proto3Parser.PAS"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\proto3Parser.PAS"/>
+        <Caret Line="50" Column="20" TopLine="30"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\proto3Parser.PAS"/>
+        <Caret Line="124" TopLine="102"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\proto3Parser.y"/>
+        <Caret Line="106" Column="27" TopLine="90"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\proto3Parser.PAS"/>
+        <Caret Line="124" TopLine="115"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\proto3Parser.y"/>
+        <Caret Line="106" Column="27" TopLine="90"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\proto3Parser.y"/>
+      </Position13>
+      <Position14>
+        <Filename Value="..\proto3Parser.y"/>
+        <Caret Line="26" Column="20" TopLine="6"/>
+      </Position14>
+      <Position15>
+        <Filename Value="..\proto3Parser.y"/>
+        <Caret Line="102" Column="32" TopLine="82"/>
+      </Position15>
+      <Position16>
+        <Filename Value="..\proto3Parser.y"/>
+        <Caret Line="107" Column="20" TopLine="87"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\proto3Parser.PAS"/>
+        <Caret Line="170" TopLine="159"/>
+      </Position17>
+      <Position18>
+        <Filename Value="testunit.pas"/>
+        <Caret Line="101" Column="15" TopLine="90"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\proto3Analyser.pas"/>
+        <Caret Line="78" Column="13" TopLine="67"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\proto3Analyser.pas"/>
+        <Caret Line="439" Column="18" TopLine="429"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\proto3Parser.PAS"/>
+        <Caret Line="50" Column="13" TopLine="38"/>
+      </Position21>
+      <Position22>
+        <Filename Value="..\proto3Parser.PAS"/>
+        <Caret Line="124" TopLine="119"/>
+      </Position22>
+      <Position23>
+        <Filename Value="..\..\..\Xpress\CustParser.pas"/>
+        <Caret Line="367" TopLine="350"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\proto3Parser.PAS"/>
+        <Caret Line="127" Column="21" TopLine="119"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\..\..\Xpress\CustParser.pas"/>
+        <Caret Line="121" Column="13" TopLine="111"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\proto3Analyser.pas"/>
+        <Caret Line="439" Column="18" TopLine="429"/>
+      </Position26>
+      <Position27>
+        <Filename Value="..\proto3Parser.PAS"/>
+        <Caret Line="50" Column="13" TopLine="38"/>
+      </Position27>
+      <Position28>
+        <Filename Value="..\proto3Parser.PAS"/>
+        <Caret Line="127" TopLine="122"/>
+      </Position28>
+      <Position29>
+        <Filename Value="..\proto3Parser.y"/>
+        <Caret Line="164" Column="27" TopLine="156"/>
+      </Position29>
+      <Position30>
+        <Filename Value="..\proto3Parser.y"/>
+        <Caret Line="196" TopLine="183"/>
+      </Position30>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="0" ActiveMode="default"/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>

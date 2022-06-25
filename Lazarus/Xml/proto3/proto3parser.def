@@ -1,0 +1,126 @@
+const _AAA_LOW = 256;
+dTokenNames: array [_AAA_LOW.._IGNORE] of String =
+( '_AAA_LOW'
+, '_LINEENDING'
+, '_TERMINATOR'
+, '_IS'
+, '_DOT'
+, '_COMMA'
+, '_LT'
+, '_GT'
+, '_OPENPARENTHESIS'
+, '_CLOSEPARENTHESIS'
+, '_OPENBRACKET'
+, '_CLOSEBRACKET'
+, '_OPENBRACE'
+, '_CLOSEBRACE'
+, '_PLUS'
+, '_MINUS'
+, '_DECIMALLIT'
+, '_OCTALLIT'
+, '_HEXLIT'
+, '_FLOATLIT'
+, '_BOOLLIT'
+, '_STRINGLIT'
+, '_IDENT'
+, '_FULLIDENT'
+, '_BOOL'
+, '_BYTES'
+, '_DOUBLE'
+, '_ENUM'
+, '_ENUMTYPE'
+, '_FIXED32'
+, '_FIXED64'
+, '_FLOAT'
+, '_IMPORT'
+, '_INT32'
+, '_INT64'
+, '_MAP'
+, '_MAX'
+, '_MESSAGE'
+, '_MESSAGETYPE'
+, '_ONEOF'
+, '_OPTION'
+, '_PACKAGE'
+, '_PACKED'
+, '_PUBLIC'
+, '_REPEATED'
+, '_RESERVED'
+, '_RETURNS'
+, '_RPC'
+, '_SERVICE'
+, '_SFIXED32'
+, '_SFIXED64'
+, '_SINT32'
+, '_SINT64'
+, '_STREAM'
+, '_STRING'
+, '_SYNTAX'
+, '_TO'
+, '_UINT32'
+, '_UINT64'
+, '_WEAK'
+, '_IGNORE'
+);
+
+const _LINEENDING = 257;
+const _TERMINATOR = 258;
+const _IS = 259;
+const _DOT = 260;
+const _COMMA = 261;
+const _LT = 262;
+const _GT = 263;
+const _OPENPARENTHESIS = 264;
+const _CLOSEPARENTHESIS = 265;
+const _OPENBRACKET = 266;
+const _CLOSEBRACKET = 267;
+const _OPENBRACE = 268;
+const _CLOSEBRACE = 269;
+const _PLUS = 270;
+const _MINUS = 271;
+const _DECIMALLIT = 272;
+const _OCTALLIT = 273;
+const _HEXLIT = 274;
+const _FLOATLIT = 275;
+const _BOOLLIT = 276;
+const _STRINGLIT = 277;
+const _IDENT = 278;
+const _FULLIDENT = 279;
+const _BOOL = 280;
+const _BYTES = 281;
+const _DOUBLE = 282;
+const _ENUM = 283;
+const _ENUMTYPE = 284;
+const _FIXED32 = 285;
+const _FIXED64 = 286;
+const _FLOAT = 287;
+const _IMPORT = 288;
+const _INT32 = 289;
+const _INT64 = 290;
+const _MAP = 291;
+const _MAX = 292;
+const _MESSAGE = 293;
+const _MESSAGETYPE = 294;
+const _ONEOF = 295;
+const _OPTION = 296;
+const _PACKAGE = 297;
+const _PACKED = 298;
+const _PUBLIC = 299;
+const _REPEATED = 300;
+const _RESERVED = 301;
+const _RETURNS = 302;
+const _RPC = 303;
+const _SERVICE = 304;
+const _SFIXED32 = 305;
+const _SFIXED64 = 306;
+const _SINT32 = 307;
+const _SINT64 = 308;
+const _STREAM = 309;
+const _STRING = 310;
+const _SYNTAX = 311;
+const _TO = 312;
+const _UINT32 = 313;
+const _UINT64 = 314;
+const _WEAK = 315;
+const _IGNORE = 316;
+

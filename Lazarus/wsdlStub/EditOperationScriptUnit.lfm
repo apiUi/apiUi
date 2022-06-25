@@ -701,7 +701,7 @@ object EditOperationScriptForm: TEditOperationScriptForm
     Left = 120
     Top = 130
     object IpmFieldMenuItem: TMenuItem
-      Caption = 'Xml Element'
+      Caption = 'Element'
       OnClick = IpmFieldMenuItemClick
     end
     object DbNameMenuItem: TMenuItem

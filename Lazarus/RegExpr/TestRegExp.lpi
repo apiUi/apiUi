@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <PathDelim Value="\"/>
     <General>
       <SessionStorage Value="InProjectDir"/>
@@ -18,7 +18,6 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <BuildNr Value="1"/>
-      <StringTable ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
@@ -27,9 +26,10 @@
       <Version Value="2"/>
     </PublishOptions>
     <RunParams>
-      <local>
-        <FormatVersion Value="1"/>
-      </local>
+      <FormatVersion Value="2"/>
+      <Modes Count="1">
+        <Mode0 Name="default"/>
+      </Modes>
     </RunParams>
     <RequiredPackages Count="3">
       <Item1>
@@ -78,6 +78,9 @@
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
+      <Debugging>
+        <GenerateDebugInfo Value="False"/>
+      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>

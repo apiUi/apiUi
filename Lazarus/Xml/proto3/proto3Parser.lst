@@ -1,0 +1,2023 @@
+
+state 0:
+
+	$accept : _ start $end
+
+	_SYNTAX	shift 3
+	.	error
+
+	Syntax	goto 1
+	start	goto 2
+
+state 1:
+
+	start : Syntax _ OptionalStatementList
+	OptionalStatementList : _	(3)
+
+	_TERMINATOR	shift 14
+	_ENUM	shift 15
+	_IMPORT	shift 16
+	_MESSAGE	shift 17
+	_OPTION	shift 18
+	_PACKAGE	shift 19
+	_SERVICE	shift 20
+	$end	reduce 3
+	.	error
+
+	Service	goto 4
+	Message	goto 5
+	Enum	goto 6
+	TopLevelDef	goto 7
+	OptionStatement	goto 8
+	PackageStatement	goto 9
+	ImportStatement	goto 10
+	Statement	goto 11
+	StatementList	goto 12
+	OptionalStatementList	goto 13
+
+state 2:
+
+	$accept : start _ $end
+
+	$end	accept
+	.	error
+
+state 3:
+
+	Syntax : _SYNTAX _ _IS _STRINGLIT _TERMINATOR
+
+	_IS	shift 21
+	.	error
+
+state 4:
+
+	TopLevelDef : Service _	(43)
+
+	.	reduce 43
+
+state 5:
+
+	TopLevelDef : Message _	(42)
+
+	.	reduce 42
+
+state 6:
+
+	TopLevelDef : Enum _	(41)
+
+	.	reduce 41
+
+state 7:
+
+	Statement : TopLevelDef _	(11)
+
+	.	reduce 11
+
+state 8:
+
+	Statement : OptionStatement _	(10)
+
+	.	reduce 10
+
+state 9:
+
+	Statement : PackageStatement _	(9)
+
+	.	reduce 9
+
+state 10:
+
+	Statement : ImportStatement _	(8)
+
+	.	reduce 8
+
+state 11:
+
+	StatementList : Statement _	(5)
+
+	.	reduce 5
+
+state 12:
+
+	OptionalStatementList : StatementList _	(4)
+	StatementList : StatementList _ Statement
+
+	_TERMINATOR	shift 14
+	_ENUM	shift 15
+	_IMPORT	shift 16
+	_MESSAGE	shift 17
+	_OPTION	shift 18
+	_PACKAGE	shift 19
+	_SERVICE	shift 20
+	$end	reduce 4
+	.	error
+
+	Service	goto 4
+	Message	goto 5
+	Enum	goto 6
+	TopLevelDef	goto 7
+	OptionStatement	goto 8
+	PackageStatement	goto 9
+	ImportStatement	goto 10
+	Statement	goto 22
+
+state 13:
+
+	start : Syntax OptionalStatementList _	(1)
+
+	.	reduce 1
+
+state 14:
+
+	Statement : _TERMINATOR _	(7)
+
+	.	reduce 7
+
+state 15:
+
+	Enum : _ENUM _ _IDENT _OPENBRACE EnumItemList _CLOSEBRACE
+
+	_IDENT	shift 23
+	.	error
+
+state 16:
+
+	ImportStatement : _IMPORT _ ImportOption _STRINGLIT _TERMINATOR
+	ImportOption : _	(13)
+
+	_PUBLIC	shift 25
+	_WEAK	shift 26
+	_STRINGLIT	reduce 13
+	.	error
+
+	ImportOption	goto 24
+
+state 17:
+
+	Message : _MESSAGE _ _IDENT _OPENBRACE MessageItemList _CLOSEBRACE
+
+	_IDENT	shift 27
+	.	error
+
+state 18:
+
+	OptionStatement : _OPTION _ OptionName _IS Constant _TERMINATOR
+
+	_OPENPARENTHESIS	shift 30
+	_IDENT	shift 31
+	_FULLIDENT	shift 32
+	.	error
+
+	OptionName	goto 28
+	Identifier	goto 29
+
+state 19:
+
+	PackageStatement : _PACKAGE _ Identifier _TERMINATOR
+
+	_IDENT	shift 31
+	_FULLIDENT	shift 32
+	.	error
+
+	Identifier	goto 33
+
+state 20:
+
+	Service : _SERVICE _ _IDENT _OPENBRACE OptionalServiceItemList _CLOSEBRACE
+
+	_IDENT	shift 34
+	.	error
+
+state 21:
+
+	Syntax : _SYNTAX _IS _ _STRINGLIT _TERMINATOR
+
+	_STRINGLIT	shift 35
+	.	error
+
+state 22:
+
+	StatementList : StatementList Statement _	(6)
+
+	.	reduce 6
+
+state 23:
+
+	Enum : _ENUM _IDENT _ _OPENBRACE EnumItemList _CLOSEBRACE
+
+	_OPENBRACE	shift 36
+	.	error
+
+state 24:
+
+	ImportStatement : _IMPORT ImportOption _ _STRINGLIT _TERMINATOR
+
+	_STRINGLIT	shift 37
+	.	error
+
+state 25:
+
+	ImportOption : _PUBLIC _	(15)
+
+	.	reduce 15
+
+state 26:
+
+	ImportOption : _WEAK _	(14)
+
+	.	reduce 14
+
+state 27:
+
+	Message : _MESSAGE _IDENT _ _OPENBRACE MessageItemList _CLOSEBRACE
+
+	_OPENBRACE	shift 38
+	.	error
+
+state 28:
+
+	OptionStatement : _OPTION OptionName _ _IS Constant _TERMINATOR
+
+	_IS	shift 39
+	.	error
+
+state 29:
+
+	OptionName : Identifier _	(18)
+
+	.	reduce 18
+
+state 30:
+
+	OptionName : _OPENPARENTHESIS _ Identifier _CLOSEPARENTHESIS OptionalDotItentifier
+
+	_IDENT	shift 31
+	_FULLIDENT	shift 32
+	.	error
+
+	Identifier	goto 40
+
+state 31:
+
+	Identifier : _IDENT _	(36)
+
+	.	reduce 36
+
+state 32:
+
+	Identifier : _FULLIDENT _	(37)
+
+	.	reduce 37
+
+state 33:
+
+	PackageStatement : _PACKAGE Identifier _ _TERMINATOR
+
+	_TERMINATOR	shift 41
+	.	error
+
+state 34:
+
+	Service : _SERVICE _IDENT _ _OPENBRACE OptionalServiceItemList _CLOSEBRACE
+
+	_OPENBRACE	shift 42
+	.	error
+
+state 35:
+
+	Syntax : _SYNTAX _IS _STRINGLIT _ _TERMINATOR
+
+	_TERMINATOR	shift 43
+	.	error
+
+state 36:
+
+	*** conflicts:
+
+	shift 48, reduce 47 on _IDENT
+	shift 49, reduce 47 on _OPTION
+
+	Enum : _ENUM _IDENT _OPENBRACE _ EnumItemList _CLOSEBRACE
+	EnumItem : _	(47)
+
+	_IDENT	shift 48
+	_OPTION	shift 49
+	_CLOSEBRACE	reduce 47
+	.	error
+
+	EnumField	goto 44
+	EnumOption	goto 45
+	EnumItem	goto 46
+	EnumItemList	goto 47
+
+state 37:
+
+	ImportStatement : _IMPORT ImportOption _STRINGLIT _ _TERMINATOR
+
+	_TERMINATOR	shift 50
+	.	error
+
+state 38:
+
+	*** conflicts:
+
+	shift 65, reduce 57 on _TERMINATOR
+	shift 66, reduce 57 on _DOT
+	shift 31, reduce 57 on _IDENT
+	shift 32, reduce 57 on _FULLIDENT
+	shift 67, reduce 57 on _BOOL
+	shift 68, reduce 57 on _BYTES
+	shift 69, reduce 57 on _DOUBLE
+	shift 15, reduce 57 on _ENUM
+	shift 70, reduce 57 on _FIXED32
+	shift 71, reduce 57 on _FIXED64
+	shift 72, reduce 57 on _FLOAT
+	shift 73, reduce 57 on _INT32
+	shift 74, reduce 57 on _INT64
+	shift 75, reduce 57 on _MAP
+	shift 17, reduce 57 on _MESSAGE
+	shift 76, reduce 57 on _ONEOF
+	shift 18, reduce 57 on _OPTION
+	shift 77, reduce 57 on _REPEATED
+	shift 78, reduce 57 on _RESERVED
+	shift 79, reduce 57 on _SFIXED32
+	shift 80, reduce 57 on _SFIXED64
+	shift 81, reduce 57 on _SINT32
+	shift 82, reduce 57 on _SINT64
+	shift 83, reduce 57 on _STRING
+	shift 84, reduce 57 on _UINT32
+	shift 85, reduce 57 on _UINT64
+
+	Message : _MESSAGE _IDENT _OPENBRACE _ MessageItemList _CLOSEBRACE
+	MessageItem : _	(57)
+
+	_TERMINATOR	shift 65
+	_DOT	shift 66
+	_IDENT	shift 31
+	_FULLIDENT	shift 32
+	_BOOL	shift 67
+	_BYTES	shift 68
+	_DOUBLE	shift 69
+	_ENUM	shift 15
+	_FIXED32	shift 70
+	_FIXED64	shift 71
+	_FLOAT	shift 72
+	_INT32	shift 73
+	_INT64	shift 74
+	_MAP	shift 75
+	_MESSAGE	shift 17
+	_ONEOF	shift 76
+	_OPTION	shift 18
+	_REPEATED	shift 77
+	_RESERVED	shift 78
+	_SFIXED32	shift 79
+	_SFIXED64	shift 80
+	_SINT32	shift 81
+	_SINT64	shift 82
+	_STRING	shift 83
+	_UINT32	shift 84
+	_UINT64	shift 85
+	_CLOSEBRACE	reduce 57
+	.	error
+
+	Reference	goto 51
+	BuiltInFieldType	goto 52
+	FieldType	goto 53
+	FieldSpec	goto 54
+	ReservedStatement	goto 55
+	MapField	goto 56
+	OneOfStatement	goto 57
+	Field	goto 58
+	MessageItem	goto 59
+	MessageItemList	goto 60
+	Message	goto 61
+	Enum	goto 62
+	Identifier	goto 63
+	OptionStatement	goto 64
+
+state 39:
+
+	OptionStatement : _OPTION OptionName _IS _ Constant _TERMINATOR
+
+	_PLUS	shift 91
+	_DECIMALLIT	shift 92
+	_OCTALLIT	shift 93
+	_HEXLIT	shift 94
+	_FLOATLIT	shift 95
+	_BOOLLIT	shift 96
+	_STRINGLIT	shift 97
+	_IDENT	shift 31
+	_FULLIDENT	shift 32
+	.	error
+
+	_MIN	goto 86
+	Float	goto 87
+	Integer	goto 88
+	Constant	goto 89
+	Identifier	goto 90
+
+state 40:
+
+	OptionName : _OPENPARENTHESIS Identifier _ _CLOSEPARENTHESIS OptionalDotItentifier
+
+	_CLOSEPARENTHESIS	shift 98
+	.	error
+
+state 41:
+
+	PackageStatement : _PACKAGE Identifier _TERMINATOR _	(16)
+
+	.	reduce 16
+
+state 42:
+
+	Service : _SERVICE _IDENT _OPENBRACE _ OptionalServiceItemList _CLOSEBRACE
+	OptionalServiceItemList : _	(126)
+
+	_TERMINATOR	shift 104
+	_OPTION	shift 18
+	_RPC	shift 105
+	_CLOSEBRACE	reduce 126
+	.	error
+
+	RpcStatement	goto 99
+	ServiceItem	goto 100
+	ServiceItemList	goto 101
+	OptionalServiceItemList	goto 102
+	OptionStatement	goto 103
+
+state 43:
+
+	Syntax : _SYNTAX _IS _STRINGLIT _TERMINATOR _	(2)
+
+	.	reduce 2
+
+state 44:
+
+	EnumItem : EnumField _	(49)
+
+	.	reduce 49
+
+state 45:
+
+	EnumItem : EnumOption _	(48)
+
+	.	reduce 48
+
+state 46:
+
+	EnumItemList : EnumItem _	(45)
+
+	.	reduce 45
+
+state 47:
+
+	*** conflicts:
+
+	shift 107, reduce 47 on _CLOSEBRACE
+	shift 48, reduce 47 on _IDENT
+	shift 49, reduce 47 on _OPTION
+
+	Enum : _ENUM _IDENT _OPENBRACE EnumItemList _ _CLOSEBRACE
+	EnumItemList : EnumItemList _ EnumItem
+	EnumItem : _	(47)
+
+	_CLOSEBRACE	shift 107
+	_IDENT	shift 48
+	_OPTION	shift 49
+	.	error
+
+	EnumField	goto 44
+	EnumOption	goto 45
+	EnumItem	goto 106
+
+state 48:
+
+	EnumField : _IDENT _ _IS Integer OptionalEnumValueOption _TERMINATOR
+
+	_IS	shift 108
+	.	error
+
+state 49:
+
+	EnumOption : _OPTION _ _IDENT _IS _BOOLLIT _TERMINATOR
+
+	_IDENT	shift 109
+	.	error
+
+state 50:
+
+	ImportStatement : _IMPORT ImportOption _STRINGLIT _TERMINATOR _	(12)
+
+	.	reduce 12
+
+state 51:
+
+	FieldType : Reference _	(70)
+
+	.	reduce 70
+
+state 52:
+
+	FieldType : BuiltInFieldType _	(69)
+
+	.	reduce 69
+
+state 53:
+
+	FieldSpec : FieldType _ _IDENT _IS Integer OptionalFieldOptions _TERMINATOR
+
+	_IDENT	shift 110
+	.	error
+
+state 54:
+
+	Field : FieldSpec _	(66)
+
+	.	reduce 66
+
+state 55:
+
+	MessageItem : ReservedStatement _	(64)
+
+	.	reduce 64
+
+state 56:
+
+	MessageItem : MapField _	(63)
+
+	.	reduce 63
+
+state 57:
+
+	MessageItem : OneOfStatement _	(62)
+
+	.	reduce 62
+
+state 58:
+
+	MessageItem : Field _	(58)
+
+	.	reduce 58
+
+state 59:
+
+	MessageItemList : MessageItem _	(55)
+
+	.	reduce 55
+
+state 60:
+
+	*** conflicts:
+
+	shift 65, reduce 57 on _TERMINATOR
+	shift 66, reduce 57 on _DOT
+	shift 112, reduce 57 on _CLOSEBRACE
+	shift 31, reduce 57 on _IDENT
+	shift 32, reduce 57 on _FULLIDENT
+	shift 67, reduce 57 on _BOOL
+	shift 68, reduce 57 on _BYTES
+	shift 69, reduce 57 on _DOUBLE
+	shift 15, reduce 57 on _ENUM
+	shift 70, reduce 57 on _FIXED32
+	shift 71, reduce 57 on _FIXED64
+	shift 72, reduce 57 on _FLOAT
+	shift 73, reduce 57 on _INT32
+	shift 74, reduce 57 on _INT64
+	shift 75, reduce 57 on _MAP
+	shift 17, reduce 57 on _MESSAGE
+	shift 76, reduce 57 on _ONEOF
+	shift 18, reduce 57 on _OPTION
+	shift 77, reduce 57 on _REPEATED
+	shift 78, reduce 57 on _RESERVED
+	shift 79, reduce 57 on _SFIXED32
+	shift 80, reduce 57 on _SFIXED64
+	shift 81, reduce 57 on _SINT32
+	shift 82, reduce 57 on _SINT64
+	shift 83, reduce 57 on _STRING
+	shift 84, reduce 57 on _UINT32
+	shift 85, reduce 57 on _UINT64
+
+	Message : _MESSAGE _IDENT _OPENBRACE MessageItemList _ _CLOSEBRACE
+	MessageItemList : MessageItemList _ MessageItem
+	MessageItem : _	(57)
+
+	_TERMINATOR	shift 65
+	_DOT	shift 66
+	_CLOSEBRACE	shift 112
+	_IDENT	shift 31
+	_FULLIDENT	shift 32
+	_BOOL	shift 67
+	_BYTES	shift 68
+	_DOUBLE	shift 69
+	_ENUM	shift 15
+	_FIXED32	shift 70
+	_FIXED64	shift 71
+	_FLOAT	shift 72
+	_INT32	shift 73
+	_INT64	shift 74
+	_MAP	shift 75
+	_MESSAGE	shift 17
+	_ONEOF	shift 76
+	_OPTION	shift 18
+	_REPEATED	shift 77
+	_RESERVED	shift 78
+	_SFIXED32	shift 79
+	_SFIXED64	shift 80
+	_SINT32	shift 81
+	_SINT64	shift 82
+	_STRING	shift 83
+	_UINT32	shift 84
+	_UINT64	shift 85
+	.	error
+
+	Reference	goto 51
+	BuiltInFieldType	goto 52
+	FieldType	goto 53
+	FieldSpec	goto 54
+	ReservedStatement	goto 55
+	MapField	goto 56
+	OneOfStatement	goto 57
+	Field	goto 58
+	MessageItem	goto 111
+	Message	goto 61
+	Enum	goto 62
+	Identifier	goto 63
+	OptionStatement	goto 64
+
+state 61:
+
+	MessageItem : Message _	(60)
+
+	.	reduce 60
+
+state 62:
+
+	MessageItem : Enum _	(59)
+
+	.	reduce 59
+
+state 63:
+
+	Reference : Identifier _	(71)
+
+	.	reduce 71
+
+state 64:
+
+	MessageItem : OptionStatement _	(61)
+
+	.	reduce 61
+
+state 65:
+
+	MessageItem : _TERMINATOR _	(65)
+
+	.	reduce 65
+
+state 66:
+
+	Reference : _DOT _ Identifier
+
+	_IDENT	shift 31
+	_FULLIDENT	shift 32
+	.	error
+
+	Identifier	goto 113
+
+state 67:
+
+	BuiltInFieldType : _BOOL _	(85)
+
+	.	reduce 85
+
+state 68:
+
+	BuiltInFieldType : _BYTES _	(87)
+
+	.	reduce 87
+
+state 69:
+
+	BuiltInFieldType : _DOUBLE _	(73)
+
+	.	reduce 73
+
+state 70:
+
+	BuiltInFieldType : _FIXED32 _	(81)
+
+	.	reduce 81
+
+state 71:
+
+	BuiltInFieldType : _FIXED64 _	(82)
+
+	.	reduce 82
+
+state 72:
+
+	BuiltInFieldType : _FLOAT _	(74)
+
+	.	reduce 74
+
+state 73:
+
+	BuiltInFieldType : _INT32 _	(75)
+
+	.	reduce 75
+
+state 74:
+
+	BuiltInFieldType : _INT64 _	(76)
+
+	.	reduce 76
+
+state 75:
+
+	MapField : _MAP _ _LT KeyType _COMMA FieldType _GT _IDENT _IS Integer OptionalFieldOptions _TERMINATOR
+
+	_LT	shift 114
+	.	error
+
+state 76:
+
+	OneOfStatement : _ONEOF _ _IDENT _OPENBRACE OneOfItemList _CLOSEBRACE
+
+	_IDENT	shift 115
+	.	error
+
+state 77:
+
+	Field : _REPEATED _ FieldSpec
+
+	_DOT	shift 66
+	_IDENT	shift 31
+	_FULLIDENT	shift 32
+	_BOOL	shift 67
+	_BYTES	shift 68
+	_DOUBLE	shift 69
+	_FIXED32	shift 70
+	_FIXED64	shift 71
+	_FLOAT	shift 72
+	_INT32	shift 73
+	_INT64	shift 74
+	_SFIXED32	shift 79
+	_SFIXED64	shift 80
+	_SINT32	shift 81
+	_SINT64	shift 82
+	_STRING	shift 83
+	_UINT32	shift 84
+	_UINT64	shift 85
+	.	error
+
+	Reference	goto 51
+	BuiltInFieldType	goto 52
+	FieldType	goto 53
+	FieldSpec	goto 116
+	Identifier	goto 63
+
+state 78:
+
+	ReservedStatement : _RESERVED _ $$1 ReservedSpec _TERMINATOR
+	$$1 : _	(112)
+
+	.	reduce 112
+
+	$$1	goto 117
+
+state 79:
+
+	BuiltInFieldType : _SFIXED32 _	(83)
+
+	.	reduce 83
+
+state 80:
+
+	BuiltInFieldType : _SFIXED64 _	(84)
+
+	.	reduce 84
+
+state 81:
+
+	BuiltInFieldType : _SINT32 _	(79)
+
+	.	reduce 79
+
+state 82:
+
+	BuiltInFieldType : _SINT64 _	(80)
+
+	.	reduce 80
+
+state 83:
+
+	BuiltInFieldType : _STRING _	(86)
+
+	.	reduce 86
+
+state 84:
+
+	BuiltInFieldType : _UINT32 _	(77)
+
+	.	reduce 77
+
+state 85:
+
+	BuiltInFieldType : _UINT64 _	(78)
+
+	.	reduce 78
+
+state 86:
+
+	Integer : _MIN _ _DECIMALLIT
+	Integer : _MIN _ _OCTALLIT
+	Integer : _MIN _ _HEXLIT
+	Float : _MIN _ _FLOATLIT
+
+	_DECIMALLIT	shift 118
+	_OCTALLIT	shift 119
+	_HEXLIT	shift 120
+	_FLOATLIT	shift 121
+	.	error
+
+state 87:
+
+	Constant : Float _	(24)
+
+	.	reduce 24
+
+state 88:
+
+	Constant : Integer _	(23)
+
+	.	reduce 23
+
+state 89:
+
+	OptionStatement : _OPTION OptionName _IS Constant _ _TERMINATOR
+
+	_TERMINATOR	shift 122
+	.	error
+
+state 90:
+
+	Constant : Identifier _	(22)
+
+	.	reduce 22
+
+state 91:
+
+	Integer : _PLUS _ _DECIMALLIT
+	Integer : _PLUS _ _OCTALLIT
+	Integer : _PLUS _ _HEXLIT
+	Float : _PLUS _ _FLOATLIT
+
+	_DECIMALLIT	shift 123
+	_OCTALLIT	shift 124
+	_HEXLIT	shift 125
+	_FLOATLIT	shift 126
+	.	error
+
+state 92:
+
+	Integer : _DECIMALLIT _	(27)
+
+	.	reduce 27
+
+state 93:
+
+	Integer : _OCTALLIT _	(28)
+
+	.	reduce 28
+
+state 94:
+
+	Integer : _HEXLIT _	(29)
+
+	.	reduce 29
+
+state 95:
+
+	Float : _FLOATLIT _	(38)
+
+	.	reduce 38
+
+state 96:
+
+	Constant : _BOOLLIT _	(26)
+
+	.	reduce 26
+
+state 97:
+
+	Constant : _STRINGLIT _	(25)
+
+	.	reduce 25
+
+state 98:
+
+	OptionName : _OPENPARENTHESIS Identifier _CLOSEPARENTHESIS _ OptionalDotItentifier
+	OptionalDotItentifier : _	(20)
+
+	_DOT	shift 128
+	_IS	reduce 20
+	.	error
+
+	OptionalDotItentifier	goto 127
+
+state 99:
+
+	ServiceItem : RpcStatement _	(132)
+
+	.	reduce 132
+
+state 100:
+
+	ServiceItemList : ServiceItem _	(128)
+
+	.	reduce 128
+
+state 101:
+
+	OptionalServiceItemList : ServiceItemList _	(127)
+	ServiceItemList : ServiceItemList _ ServiceItem
+
+	_TERMINATOR	shift 104
+	_OPTION	shift 18
+	_RPC	shift 105
+	_CLOSEBRACE	reduce 127
+	.	error
+
+	RpcStatement	goto 99
+	ServiceItem	goto 129
+	OptionStatement	goto 103
+
+state 102:
+
+	Service : _SERVICE _IDENT _OPENBRACE OptionalServiceItemList _ _CLOSEBRACE
+
+	_CLOSEBRACE	shift 130
+	.	error
+
+state 103:
+
+	ServiceItem : OptionStatement _	(131)
+
+	.	reduce 131
+
+state 104:
+
+	ServiceItem : _TERMINATOR _	(130)
+
+	.	reduce 130
+
+state 105:
+
+	RpcStatement : _RPC _ _IDENT _OPENPARENTHESIS MessageSpec _CLOSEPARENTHESIS _RETURNS _OPENPARENTHESIS MessageSpec _CLOSEPARENTHESIS RpcOptionsBlockOrTerminator
+
+	_IDENT	shift 131
+	.	error
+
+state 106:
+
+	EnumItemList : EnumItemList EnumItem _	(46)
+
+	.	reduce 46
+
+state 107:
+
+	Enum : _ENUM _IDENT _OPENBRACE EnumItemList _CLOSEBRACE _	(44)
+
+	.	reduce 44
+
+state 108:
+
+	EnumField : _IDENT _IS _ Integer OptionalEnumValueOption _TERMINATOR
+
+	_PLUS	shift 134
+	_DECIMALLIT	shift 92
+	_OCTALLIT	shift 93
+	_HEXLIT	shift 94
+	.	error
+
+	_MIN	goto 132
+	Integer	goto 133
+
+state 109:
+
+	EnumOption : _OPTION _IDENT _ _IS _BOOLLIT _TERMINATOR
+
+	_IS	shift 135
+	.	error
+
+state 110:
+
+	FieldSpec : FieldType _IDENT _ _IS Integer OptionalFieldOptions _TERMINATOR
+
+	_IS	shift 136
+	.	error
+
+state 111:
+
+	MessageItemList : MessageItemList MessageItem _	(56)
+
+	.	reduce 56
+
+state 112:
+
+	Message : _MESSAGE _IDENT _OPENBRACE MessageItemList _CLOSEBRACE _	(54)
+
+	.	reduce 54
+
+state 113:
+
+	Reference : _DOT Identifier _	(72)
+
+	.	reduce 72
+
+state 114:
+
+	MapField : _MAP _LT _ KeyType _COMMA FieldType _GT _IDENT _IS Integer OptionalFieldOptions _TERMINATOR
+
+	_BOOL	shift 138
+	_FIXED32	shift 139
+	_FIXED64	shift 140
+	_INT32	shift 141
+	_INT64	shift 142
+	_SFIXED32	shift 143
+	_SFIXED64	shift 144
+	_SINT32	shift 145
+	_SINT64	shift 146
+	_STRING	shift 147
+	_UINT32	shift 148
+	_UINT64	shift 149
+	.	error
+
+	KeyType	goto 137
+
+state 115:
+
+	OneOfStatement : _ONEOF _IDENT _ _OPENBRACE OneOfItemList _CLOSEBRACE
+
+	_OPENBRACE	shift 150
+	.	error
+
+state 116:
+
+	Field : _REPEATED FieldSpec _	(67)
+
+	.	reduce 67
+
+state 117:
+
+	ReservedStatement : _RESERVED $$1 _ ReservedSpec _TERMINATOR
+
+	_PLUS	shift 134
+	_DECIMALLIT	shift 92
+	_OCTALLIT	shift 93
+	_HEXLIT	shift 94
+	_STRINGLIT	shift 156
+	.	error
+
+	IntegerRange	goto 151
+	FieldNames	goto 152
+	IntegerRanges	goto 153
+	ReservedSpec	goto 154
+	_MIN	goto 132
+	Integer	goto 155
+
+state 118:
+
+	Integer : _MIN _DECIMALLIT _	(33)
+
+	.	reduce 33
+
+state 119:
+
+	Integer : _MIN _OCTALLIT _	(34)
+
+	.	reduce 34
+
+state 120:
+
+	Integer : _MIN _HEXLIT _	(35)
+
+	.	reduce 35
+
+state 121:
+
+	Float : _MIN _FLOATLIT _	(40)
+
+	.	reduce 40
+
+state 122:
+
+	OptionStatement : _OPTION OptionName _IS Constant _TERMINATOR _	(17)
+
+	.	reduce 17
+
+state 123:
+
+	Integer : _PLUS _DECIMALLIT _	(30)
+
+	.	reduce 30
+
+state 124:
+
+	Integer : _PLUS _OCTALLIT _	(31)
+
+	.	reduce 31
+
+state 125:
+
+	Integer : _PLUS _HEXLIT _	(32)
+
+	.	reduce 32
+
+state 126:
+
+	Float : _PLUS _FLOATLIT _	(39)
+
+	.	reduce 39
+
+state 127:
+
+	OptionName : _OPENPARENTHESIS Identifier _CLOSEPARENTHESIS OptionalDotItentifier _	(19)
+
+	.	reduce 19
+
+state 128:
+
+	OptionalDotItentifier : _DOT _ Identifier
+
+	_IDENT	shift 31
+	_FULLIDENT	shift 32
+	.	error
+
+	Identifier	goto 157
+
+state 129:
+
+	ServiceItemList : ServiceItemList ServiceItem _	(129)
+
+	.	reduce 129
+
+state 130:
+
+	Service : _SERVICE _IDENT _OPENBRACE OptionalServiceItemList _CLOSEBRACE _	(125)
+
+	.	reduce 125
+
+state 131:
+
+	RpcStatement : _RPC _IDENT _ _OPENPARENTHESIS MessageSpec _CLOSEPARENTHESIS _RETURNS _OPENPARENTHESIS MessageSpec _CLOSEPARENTHESIS RpcOptionsBlockOrTerminator
+
+	_OPENPARENTHESIS	shift 158
+	.	error
+
+state 132:
+
+	Integer : _MIN _ _DECIMALLIT
+	Integer : _MIN _ _OCTALLIT
+	Integer : _MIN _ _HEXLIT
+
+	_DECIMALLIT	shift 118
+	_OCTALLIT	shift 119
+	_HEXLIT	shift 120
+	.	error
+
+state 133:
+
+	EnumField : _IDENT _IS Integer _ OptionalEnumValueOption _TERMINATOR
+	OptionalEnumValueOption : _	(52)
+
+	_OPENBRACKET	shift 160
+	_TERMINATOR	reduce 52
+	.	error
+
+	OptionalEnumValueOption	goto 159
+
+state 134:
+
+	Integer : _PLUS _ _DECIMALLIT
+	Integer : _PLUS _ _OCTALLIT
+	Integer : _PLUS _ _HEXLIT
+
+	_DECIMALLIT	shift 123
+	_OCTALLIT	shift 124
+	_HEXLIT	shift 125
+	.	error
+
+state 135:
+
+	EnumOption : _OPTION _IDENT _IS _ _BOOLLIT _TERMINATOR
+
+	_BOOLLIT	shift 161
+	.	error
+
+state 136:
+
+	FieldSpec : FieldType _IDENT _IS _ Integer OptionalFieldOptions _TERMINATOR
+
+	_PLUS	shift 134
+	_DECIMALLIT	shift 92
+	_OCTALLIT	shift 93
+	_HEXLIT	shift 94
+	.	error
+
+	_MIN	goto 132
+	Integer	goto 162
+
+state 137:
+
+	MapField : _MAP _LT KeyType _ _COMMA FieldType _GT _IDENT _IS Integer OptionalFieldOptions _TERMINATOR
+
+	_COMMA	shift 163
+	.	error
+
+state 138:
+
+	KeyType : _BOOL _	(110)
+
+	.	reduce 110
+
+state 139:
+
+	KeyType : _FIXED32 _	(106)
+
+	.	reduce 106
+
+state 140:
+
+	KeyType : _FIXED64 _	(107)
+
+	.	reduce 107
+
+state 141:
+
+	KeyType : _INT32 _	(100)
+
+	.	reduce 100
+
+state 142:
+
+	KeyType : _INT64 _	(101)
+
+	.	reduce 101
+
+state 143:
+
+	KeyType : _SFIXED32 _	(108)
+
+	.	reduce 108
+
+state 144:
+
+	KeyType : _SFIXED64 _	(109)
+
+	.	reduce 109
+
+state 145:
+
+	KeyType : _SINT32 _	(104)
+
+	.	reduce 104
+
+state 146:
+
+	KeyType : _SINT64 _	(105)
+
+	.	reduce 105
+
+state 147:
+
+	KeyType : _STRING _	(111)
+
+	.	reduce 111
+
+state 148:
+
+	KeyType : _UINT32 _	(102)
+
+	.	reduce 102
+
+state 149:
+
+	KeyType : _UINT64 _	(103)
+
+	.	reduce 103
+
+state 150:
+
+	*** conflicts:
+
+	shift 66, reduce 96 on _DOT
+	shift 31, reduce 96 on _IDENT
+	shift 32, reduce 96 on _FULLIDENT
+	shift 67, reduce 96 on _BOOL
+	shift 68, reduce 96 on _BYTES
+	shift 69, reduce 96 on _DOUBLE
+	shift 70, reduce 96 on _FIXED32
+	shift 71, reduce 96 on _FIXED64
+	shift 72, reduce 96 on _FLOAT
+	shift 73, reduce 96 on _INT32
+	shift 74, reduce 96 on _INT64
+	shift 18, reduce 96 on _OPTION
+	shift 79, reduce 96 on _SFIXED32
+	shift 80, reduce 96 on _SFIXED64
+	shift 81, reduce 96 on _SINT32
+	shift 82, reduce 96 on _SINT64
+	shift 83, reduce 96 on _STRING
+	shift 84, reduce 96 on _UINT32
+	shift 85, reduce 96 on _UINT64
+
+	OneOfStatement : _ONEOF _IDENT _OPENBRACE _ OneOfItemList _CLOSEBRACE
+	OneOfItem : _	(96)
+
+	_DOT	shift 66
+	_IDENT	shift 31
+	_FULLIDENT	shift 32
+	_BOOL	shift 67
+	_BYTES	shift 68
+	_DOUBLE	shift 69
+	_FIXED32	shift 70
+	_FIXED64	shift 71
+	_FLOAT	shift 72
+	_INT32	shift 73
+	_INT64	shift 74
+	_OPTION	shift 18
+	_SFIXED32	shift 79
+	_SFIXED64	shift 80
+	_SINT32	shift 81
+	_SINT64	shift 82
+	_STRING	shift 83
+	_UINT32	shift 84
+	_UINT64	shift 85
+	_CLOSEBRACE	reduce 96
+	.	error
+
+	OneOfItem	goto 164
+	OneOfItemList	goto 165
+	Reference	goto 51
+	BuiltInFieldType	goto 52
+	FieldType	goto 53
+	FieldSpec	goto 166
+	Identifier	goto 63
+	OptionStatement	goto 167
+
+state 151:
+
+	IntegerRanges : IntegerRange _	(116)
+
+	.	reduce 116
+
+state 152:
+
+	ReservedSpec : FieldNames _	(115)
+	FieldNames : FieldNames _ _COMMA _STRINGLIT
+
+	_COMMA	shift 168
+	_TERMINATOR	reduce 115
+	.	error
+
+state 153:
+
+	ReservedSpec : IntegerRanges _	(114)
+	IntegerRanges : IntegerRanges _ _COMMA IntegerRange
+
+	_COMMA	shift 169
+	_TERMINATOR	reduce 114
+	.	error
+
+state 154:
+
+	ReservedStatement : _RESERVED $$1 ReservedSpec _ _TERMINATOR
+
+	_TERMINATOR	shift 170
+	.	error
+
+state 155:
+
+	IntegerRange : Integer _ OptionalToIntegerRange
+	OptionalToIntegerRange : _	(119)
+
+	_TO	shift 172
+	_TERMINATOR	reduce 119
+	_COMMA	reduce 119
+	.	error
+
+	OptionalToIntegerRange	goto 171
+
+state 156:
+
+	FieldNames : _STRINGLIT _	(123)
+
+	.	reduce 123
+
+state 157:
+
+	OptionalDotItentifier : _DOT Identifier _	(21)
+
+	.	reduce 21
+
+state 158:
+
+	RpcStatement : _RPC _IDENT _OPENPARENTHESIS _ MessageSpec _CLOSEPARENTHESIS _RETURNS _OPENPARENTHESIS MessageSpec _CLOSEPARENTHESIS RpcOptionsBlockOrTerminator
+
+	_DOT	shift 176
+	_IDENT	shift 31
+	_FULLIDENT	shift 32
+	_STREAM	shift 177
+	.	error
+
+	MessageType	goto 173
+	MessageSpec	goto 174
+	Identifier	goto 175
+
+state 159:
+
+	EnumField : _IDENT _IS Integer OptionalEnumValueOption _ _TERMINATOR
+
+	_TERMINATOR	shift 178
+	.	error
+
+state 160:
+
+	OptionalEnumValueOption : _OPENBRACKET _ OptionName _IS Constant _CLOSEBRACKET
+
+	_OPENPARENTHESIS	shift 30
+	_IDENT	shift 31
+	_FULLIDENT	shift 32
+	.	error
+
+	OptionName	goto 179
+	Identifier	goto 29
+
+state 161:
+
+	EnumOption : _OPTION _IDENT _IS _BOOLLIT _ _TERMINATOR
+
+	_TERMINATOR	shift 180
+	.	error
+
+state 162:
+
+	FieldSpec : FieldType _IDENT _IS Integer _ OptionalFieldOptions _TERMINATOR
+	OptionalFieldOptions : _	(88)
+
+	_OPENBRACKET	shift 182
+	_TERMINATOR	reduce 88
+	.	error
+
+	OptionalFieldOptions	goto 181
+
+state 163:
+
+	MapField : _MAP _LT KeyType _COMMA _ FieldType _GT _IDENT _IS Integer OptionalFieldOptions _TERMINATOR
+
+	_DOT	shift 66
+	_IDENT	shift 31
+	_FULLIDENT	shift 32
+	_BOOL	shift 67
+	_BYTES	shift 68
+	_DOUBLE	shift 69
+	_FIXED32	shift 70
+	_FIXED64	shift 71
+	_FLOAT	shift 72
+	_INT32	shift 73
+	_INT64	shift 74
+	_SFIXED32	shift 79
+	_SFIXED64	shift 80
+	_SINT32	shift 81
+	_SINT64	shift 82
+	_STRING	shift 83
+	_UINT32	shift 84
+	_UINT64	shift 85
+	.	error
+
+	Reference	goto 51
+	BuiltInFieldType	goto 52
+	FieldType	goto 183
+	Identifier	goto 63
+
+state 164:
+
+	OneOfItemList : OneOfItem _	(94)
+
+	.	reduce 94
+
+state 165:
+
+	*** conflicts:
+
+	shift 66, reduce 96 on _DOT
+	shift 185, reduce 96 on _CLOSEBRACE
+	shift 31, reduce 96 on _IDENT
+	shift 32, reduce 96 on _FULLIDENT
+	shift 67, reduce 96 on _BOOL
+	shift 68, reduce 96 on _BYTES
+	shift 69, reduce 96 on _DOUBLE
+	shift 70, reduce 96 on _FIXED32
+	shift 71, reduce 96 on _FIXED64
+	shift 72, reduce 96 on _FLOAT
+	shift 73, reduce 96 on _INT32
+	shift 74, reduce 96 on _INT64
+	shift 18, reduce 96 on _OPTION
+	shift 79, reduce 96 on _SFIXED32
+	shift 80, reduce 96 on _SFIXED64
+	shift 81, reduce 96 on _SINT32
+	shift 82, reduce 96 on _SINT64
+	shift 83, reduce 96 on _STRING
+	shift 84, reduce 96 on _UINT32
+	shift 85, reduce 96 on _UINT64
+
+	OneOfStatement : _ONEOF _IDENT _OPENBRACE OneOfItemList _ _CLOSEBRACE
+	OneOfItemList : OneOfItemList _ OneOfItem
+	OneOfItem : _	(96)
+
+	_DOT	shift 66
+	_CLOSEBRACE	shift 185
+	_IDENT	shift 31
+	_FULLIDENT	shift 32
+	_BOOL	shift 67
+	_BYTES	shift 68
+	_DOUBLE	shift 69
+	_FIXED32	shift 70
+	_FIXED64	shift 71
+	_FLOAT	shift 72
+	_INT32	shift 73
+	_INT64	shift 74
+	_OPTION	shift 18
+	_SFIXED32	shift 79
+	_SFIXED64	shift 80
+	_SINT32	shift 81
+	_SINT64	shift 82
+	_STRING	shift 83
+	_UINT32	shift 84
+	_UINT64	shift 85
+	.	error
+
+	OneOfItem	goto 184
+	Reference	goto 51
+	BuiltInFieldType	goto 52
+	FieldType	goto 53
+	FieldSpec	goto 166
+	Identifier	goto 63
+	OptionStatement	goto 167
+
+state 166:
+
+	OneOfItem : FieldSpec _	(98)
+
+	.	reduce 98
+
+state 167:
+
+	OneOfItem : OptionStatement _	(97)
+
+	.	reduce 97
+
+state 168:
+
+	FieldNames : FieldNames _COMMA _ _STRINGLIT
+
+	_STRINGLIT	shift 186
+	.	error
+
+state 169:
+
+	IntegerRanges : IntegerRanges _COMMA _ IntegerRange
+
+	_PLUS	shift 134
+	_DECIMALLIT	shift 92
+	_OCTALLIT	shift 93
+	_HEXLIT	shift 94
+	.	error
+
+	IntegerRange	goto 187
+	_MIN	goto 132
+	Integer	goto 155
+
+state 170:
+
+	ReservedStatement : _RESERVED $$1 ReservedSpec _TERMINATOR _	(113)
+
+	.	reduce 113
+
+state 171:
+
+	IntegerRange : Integer OptionalToIntegerRange _	(118)
+
+	.	reduce 118
+
+state 172:
+
+	OptionalToIntegerRange : _TO _ MaxOrInteger
+
+	_PLUS	shift 134
+	_DECIMALLIT	shift 92
+	_OCTALLIT	shift 93
+	_HEXLIT	shift 94
+	_MAX	shift 190
+	.	error
+
+	MaxOrInteger	goto 188
+	_MIN	goto 132
+	Integer	goto 189
+
+state 173:
+
+	MessageSpec : MessageType _	(135)
+
+	.	reduce 135
+
+state 174:
+
+	RpcStatement : _RPC _IDENT _OPENPARENTHESIS MessageSpec _ _CLOSEPARENTHESIS _RETURNS _OPENPARENTHESIS MessageSpec _CLOSEPARENTHESIS RpcOptionsBlockOrTerminator
+
+	_CLOSEPARENTHESIS	shift 191
+	.	error
+
+state 175:
+
+	MessageType : Identifier _	(136)
+
+	.	reduce 136
+
+state 176:
+
+	MessageType : _DOT _ Identifier
+
+	_IDENT	shift 31
+	_FULLIDENT	shift 32
+	.	error
+
+	Identifier	goto 192
+
+state 177:
+
+	MessageSpec : _STREAM _ MessageType
+
+	_DOT	shift 176
+	_IDENT	shift 31
+	_FULLIDENT	shift 32
+	.	error
+
+	MessageType	goto 193
+	Identifier	goto 175
+
+state 178:
+
+	EnumField : _IDENT _IS Integer OptionalEnumValueOption _TERMINATOR _	(51)
+
+	.	reduce 51
+
+state 179:
+
+	OptionalEnumValueOption : _OPENBRACKET OptionName _ _IS Constant _CLOSEBRACKET
+
+	_IS	shift 194
+	.	error
+
+state 180:
+
+	EnumOption : _OPTION _IDENT _IS _BOOLLIT _TERMINATOR _	(50)
+
+	.	reduce 50
+
+state 181:
+
+	FieldSpec : FieldType _IDENT _IS Integer OptionalFieldOptions _ _TERMINATOR
+
+	_TERMINATOR	shift 195
+	.	error
+
+state 182:
+
+	OptionalFieldOptions : _OPENBRACKET _ FieldOptionList _CLOSEBRACKET
+
+	_OPTION	shift 18
+	.	error
+
+	FieldOption	goto 196
+	FieldOptionList	goto 197
+	OptionStatement	goto 198
+
+state 183:
+
+	MapField : _MAP _LT KeyType _COMMA FieldType _ _GT _IDENT _IS Integer OptionalFieldOptions _TERMINATOR
+
+	_GT	shift 199
+	.	error
+
+state 184:
+
+	OneOfItemList : OneOfItemList OneOfItem _	(95)
+
+	.	reduce 95
+
+state 185:
+
+	OneOfStatement : _ONEOF _IDENT _OPENBRACE OneOfItemList _CLOSEBRACE _	(93)
+
+	.	reduce 93
+
+state 186:
+
+	FieldNames : FieldNames _COMMA _STRINGLIT _	(124)
+
+	.	reduce 124
+
+state 187:
+
+	IntegerRanges : IntegerRanges _COMMA IntegerRange _	(117)
+
+	.	reduce 117
+
+state 188:
+
+	OptionalToIntegerRange : _TO MaxOrInteger _	(120)
+
+	.	reduce 120
+
+state 189:
+
+	MaxOrInteger : Integer _	(122)
+
+	.	reduce 122
+
+state 190:
+
+	MaxOrInteger : _MAX _	(121)
+
+	.	reduce 121
+
+state 191:
+
+	RpcStatement : _RPC _IDENT _OPENPARENTHESIS MessageSpec _CLOSEPARENTHESIS _ _RETURNS _OPENPARENTHESIS MessageSpec _CLOSEPARENTHESIS RpcOptionsBlockOrTerminator
+
+	_RETURNS	shift 200
+	.	error
+
+state 192:
+
+	MessageType : _DOT Identifier _	(137)
+
+	.	reduce 137
+
+state 193:
+
+	MessageSpec : _STREAM MessageType _	(134)
+
+	.	reduce 134
+
+state 194:
+
+	OptionalEnumValueOption : _OPENBRACKET OptionName _IS _ Constant _CLOSEBRACKET
+
+	_PLUS	shift 91
+	_DECIMALLIT	shift 92
+	_OCTALLIT	shift 93
+	_HEXLIT	shift 94
+	_FLOATLIT	shift 95
+	_BOOLLIT	shift 96
+	_STRINGLIT	shift 97
+	_IDENT	shift 31
+	_FULLIDENT	shift 32
+	.	error
+
+	_MIN	goto 86
+	Float	goto 87
+	Integer	goto 88
+	Constant	goto 201
+	Identifier	goto 90
+
+state 195:
+
+	FieldSpec : FieldType _IDENT _IS Integer OptionalFieldOptions _TERMINATOR _	(68)
+
+	.	reduce 68
+
+state 196:
+
+	FieldOptionList : FieldOption _	(90)
+
+	.	reduce 90
+
+state 197:
+
+	OptionalFieldOptions : _OPENBRACKET FieldOptionList _ _CLOSEBRACKET
+	FieldOptionList : FieldOptionList _ _COMMA FieldOption
+
+	_COMMA	shift 202
+	_CLOSEBRACKET	shift 203
+	.	error
+
+state 198:
+
+	FieldOption : OptionStatement _	(92)
+
+	.	reduce 92
+
+state 199:
+
+	MapField : _MAP _LT KeyType _COMMA FieldType _GT _ _IDENT _IS Integer OptionalFieldOptions _TERMINATOR
+
+	_IDENT	shift 204
+	.	error
+
+state 200:
+
+	RpcStatement : _RPC _IDENT _OPENPARENTHESIS MessageSpec _CLOSEPARENTHESIS _RETURNS _ _OPENPARENTHESIS MessageSpec _CLOSEPARENTHESIS RpcOptionsBlockOrTerminator
+
+	_OPENPARENTHESIS	shift 205
+	.	error
+
+state 201:
+
+	OptionalEnumValueOption : _OPENBRACKET OptionName _IS Constant _ _CLOSEBRACKET
+
+	_CLOSEBRACKET	shift 206
+	.	error
+
+state 202:
+
+	FieldOptionList : FieldOptionList _COMMA _ FieldOption
+
+	_OPTION	shift 18
+	.	error
+
+	FieldOption	goto 207
+	OptionStatement	goto 198
+
+state 203:
+
+	OptionalFieldOptions : _OPENBRACKET FieldOptionList _CLOSEBRACKET _	(89)
+
+	.	reduce 89
+
+state 204:
+
+	MapField : _MAP _LT KeyType _COMMA FieldType _GT _IDENT _ _IS Integer OptionalFieldOptions _TERMINATOR
+
+	_IS	shift 208
+	.	error
+
+state 205:
+
+	RpcStatement : _RPC _IDENT _OPENPARENTHESIS MessageSpec _CLOSEPARENTHESIS _RETURNS _OPENPARENTHESIS _ MessageSpec _CLOSEPARENTHESIS RpcOptionsBlockOrTerminator
+
+	_DOT	shift 176
+	_IDENT	shift 31
+	_FULLIDENT	shift 32
+	_STREAM	shift 177
+	.	error
+
+	MessageType	goto 173
+	MessageSpec	goto 209
+	Identifier	goto 175
+
+state 206:
+
+	OptionalEnumValueOption : _OPENBRACKET OptionName _IS Constant _CLOSEBRACKET _	(53)
+
+	.	reduce 53
+
+state 207:
+
+	FieldOptionList : FieldOptionList _COMMA FieldOption _	(91)
+
+	.	reduce 91
+
+state 208:
+
+	MapField : _MAP _LT KeyType _COMMA FieldType _GT _IDENT _IS _ Integer OptionalFieldOptions _TERMINATOR
+
+	_PLUS	shift 134
+	_DECIMALLIT	shift 92
+	_OCTALLIT	shift 93
+	_HEXLIT	shift 94
+	.	error
+
+	_MIN	goto 132
+	Integer	goto 210
+
+state 209:
+
+	RpcStatement : _RPC _IDENT _OPENPARENTHESIS MessageSpec _CLOSEPARENTHESIS _RETURNS _OPENPARENTHESIS MessageSpec _ _CLOSEPARENTHESIS RpcOptionsBlockOrTerminator
+
+	_CLOSEPARENTHESIS	shift 211
+	.	error
+
+state 210:
+
+	MapField : _MAP _LT KeyType _COMMA FieldType _GT _IDENT _IS Integer _ OptionalFieldOptions _TERMINATOR
+	OptionalFieldOptions : _	(88)
+
+	_OPENBRACKET	shift 182
+	_TERMINATOR	reduce 88
+	.	error
+
+	OptionalFieldOptions	goto 212
+
+state 211:
+
+	RpcStatement : _RPC _IDENT _OPENPARENTHESIS MessageSpec _CLOSEPARENTHESIS _RETURNS _OPENPARENTHESIS MessageSpec _CLOSEPARENTHESIS _ RpcOptionsBlockOrTerminator
+
+	_TERMINATOR	shift 215
+	_OPENBRACE	shift 216
+	.	error
+
+	RpcOptionsBlock	goto 213
+	RpcOptionsBlockOrTerminator	goto 214
+
+state 212:
+
+	MapField : _MAP _LT KeyType _COMMA FieldType _GT _IDENT _IS Integer OptionalFieldOptions _ _TERMINATOR
+
+	_TERMINATOR	shift 217
+	.	error
+
+state 213:
+
+	RpcOptionsBlockOrTerminator : RpcOptionsBlock _	(138)
+
+	.	reduce 138
+
+state 214:
+
+	RpcStatement : _RPC _IDENT _OPENPARENTHESIS MessageSpec _CLOSEPARENTHESIS _RETURNS _OPENPARENTHESIS MessageSpec _CLOSEPARENTHESIS RpcOptionsBlockOrTerminator _	(133)
+
+	.	reduce 133
+
+state 215:
+
+	RpcOptionsBlockOrTerminator : _TERMINATOR _	(139)
+
+	.	reduce 139
+
+state 216:
+
+	RpcOptionsBlock : _OPENBRACE _ RpcOptionalOptionsList _CLOSEBRACE
+	RpcOptionalOptionsList : _	(141)
+
+	_OPTION	shift 18
+	_CLOSEBRACE	reduce 141
+	.	error
+
+	RpcOption	goto 218
+	RpcOptionsList	goto 219
+	RpcOptionalOptionsList	goto 220
+	OptionStatement	goto 221
+
+state 217:
+
+	MapField : _MAP _LT KeyType _COMMA FieldType _GT _IDENT _IS Integer OptionalFieldOptions _TERMINATOR _	(99)
+
+	.	reduce 99
+
+state 218:
+
+	RpcOptionsList : RpcOption _	(143)
+
+	.	reduce 143
+
+state 219:
+
+	RpcOptionalOptionsList : RpcOptionsList _	(142)
+	RpcOptionsList : RpcOptionsList _ RpcOption
+
+	_OPTION	shift 18
+	_CLOSEBRACE	reduce 142
+	.	error
+
+	RpcOption	goto 222
+	OptionStatement	goto 221
+
+state 220:
+
+	RpcOptionsBlock : _OPENBRACE RpcOptionalOptionsList _ _CLOSEBRACE
+
+	_CLOSEBRACE	shift 223
+	.	error
+
+state 221:
+
+	RpcOption : OptionStatement _	(145)
+
+	.	reduce 145
+
+state 222:
+
+	RpcOptionsList : RpcOptionsList RpcOption _	(144)
+
+	.	reduce 144
+
+state 223:
+
+	RpcOptionsBlock : _OPENBRACE RpcOptionalOptionsList _CLOSEBRACE _	(140)
+
+	.	reduce 140
+
+97 shift/reduce conflicts.

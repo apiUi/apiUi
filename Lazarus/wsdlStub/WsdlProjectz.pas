@@ -3550,14 +3550,25 @@ var
 begin
   xExt := UpperCase (ExtractFileExt (resolveAliasses(aName)));
   result := TWsdl.Create(EnvVars, OperationsWithEndpointOnly);
-    if (xExt = '.JSON')
-    or (xExt = '.YAML')
-    or (xExt = '.JSN')
-    or (xExt = '.YML')
+  if (xExt = '.JSON')
+  or (xExt = '.YAML')
+  or (xExt = '.JSN')
+  or (xExt = '.YML')
   or (AnsiStartsText('APIARY://', aName)) then
     result.LoadFromJsonYamlFile(aName, nil, OnBeforeFileRead)
   else
-    result.LoadFromSchemaFile(aName, nil, OnBeforeFileRead);
+  begin
+    if xExt = '' then
+    try
+      result.LoadFromJsonYamlFile(aName, nil, OnBeforeFileRead);
+    except
+      result.Free;
+      result := TWsdl.Create(EnvVars, OperationsWithEndpointOnly);
+      result.LoadFromSchemaFile(aName, nil, OnBeforeFileRead);
+    end
+    else
+      result.LoadFromSchemaFile(aName, nil, OnBeforeFileRead);
+  end;
   if Result.FileName = '' then
     SjowMessage(format('(%s)if Result.FileName = ''''? hoe kan dat dan?', [aName]));
 end;

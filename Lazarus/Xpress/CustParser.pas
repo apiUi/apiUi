@@ -120,7 +120,7 @@ public
   procedure HaveData (aObject: TObject; aString: String);
   procedure Prepare; virtual;
   function Execute: Integer; virtual;
-  constructor Create (aOwner: TObject);
+  constructor Create (aOwner: TObject); virtual;
   destructor Destroy; override;
 end;
 
