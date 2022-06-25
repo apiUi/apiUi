@@ -283,7 +283,7 @@ public
   function MergeChecked: Boolean; Virtual;
   {$ifndef NoGUI}
   procedure Font (aFont: TFont); Virtual;
-  function bgColor (aReadOnly: Boolean; aColumn: Integer): TColor; Virtual;
+  function bgValueColor (aReadOnly: Boolean): TColor; Virtual;
   {$endif}
   function IsAncestorOf (aBindable: TCustomBindable): Boolean;
   function UplineAsList: TBindableList;
@@ -939,7 +939,7 @@ begin
 end;
 
 {$ifndef NoGUI}
-function TCustomBindable.bgColor (aReadOnly: Boolean; aColumn: Integer): TColor;
+function TCustomBindable.bgValueColor (aReadOnly: Boolean): TColor;
 begin
   if aReadOnly
   or (Children.Count > 0) then
