@@ -225,7 +225,7 @@ type TBindableList = class;
     function getTotalNumberOfSubElements: Integer;
     function getValueAsInteger: Integer;
     function getYamlValue: String;
-    procedure sethasValidationMessage(Value: Boolean);
+    procedure sethasValidationMessage(aValue: Boolean);
     procedure setValidationMesssage(AValue: String);
     procedure setValueAsInteger(const aValue: Integer);
     function getChecked: Boolean;
@@ -753,13 +753,13 @@ begin
     result := Value;
 end;
 
-procedure TCustomBindable.sethasValidationMessage(Value: Boolean);
+procedure TCustomBindable.sethasValidationMessage(aValue: Boolean);
 begin
-  if fhasValidationMessage = Value then Exit;
-  fhasValidationMessage := Value;
-  if Value
+  if fhasValidationMessage = aValue then Exit;
+  fhasValidationMessage := aValue;
+  if aValue
   and Assigned (Parent) then
-    Parent.hasValidationMessage := Value;
+    Parent.hasValidationMessage := aValue;
 end;
 
 procedure TCustomBindable.setValidationMesssage(AValue: String);
@@ -767,7 +767,7 @@ begin
   fIsValidated := True;
   if fValidationMesssage = AValue then Exit;
   fValidationMesssage := AValue;
-  if Value <> '' then
+  if aValue <> '' then
     hasValidationMessage := True;
 end;
 

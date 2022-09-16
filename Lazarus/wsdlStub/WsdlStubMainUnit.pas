@@ -2358,6 +2358,7 @@ end;
 procedure TMainForm.TreeViewPaintText(Sender: TBaseVirtualTree;
   const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
   TextType: TVSTTextType);
+
 var
   xBind: TCustomBindable;
 begin
@@ -2399,7 +2400,7 @@ begin
         TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsBold];
         if AllChecked(Sender, Node.Parent) then
           if (not Checked)
-          and ((not isOneOfGroupOk) or (not isAnyOfGroupOk)) then
+          and (not (isOneOfGroupOk or isAnyOfGroupOk)) then
             TargetCanvas.Font.Color := clRed;
       end;
     except
@@ -5405,8 +5406,12 @@ begin
       rscType:=rscApiUi;
       xXml := Items.XmlCheckedItemByTag['type'];
       if Assigned (xXml) then
+      begin
         if Assigned (xXml.Items.XmlCheckedItemByTag['WireMock']) then
           rscType := rscWireMock;
+        if Assigned (xXml.Items.XmlCheckedItemByTag['pegaSimul8r']) then
+          rscType := rscSimul8r;
+      end;
       ResolveAliasses;
       case rscType of
         rscApiUi:
@@ -5419,7 +5424,12 @@ begin
             xmlio.apiUiServerDialog(thisXml, '/__admin/recordings/status', '', 'GET', 'application/json');
             ShowMessage(Format('Remote WireMock server (%s) connected OK', [Items.XmlValueByTag['Address']]));
           end;
-        rscSimul8ter: ;
+        rscSimul8r:
+          begin
+ //         xmlio.apiUiServerDialog(thisXml, '/__admin/recordings/status', '', 'GET', 'application/json');
+ //         ShowMessage(Format('Remote Pega Simul8r server (%s) connected OK', [Items.XmlValueByTag['Address']]));
+            ShowMessage('not yet implemented for Pega Simul8r');
+          end;
       end;
       result := True;
     except

@@ -74,7 +74,7 @@ uses Classes
   ;
 
 type TCompressionLevel = (zcNone, zcFastest, zcDefault, zcMax);
-type TRemoteServerConnectionType = (rscApiUi, rscWireMock, rscSimul8ter);
+type TRemoteServerConnectionType = (rscApiUi, rscWireMock, rscSimul8r);
 type TCORSType = (corsException, corsRefuse, corsAcceptWithoutLogging, corsAcceptWithLogging);
 type TProcedure = procedure of Object;
 type TProcedureB = procedure (arg: Boolean) of Object;

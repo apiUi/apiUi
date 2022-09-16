@@ -2323,7 +2323,19 @@ end;
 
 function xsdParseBoolean(const S: AnsiString): Boolean;
 begin
-  xsdParseBoolean(PChar(S), Length(S), Result);
+  if (S = 'true')
+  or (S = '1') then
+  begin
+    result := True;
+    Exit;
+  end;
+  if (S = 'false')
+  or (S = '0') then
+  begin
+    result := False;
+    Exit;
+  end;
+  raise EConvertError.CreateFmt(SXsdParserError, [S, 'xs:boolean']);
 end;
 
 function xsdParseDate(const S: AnsiString; Timezone: PXsdTimezone): TDateTime;
