@@ -1,0 +1,77 @@
+  <Message>
+    <Name>Default</Name>
+    <SequenceNr>0</SequenceNr>
+    <stateMachineScenarioName>.*</stateMachineScenarioName>
+    <stateMachineRequiredState>.*</stateMachineRequiredState>
+    <stateMachineNextState>.*</stateMachineNextState>
+    <Patterns></Patterns>
+    <Reply></Reply>
+    <Request>
+      <schemaValMessge checked__="true">
+        <schemaVal checked__="true">
+          <booleanFacets checked__="true">
+            <boolean checked__="true"></boolean>
+          </booleanFacets>
+          <dateFacets checked__="true">
+            <minIncl checked__="true">1956-08-17</minIncl>
+            <maxIncl checked__="true">2022-09-14</maxIncl>
+            <minExcl checked__="true">1956-08-17</minExcl>
+            <maxExcl checked__="true">1956-08-17</maxExcl>
+          </dateFacets>
+          <dateTimeFacets checked__="true">
+            <minIncl checked__="true">1956-08-17T02:02:02.200</minIncl>
+            <maxIncl checked__="true"></maxIncl>
+            <minExcl checked__="true">1956-08-17T02:02:02.200</minExcl>
+            <maxExcl checked__="true">1956-08-17T02:02:02.200</maxExcl>
+          </dateTimeFacets>
+          <timeFacets checked__="true">
+            <minIncl checked__="true">02:02:02.20</minIncl>
+            <maxIncl checked__="true"></maxIncl>
+            <minExcl checked__="true">02:02:02.20</minExcl>
+            <maxExcl checked__="true">02:02:02.20</maxExcl>
+          </timeFacets>
+          <decimalFacets checked__="true">
+            <minIncl checked__="true">2.8</minIncl>
+            <maxIncl checked__="true"></maxIncl>
+            <minExcl checked__="true">2.8</minExcl>
+            <maxExcl checked__="true">2.8</maxExcl>
+            <totalDig checked__="true">122.745</totalDig>
+            <fracDig checked__="true">122.745</fracDig>
+          </decimalFacets>
+          <durationFacets checked__="true">
+            <minIncl checked__="true">P5Y2M10DT15H</minIncl>
+            <maxIncl checked__="true"></maxIncl>
+            <minExcl checked__="true">P5Y2M10DT15H</minExcl>
+            <maxExcl checked__="true">P5Y2M10DT15H</maxExcl>
+          </durationFacets>
+          <integerFacets checked__="true">
+            <minIncl checked__="true">2</minIncl>
+            <maxIncl checked__="true"></maxIncl>
+            <minExcl checked__="true">2</minExcl>
+            <maxExcl checked__="true">2</maxExcl>
+            <totalDig checked__="true">642</totalDig>
+          </integerFacets>
+          <byteFacets checked__="true">
+            <minIncl checked__="true">2</minIncl>
+            <maxIncl checked__="true"></maxIncl>
+            <minExcl checked__="true">2</minExcl>
+            <maxExcl checked__="true">2</maxExcl>
+            <totalDig checked__="true">123</totalDig>
+          </byteFacets>
+          <stringFacets checked__="true">
+            <length checked__="true">length</length>
+            <minLength checked__="true">minLength</minLength>
+            <maxLength checked__="true">ma</maxLength>
+            <whiteSpaceCollapse checked__="true">whiteSpaceCollapse</whiteSpaceCollapse>
+            <whiteSpacePreserve checked__="true">whiteSpacePreserve</whiteSpacePreserve>
+            <whiteSpaceReplace checked__="true">whiteSpaceReplace</whiteSpaceReplace>
+          </stringFacets>
+          <stringEnumeration checked__="true">Bouwman</stringEnumeration>
+          <stringPatterns checked__="true">stringPatterns</stringPatterns>
+          <anyType checked__="true">anyType</anyType>
+        </schemaVal>
+      </schemaValMessge>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

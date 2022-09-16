@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:req="http://www.JanBo.nl/schemaVal" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.rechtspraak.nl/namespaces/schamaVal01" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="http://www.rechtspraak.nl/namespaces/schamaVal01">
+	<wsdl:types>
+		<xs:schema>
+			<xs:import namespace="http://www.JanBo.nl/schemaVal" schemaLocation="schemaVal.xsd"/>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="schemaValMessge">
+		<wsdl:part name="parameters" element="req:schemaVal"/>
+	</wsdl:message>
+	<wsdl:portType name="schemaValSoap">
+		<wsdl:operation name="schemaValMessge">
+			<wsdl:input message="tns:schemaValMessge"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="schemaValSoap" type="tns:schemaValSoap">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="schemaValMessge">
+			<soap:operation soapAction="http://www.rechtspraak.nl/namespaces/schamaVal01/GetLastUpdate" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="CIR">
+		<wsdl:port name="schemaValSoap" binding="tns:schemaValSoap">
+			<soap:address location="http://lokaalhost:7777"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

@@ -2002,9 +2002,11 @@ procedure TWsdl.LoadFromSchemaFile (aFileName : String; aOnError: TOnErrorEvent;
     for x := 0 to aXml.Items.Count - 1 do with aXml.Items.XmlItems[x] do
     begin
       if Name = tagImport then
-        _LoadFromFile (xmlio.ExpandRelativeFileName (aFileName, Attributes.ValueByTag[tagLocation]));
+        if Attributes.ValueByTag[tagLocation] <> '' then
+          _LoadFromFile (xmlio.ExpandRelativeFileName (aFileName, Attributes.ValueByTag[tagLocation]));
       if Name = tagInclude then
-        _LoadFromFile (xmlio.ExpandRelativeFileName(aFileName, Attributes.ValueByTag[tagLocation]));
+        if Attributes.ValueByTag[tagLocation] <> '' then
+          _LoadFromFile (xmlio.ExpandRelativeFileName(aFileName, Attributes.ValueByTag[tagLocation]));
     end;
     for x := 0 to aXml.Items.Count - 1 do with aXml.Items do
     begin

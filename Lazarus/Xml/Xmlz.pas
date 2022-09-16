@@ -1415,7 +1415,7 @@ function TXml.isOneOfGroupOk: Boolean;
 var
   x, n: Integer;
 begin
-  result := True;
+  result := False;
   if Assigned (Parent)
   and Assigned (Xsd)
   and (Xsd.isOneOfGroupLevel > 0) then with (Parent as TXml) do
@@ -1433,7 +1433,7 @@ function TXml.isAnyOfGroupOk: Boolean;
 var
   x, n: Integer;
 begin
-  result := True;
+  result := False;
   if Assigned (Parent)
   and Assigned (Xsd)
   and (Xsd.isAnyOfGroupLevel > 0) then with (Parent as TXml) do
