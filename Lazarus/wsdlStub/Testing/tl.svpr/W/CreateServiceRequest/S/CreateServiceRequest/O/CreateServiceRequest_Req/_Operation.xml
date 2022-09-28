@@ -1,7 +1,7 @@
   <Operation>
-    <Name>/testparams/{pathparam1}/{pathparam2}:post</Name>
+    <Name>process</Name>
     <Action>3</Action>
-    <Alias>Simul8TestAPIPOST</Alias>
+    <Alias>CreateServiceRequest_Req</Alias>
     <HiddenFromUI>false</HiddenFromUI>
     <wsaEnabled>false</wsaEnabled>
     <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
@@ -38,7 +38,7 @@
     <DelayTimeMsMax>0</DelayTimeMsMax>
     <endpointConfig>
       <Http>
-        <Address>${Address}</Address>
+        <Address>htp://localhost:7775</Address>
         <Verb>POST</Verb>
         <ContentEncoding>identity</ContentEncoding>
         <AcceptEncoding>
@@ -48,16 +48,8 @@
         <customHeaders></customHeaders>
       </Http>
     </endpointConfig>
-    <CorrelationElements>
-      <CorrelationElement>Req.Simul8TestAPIPOST.pathparam1</CorrelationElement>
-      <CorrelationElement>Req.Simul8TestAPIPOST.pathparam2</CorrelationElement>
-      <CorrelationElement>Req.Simul8TestAPIPOST.headerparam1</CorrelationElement>
-      <CorrelationElement>Req.Simul8TestAPIPOST.headerparam2</CorrelationElement>
-      <CorrelationElement>Req.Simul8TestAPIPOST.queryparam1</CorrelationElement>
-      <CorrelationElement>Req.Simul8TestAPIPOST.queryparam2</CorrelationElement>
-      <CorrelationElement>Req.Simul8Tester.body.bodyparam1</CorrelationElement>
-      <CorrelationElement>Req.Simul8Tester.body.bodyparam2</CorrelationElement>
-    </CorrelationElements>
+    <CorrelationElements></CorrelationElements>
     <ColumnElements></ColumnElements>
     <LogColumns></LogColumns>
+    <focusedOperation>true</focusedOperation>
   </Operation>

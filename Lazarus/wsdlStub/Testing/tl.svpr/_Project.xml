@@ -23,8 +23,8 @@
         </versionInfo>
         <SaveRelativeFileNames>true</SaveRelativeFileNames>
         <projectFolders>
-          <current></current>
-          <reference></reference>
+          <current>current</current>
+          <reference>reference</reference>
           <reports></reports>
         </projectFolders>
       </General>

@@ -114,6 +114,23 @@
                   <body checked__="true">{&quot;search_results&quot;: &quot;ok&quot;}</body>
                 </response>
               </_>
+              <_ checked__="true">
+                <request checked__="true">
+                  <method checked__="true">POST</method>
+                  <ServiceName checked__="true">Simul8TestAPI</ServiceName>
+                  <RequestContent-Type checked__="true">JSON</RequestContent-Type>
+                  <path checked__="true">/p1/p2</path>
+                  <queryString checked__="true">queryparam1=q1&amp;queryparam2=q2</queryString>
+                  <body checked__="true">{ &quot;bodyparam1&quot;: &quot;b1&quot;, &quot;bodyparam2&quot;: &quot;b2&quot;}</body>
+                  <InboundTimeStamp checked__="true">20220926T155812.032 GMT</InboundTimeStamp>
+                </request>
+                <response checked__="true">
+                  <statusCode checked__="true">200</statusCode>
+                  <ResponseContent-Type checked__="true">JSON</ResponseContent-Type>
+                  <body checked__="true">&#x0D;&#x0A;{ &quot;bodyparam1&quot;: &quot;b1&quot;&#x0D;&#x0A;, &quot;bodyparam2&quot;: &quot;b2&quot;&#x0D;&#x0A;, &quot;headerparam1&quot;: &quot;h1&quot;&#x0D;&#x0A;, &quot;headerparam2&quot;: &quot;h2&quot;&#x0D;&#x0A;, &quot;pathparam1&quot;: &quot;p1&quot;&#x0D;&#x0A;, &quot;pathparam2&quot;: &quot;p2&quot;&#x0D;&#x0A;, &quot;queryparam1&quot;: &quot;q1&quot;&#x0D;&#x0A;, &quot;queryparam2&quot;: &quot;q2&quot;&#x0D;&#x0A;, &quot;noparam&quot;: &quot;no parameter&quot;&#x0D;&#x0A;}</body>
+                  <OutBoundTimeStamp checked__="true">20220926T155812.033 GMT</OutBoundTimeStamp>
+                </response>
+              </_>
             </interactions>
           </json>
         </rspns200>

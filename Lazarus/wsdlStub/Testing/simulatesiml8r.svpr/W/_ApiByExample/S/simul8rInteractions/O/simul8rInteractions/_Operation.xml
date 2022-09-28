@@ -1,6 +1,6 @@
   <Operation>
     <Name>simul8rInteractions</Name>
-    <Action>0</Action>
+    <Action>3</Action>
     <Alias>simul8rInteractions</Alias>
     <HiddenFromUI>false</HiddenFromUI>
     <wsaEnabled>false</wsaEnabled>
@@ -38,6 +38,7 @@
     <DelayTimeMsMax>0</DelayTimeMsMax>
     <endpointConfig>
       <Http>
+        <Address>http://localhost:7776</Address>
         <Verb>GET</Verb>
         <ContentEncoding>identity</ContentEncoding>
         <AcceptEncoding>
