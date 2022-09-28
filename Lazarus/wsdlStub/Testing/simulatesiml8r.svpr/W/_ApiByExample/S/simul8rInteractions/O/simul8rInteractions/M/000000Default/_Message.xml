@@ -1,0 +1,127 @@
+  <Message>
+    <Name>Default</Name>
+    <SequenceNr>0</SequenceNr>
+    <stateMachineScenarioName>.*</stateMachineScenarioName>
+    <stateMachineRequiredState>.*</stateMachineRequiredState>
+    <stateMachineNextState>.*</stateMachineNextState>
+    <Patterns></Patterns>
+    <Reply>
+      <simul8rInteractions checked__="true">
+        <rspns200 checked__="true">
+          <json checked__="true">
+            <id checked__="true"></id>
+            <application checked__="true">EVORIDev 01.01.01</application>
+            <applicationVersion checked__="true"></applicationVersion>
+            <accessGroup checked__="true"></accessGroup>
+            <operator checked__="true"></operator>
+            <fromDateTime checked__="true">20210923T113530.198 GMT</fromDateTime>
+            <toDateTime checked__="true"></toDateTime>
+            <pageClass checked__="true"></pageClass>
+            <serviceName checked__="true"></serviceName>
+            <RESTServiceMethod checked__="true"></RESTServiceMethod>
+            <requestPath checked__="true"></requestPath>
+            <requestQueryString checked__="true"></requestQueryString>
+            <interactions checked__="true">
+              <_ checked__="true">
+                <request checked__="true">
+                  <method checked__="true">POST</method>
+                  <ServiceName checked__="true">QueryIKBDetails</ServiceName>
+                  <RequestContent-Type checked__="true">JSON</RequestContent-Type>
+                  <path checked__="true"></path>
+                  <queryString checked__="true"></queryString>
+                  <body checked__="true">{&quot;KlantId&quot;:&quot;1234567890123456&quot;}</body>
+                  <InboundTimeStamp checked__="true">20220926T155513.057 GMT</InboundTimeStamp>
+                </request>
+                <response checked__="true">
+                  <statusCode checked__="true">405</statusCode>
+                  <ResponseContent-Type checked__="true">JSON</ResponseContent-Type>
+                  <body checked__="true"></body>
+                  <OutBoundTimeStamp checked__="true">20220926T155513.058 GMT</OutBoundTimeStamp>
+                </response>
+              </_>
+              <_ checked__="true">
+                <request checked__="true">
+                  <method checked__="true">POST</method>
+                  <ServiceName checked__="true">QueryIKBDetails</ServiceName>
+                  <RequestContent-Type checked__="true">JSON</RequestContent-Type>
+                  <path checked__="true"></path>
+                  <queryString checked__="true"></queryString>
+                  <body checked__="true">{&quot;KlantId&quot;:&quot;B2&quot;}</body>
+                  <InboundTimeStamp checked__="true">20220926T155509.606 GMT</InboundTimeStamp>
+                </request>
+                <response checked__="true">
+                  <statusCode checked__="true">405</statusCode>
+                  <ResponseContent-Type checked__="true">JSON</ResponseContent-Type>
+                  <body checked__="true"></body>
+                  <OutBoundTimeStamp checked__="true">20220926T155509.608 GMT</OutBoundTimeStamp>
+                </response>
+              </_>
+              <_ checked__="true">
+                <request checked__="true">
+                  <method checked__="true">POST</method>
+                  <ServiceName checked__="true">QueryIKBDetails</ServiceName>
+                  <RequestContent-Type checked__="true">JSON</RequestContent-Type>
+                  <path checked__="true"></path>
+                  <queryString checked__="true"></queryString>
+                  <body checked__="true">{&quot;KlantId&quot;:&quot;B2&quot;}</body>
+                  <InboundTimeStamp checked__="true">20220926T155537.057 GMT</InboundTimeStamp>
+                </request>
+                <response checked__="true">
+                  <statusCode checked__="true">405</statusCode>
+                  <ResponseContent-Type checked__="true">JSON</ResponseContent-Type>
+                  <body checked__="true"></body>
+                  <OutBoundTimeStamp checked__="true">20220926T155537.060 GMT</OutBoundTimeStamp>
+                </response>
+              </_>
+              <_ checked__="true">
+                <request checked__="true">
+                  <method checked__="true">SOAPMethod</method>
+                  <ServiceName checked__="true">ListBerichten</ServiceName>
+                  <RequestContent-Type checked__="true">XML ParseRule</RequestContent-Type>
+                  <path checked__="true"></path>
+                  <queryString checked__="true"></queryString>
+                  <body checked__="true">&lt;ns1:RequestHeader xmlns:ns1=&quot;http://schemas.sng.nl/shared/header/001&quot;&gt; &lt;Metadata&gt; &lt;ConversatieId&gt;convers&lt;/ConversatieId&gt; &lt;BerichtId&gt;2&lt;/BerichtId&gt; &lt;Tijdstip&gt;2022-09-26T15:55:37.060Z&lt;/Tijdstip&gt; &lt;/Metadata&gt; &lt;Afzender&gt;  &lt;RequestorId&gt;&lt;/RequestorId&gt; &lt;/Afzender&gt; &lt;/ns1:RequestHeader&gt;&lt;ns1:ListBerichtenRequest xmlns:ns1=&quot;http://schemas.sng.nl/berichtenverkeer/evori/001&quot;/&gt;</body>
+                  <InboundTimeStamp checked__="true">20220926T155812.032 GMT</InboundTimeStamp>
+                </request>
+                <response checked__="true">
+                  <statusCode checked__="true">405</statusCode>
+                  <ResponseContent-Type checked__="true">XML ParseRule</ResponseContent-Type>
+                  <body checked__="true">&lt;soapenv:Envelope  xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;  xmlns:soapenc=&quot;http://schemas.xmlsoap.org/soap/encoding/&quot;  xmlns:soap=&quot;http://schemas.xmlsoap.org/wsdl/soap/&quot;  xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot;  xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;  xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;  &gt;   &lt;soapenv:Header&gt;     &lt;ns1:ResponseHeader xmlns:ns1=&quot;http://schemas.sng.nl/shared/header/001&quot;&gt;       &lt;Metadata&gt;         &lt;ConversatieId&gt;convers&lt;/ConversatieId&gt;         &lt;BerichtId&gt;listberichtenid&lt;/BerichtId&gt;         &lt;Tijdstip&gt;2022-05-30T09:39:45.795&lt;/Tijdstip&gt;       &lt;/Metadata&gt;     &lt;/ns1:ResponseHeader&gt;   &lt;/soapenv:Header&gt;   &lt;soapenv:Body&gt;     &lt;ns1:ListBerichtenResponse xmlns:ns1=&quot;http://schemas.sng.nl/berichtenverkeer/evori/001&quot;&gt;       &lt;Berichten&gt;         &lt;Bericht&gt;           &lt;BerichtId&gt;X&lt;/BerichtId&gt;           &lt;ConversatieId&gt;conversationid&lt;/ConversatieId&gt;           &lt;SoortBericht&gt;GetEvoriVraag&lt;/SoortBericht&gt;           &lt;GeadresseerdeId&gt;rabobankId&lt;/GeadresseerdeId&gt;           &lt;Versie&gt;version&lt;/Versie&gt;         &lt;/Bericht&gt;       &lt;/Berichten&gt;       &lt;Resultaat&gt;         &lt;Succes&gt;true&lt;/Succes&gt;       &lt;/Resultaat&gt;     &lt;/ns1:ListBerichtenResponse&gt;   &lt;/soapenv:Body&gt; &lt;/soapenv:Envelope&gt;</body>
+                  <OutBoundTimeStamp checked__="true">20220926T155812.033 GMT</OutBoundTimeStamp>
+                </response>
+              </_>
+              <_ checked__="true">
+                <request checked__="true">
+                  <method checked__="true">GET</method>
+                  <path checked__="true">/TEK1-VKT/metadata</path>
+                  <queryString checked__="true"></queryString>
+                  <body checked__="true">{}</body>
+                </request>
+                <response checked__="true">
+                  <statusCode checked__="true">200</statusCode>
+                  <body checked__="true">{ &#x09;&quot;document_key&quot;: &quot;TEK1-VKT&quot;, &#x09;&quot;document_metadata&quot;: { &#x09;&#x09;&quot;source_system&quot;: &quot;SiebeliFrame&quot;, &#x09;&#x09;&quot;document_title&quot;: &quot;TEK1-VKT Organogram&quot;, &#x09;&#x09;&quot;document_type&quot;: &quot;Kltgeg&quot;, &#x09;&#x09;&quot;product_type&quot;: &quot;Overig&quot;, &#x09;&#x09;&quot;user_id&quot;: &quot;7000003588&quot;, &#x09;&#x09;&quot;checkin_date&quot;: &quot;2020-07-15T07:39:29Z&quot;, &#x09;&#x09;&quot;security_group&quot;: &quot;VKT&quot;, &#x09;&#x09;&quot;document_purpose&quot;: &quot;KBG&quot;, &#x09;&#x09;&quot;lifecycle_state&quot;: &quot;ACTIVE&quot;, &#x09;&#x09;&quot;remarks&quot;: &quot;TEK1-VKT document&quot; &#x09;}, &#x09;&quot;relation_metadata&quot;: { &#x09;&#x09;&quot;xsiebelAcct&quot;: [ &#x09;&#x09;&#x09;&quot;000000100812664&quot; &#x09;&#x09;] &#x09;}, &#x09;&quot;orig_file_metadata&quot;: { &#x09;&#x09;&quot;file_name&quot;: &quot;TEK1-VKT Document.docx&quot;, &#x09;&#x09;&quot;file_size&quot;: 18288, &#x09;&#x09;&quot;file_format&quot;: &quot;application/vnd.openxmlformats-officedocument.wordprocessingml.document&quot;, &#x09;&#x09;&quot;download&quot;: &quot;/api/customer-documents/document/TEK1-VKT?rendition=original&quot; &#x09;}, &#x09;&quot;web_file_metadata&quot;: { &#x09;&#x09;&quot;file_name&quot;: &quot;TEK1-VKT Document.pdf&quot;, &#x09;&#x09;&quot;file_size&quot;: 18288, &#x09;&#x09;&quot;file_format&quot;: &quot;application/pdf&quot;, &#x09;&#x09;&quot;download&quot;: &quot;/api/customer-documents/document/TEK1-VKT?rendition=pdfa&quot; &#x09;} }</body>
+                </response>
+              </_>
+              <_ checked__="true">
+                <request checked__="true">
+                  <method checked__="true">POST</method>
+                  <path checked__="true"></path>
+                  <queryString checked__="true"></queryString>
+                  <body checked__="true">{&quot;search_context_base&quot;:{&quot;entity_value&quot;:&quot;00000011188802&quot;,&quot;entity_type&quot;:&quot;xsiebelAcct&quot;},&quot;date_search_filters&quot;:[],&quot;search_result_type&quot;:&quot;SIMPLE&quot;,&quot;lov_search_filters&quot;:[{&quot;filter_value&quot;:&quot;WITHDRAWN,REJECTED&quot;,&quot;filter_type&quot;:&quot;NOT_IN&quot;,&quot;filter_field&quot;:&quot;LifeCycleState&quot;},{&quot;filter_value&quot;:&quot;Kltgeg,Ooafin,Cmplcy,Aanvrg,Corres,Zekhyp,Legitm&quot;,&quot;filter_type&quot;:&quot;IN&quot;,&quot;filter_field&quot;:&quot;DocumentType&quot;},{&quot;filter_value&quot;:&quot;KBG&quot;,&quot;filter_type&quot;:&quot;MATCHES&quot;,&quot;filter_field&quot;:&quot;DocumentPurpose&quot;}]}</body>
+                </request>
+                <response checked__="true">
+                  <statusCode checked__="true">200</statusCode>
+                  <body checked__="true">{&quot;search_results&quot;: &quot;ok&quot;}</body>
+                </response>
+              </_>
+            </interactions>
+          </json>
+        </rspns200>
+      </simul8rInteractions>
+    </Reply>
+    <Request>
+      <simul8rInteractions checked__="false"></simul8rInteractions>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

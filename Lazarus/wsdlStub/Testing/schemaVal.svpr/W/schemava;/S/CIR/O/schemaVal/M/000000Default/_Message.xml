@@ -10,7 +10,8 @@
       <schemaValMessge checked__="true">
         <schemaVal checked__="true">
           <booleanFacets checked__="true">
-            <boolean checked__="true"></boolean>
+            <boolean checked__="true">false</boolean>
+            <booleanoptional checked__="true"></booleanoptional>
           </booleanFacets>
           <dateFacets checked__="true">
             <minIncl checked__="true">1956-08-17</minIncl>
@@ -26,7 +27,7 @@
           </dateTimeFacets>
           <timeFacets checked__="true">
             <minIncl checked__="true">02:02:02.20</minIncl>
-            <maxIncl checked__="true"></maxIncl>
+            <maxIncl checked__="true">02:02:02.21</maxIncl>
             <minExcl checked__="true">02:02:02.20</minExcl>
             <maxExcl checked__="true">02:02:02.20</maxExcl>
           </timeFacets>

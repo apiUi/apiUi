@@ -1,0 +1,35 @@
+  <Message>
+    <Name>Request1</Name>
+    <SequenceNr>10</SequenceNr>
+    <Patterns></Patterns>
+    <Reply>
+      <QueryIKBDetailsPOST checked__="true">
+        <rspns200 checked__="true">
+          <body checked__="true">
+            <IKB checked__="true">
+              <KlantIKBId checked__="true">KlantIKBId</KlantIKBId>
+            </IKB>
+            <KlantenLijst checked__="true">
+              <Klant checked__="true">
+                <_ checked__="true">
+                  <KlantId checked__="true">KlantId</KlantId>
+                  <IsRegieBank checked__="true">I</IsRegieBank>
+                  <BankCode checked__="true">BankCode</BankCode>
+                </_>
+              </Klant>
+            </KlantenLijst>
+          </body>
+        </rspns200>
+      </QueryIKBDetailsPOST>
+    </Reply>
+    <Request>
+      <QueryIKBDetailsPOST checked__="true">
+        <body checked__="true">
+          <KlantId checked__="true">123456</KlantId>
+        </body>
+      </QueryIKBDetailsPOST>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+    <focusedMessage>true</focusedMessage>
+  </Message>

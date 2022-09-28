@@ -281,7 +281,8 @@ type
     function ReloadDesignCommand: String;
     procedure ExecuteAllOperationRequests(aOperation: TWsdlOperation);
     procedure OpenApiUiMessagesLog (aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList; aDoLogEventProcessing: Boolean = False);
-    procedure OpenWireMockMessagesLog (aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList; aExecuteOnReadLog: Boolean = False);
+    procedure OpenWireMockMessagesLog (aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList; aDoLogEventProcessing: Boolean = False);
+    procedure OpenSimul8rMessagesLog (aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList; aDoLogEventProcessing: Boolean = False);
     procedure EnvironmentListClear;
     function MessagesRegressionReportAsXml(aReferenceFileName: String; aPromptUser: Boolean): TXml;
     function InformationAsXml: TXml;
@@ -7354,8 +7355,12 @@ begin
       remoteServerConnectionPushDesignAllowed := xXml.Items.XmlCheckedBooleanByTagDef['pushDesign', remoteServerConnectionPushDesignAllowed];
     xXml := Items.XmlCheckedItemByTag['type'];
     if Assigned (xXml) then
+    begin
       if Assigned (xXml.Items.XmlCheckedItemByTag['WireMock']) then
         remoteServerConnectionType := rscWireMock;
+      if Assigned (xXml.Items.XmlCheckedItemByTag['pegaSimul8r']) then
+        remoteServerConnectionType := rscSimul8r;
+    end;
   end;
   xmlio.apiUiConnectionConfig := remoteServerConnectionXml;
 end;
@@ -7525,7 +7530,7 @@ begin
 end;
 
 procedure TWsdlProject.OpenWireMockMessagesLog(aString: String; aIsFileName,
-  aPrompt: Boolean; aLogList: TLogList; aExecuteOnReadLog: Boolean = False);
+  aPrompt: Boolean; aLogList: TLogList; aDoLogEventProcessing: Boolean = False);
 var
   xXml, yXml, zXml, dXml: TXml;
   x, y, d: Integer;
@@ -7647,6 +7652,222 @@ begin
                 end;
               finally
                 Free;
+              end;
+            end;
+            if aDoLogEventProcessing then
+            begin
+              if xLog.Operation.onFetchLogFromRemoteServer <> '' then
+              begin
+                with TWsdlOperation.Create(xLog.Operation) do
+                try
+                  try
+                    xLog.toBindables(thisOperation);
+                    OperationScriptExecuteLater(thisOperation, onFetchLogFromRemoteServer, 0);
+                  except
+                  end;
+                finally
+                  // Freed in Thread;
+                end;
+              end;
+            end;
+          end;
+          LogFilter.Execute (xLog);
+          aLogList.SaveLog ('', xLog);
+        end;
+      end; // for each xml
+    end;
+  finally
+    FreeAndNil (xXml);
+  end;
+end;
+
+procedure TWsdlProject.OpenSimul8rMessagesLog(aString: String; aIsFileName,
+  aPrompt: Boolean; aLogList: TLogList; aDoLogEventProcessing: Boolean);
+  function _convertTimeStamp (aValue: String): String;
+  begin
+    result := aValue;
+    if (Length (aValue) > 19)
+    and (aValue [5] <> '-') then
+    begin
+// 123456789012345678901234567890
+// 20220926T155513.057 GMT
+// 2022-09-26T15:55:13.057Z
+      result := Copy (aValue, 1, 4)
+              + '-'
+              + Copy (aValue, 5, 2)
+              + '-'
+              + Copy (aValue, 7, 2)
+              + 'T'
+              + Copy (aValue, 10, 2)
+              + ':'
+              + Copy (aValue, 12, 2)
+              + ':'
+              + Copy (aValue, 14, 2)
+              + '.'
+              + Copy (aValue, 17, 3)
+              + 'Z'
+              ;
+    end;
+  end;
+var
+  xXml, yXml, zXml, dXml: TXml;
+  x, y, d: Integer;
+  xLog: TLog;
+  xBodiesAsBase64: Boolean;
+  xAlias: String;
+begin
+  xXml :=TXml.Create;
+  try
+    if aIsFileName then
+      xXml.LoadJsonFromFile(aString, nil, nil)
+    else
+      xXml.LoadJsonFromString(aString, nil);
+    if xXml.Name = '' then
+      raise Exception.Create ('Unabale to parse as JSON' + LineEnding + aString);
+    yXml := xXml.Items.XmlItemByTag['interactions'];
+    if not Assigned (yXml) then
+      raise Exception.Create('Does not contain saved Simul8r messages');
+    with yXml do
+    begin
+      for x := 0 to Items.Count - 1 do
+      begin
+        with Items.XmlItems [x] do
+        begin
+          if TagName <> '_' then
+            raise Exception.Create('serveEvents array entry expected');
+          xLog := TLog.Create;
+          xLog.MessageId := Items.XmlValueByTagDef ['id', xLog.MessageId];
+          xAlias := Items.XmlValueByTagDef['ServiceName', ''];
+          with Items.XmlItemByTag['request'] do if Assigned (thisXml) then
+          begin
+            xLog.ServiceName := Items.XmlValueByTag['ServiceName'];
+            with Items.XmlItemByTag['InboundTimeStamp'] do if Assigned (thisXml) then
+            try
+              xLog.InboundTimeStamp := xsdParseDateTime (_convertTimeStamp (thisXml.Value));
+            except
+              xLog.InboundTimeStamp := TDateTime (0);
+            end;
+            with Items.XmlItemByTag['RequestContent-Type'] do if Assigned (thisXml) then
+            begin
+              xLog.RequestContentType := thisXml.Value;
+              if xLog.RequestContentType = 'JSON' then
+                xLog.RequestContentType := 'application/json';
+              if Copy (xLog.RequestContentType, 1, 3) = 'XML' then
+                xLog.RequestContentType := 'application/xml';
+            end;
+            xLog.httpUri := items.XmlValueByTag['absoluteUrl'];
+            xLog.httpCommand := items.XmlValueByTag['method'];
+            if xLog.httpCommand = 'SOAPMethod' then
+              xLog.httpCommand := 'POST';
+            xLog.OperationName := xLog.ServiceName + xLog.httpCommand;
+            xLog.StubAction := saStub;
+            with Items.XmlItemByTag['headers'] do
+            if Assigned (thisXml) then
+            begin
+              for d := 0 to Items.Count - 1 do with items.XmlItems[d] do
+              begin
+                xLog.RequestHeaders := xLog.RequestHeaders + Name + ': ' + Value + LineEnding;
+              end;
+            end;
+            xLog.httpDocument := items.XmlValueByTagDef['path', ''];
+            xLog.httpParams := items.XmlValueByTagDef['queryString', ''];
+            xLog.RequestBody := Items.XmlValueByTag['body'];
+            xLog.InboundBody := xLog.RequestBody;
+          end;
+          with Items.XmlItemByTag['response'] do if Assigned (thisXml) then
+          begin
+            with Items.XmlItemByTag['OutBoundTimeStamp'] do if Assigned (thisXml) then
+            try
+              xLog.OutBoundTimeStamp := xsdParseDateTime (_convertTimeStamp (thisXml.Value));
+            except
+              xLog.OutBoundTimeStamp := TDateTime (0);
+            end;
+            with Items.XmlItemByTag['ResponseContent-Type'] do if Assigned (thisXml) then
+            begin
+              xLog.ReplyContentType := thisXml.Value;
+              if xLog.ReplyContentType = 'JSON' then
+                xLog.ReplyContentType := 'application/json';
+              if Copy (xLog.ReplyContentType, 1, 3) = 'XML' then
+                xLog.ReplyContentType := 'application/xml';
+            end;
+            xLog.ReplyBody := Items.XmlValueByTag['body'];
+            xLog.httpResponseCode := StrToInt(Items.XmlValueByTag['statusCode']);
+            dXml := Items.XmlItemByTag['headers'];
+            if Assigned (dXml) then with dXml do
+            begin
+              for d := 0 to Items.Count - 1 do with items.XmlItems[d] do
+              begin
+                xLog.ReplyHeaders := xLog.ReplyHeaders + Name + ': ' + Value + LineEnding;
+              end;
+            end;
+          end;
+          zXml := Items.XmlItemByTag['timing'];
+          if Assigned (zXml) then with zXml.Items do
+          begin
+            xLog.DelayTimeMs := XmlIntegerByTag['addedDelay'];
+          end;
+          if xLog.httpUri <> '' then with TIdUri.Create(xLog.httpUri) do
+          try
+            xLog.httpDocument:= Path + Document;
+            xLog.PathFormat := xLog.httpDocument;
+            xLog.httpParams := Params;
+            if Uppercase (Protocol) = 'HTTP' then xLog.TransportType := ttHttp;
+            if Uppercase (Protocol) = 'HTTPS' then xLog.TransportType := ttHttps;
+          finally
+            Free;
+          end;
+          xLog.Operation := allAliasses.FindOnAliasName(xlog.OperationName);
+          if Assigned (xLog.Operation) then
+          begin
+            xLog.ServiceName:= xlog.Operation.WsdlService.Name;
+            xLog.OperationName:= xlog.Operation.Alias;
+            xLog.Mssg := xLog.Operation.MessageBasedOnRequest;
+            if (xLog.Operation.WsdlService.DescriptionType <> ipmDTFreeFormat)
+            and (   doValidateInboundRequests(xLog.Operation)
+                 or doValidateOutboundReplies(xLog.Operation)
+                ) then
+            begin
+              xLog.httpUri := xlog.Operation.WsdlService.logPathFormat;
+              xlog.httpDocument := xLog.Operation.WsdlService.logPathFormat;
+              xLog.PathFormat := xLog.Operation.WsdlService.logPathFormat;
+              with TWsdlOperation.Create(xLog.Operation) do
+              try
+                try
+                  xLog.toBindables(thisOperation);
+                  xLog.RequestValidateResult := '';
+                  xLog.ReplyValidateResult := '';
+                  if doValidateInboundRequests(thisOperation) then
+                  begin
+                    reqBind.IsValueValid;
+                    xLog.RequestValidateResult := reqBind.AllValidationsMessage;
+                    xLog.RequestValidated := True;
+                  end;
+                  if doValidateOutboundReplies(thisOperation) then
+                  begin
+                    rpyBind.IsValueValid;
+                    xLog.ReplyValidateResult := rpyBind.AllValidationsMessage;
+                    xLog.ReplyValidated := True;
+                  end;
+                except
+                end;
+              finally
+                Free;
+              end;
+            end;
+            if aDoLogEventProcessing then
+            begin
+              if xLog.Operation.onFetchLogFromRemoteServer <> '' then
+              begin
+                with TWsdlOperation.Create(xLog.Operation) do
+                try
+                  try
+                    xLog.toBindables(thisOperation);
+                    OperationScriptExecuteLater(thisOperation, onFetchLogFromRemoteServer, 0);
+                  except
+                  end;
+                finally
+                  // Freed in Thread;
+                end;
               end;
             end;
           end;
@@ -9164,6 +9385,10 @@ begin
       if StubAction <> saRequest then
         PushOperationToRemoteServer(thisOperation);
   end;
+  if remoteServerConnectionType = rscSimul8r then
+  begin
+    SjowMessage ('not implemented for remote server connection type');
+  end;
 end;
 
 procedure TWsdlProject.PushOperationToRemoteServer(aOperation: TWsdlOperation);
@@ -9246,32 +9471,27 @@ procedure TWsdlProject.ResetStateMachineRemoteServer;
 begin
   if not Assigned (remoteServerConnectionXml) then
     raise Exception.Create('ResetCloudStateMachine requires a Remote Server Connection');
-  try
-    case remoteServerConnectionType of
-      rscApiUi:
-        begin
-          xmlio.apiUiServerDialog ( remoteServerConnectionXml
-                                  , '/apiUi/api/statemachine/reset'
-                                  , ''
-                                  , 'POST'
-                                  , 'application/json'
-                                  );
-        end;
-      rscWireMock:
-        begin
-          xmlio.apiUiServerDialog ( remoteServerConnectionXml
-                                  , generateWireMockResetStateMachine
-                                  , ''
-                                  , 'POST'
-                                  , 'application/json'
-                                  );
-        end;
-      else
-        raise Exception.Create('not implemented for this remote server connection');
-    end;
-  except
-    on e: exception do
-      SjowMessage(e.Message);
+  case remoteServerConnectionType of
+    rscApiUi:
+      begin
+        xmlio.apiUiServerDialog ( remoteServerConnectionXml
+                                , '/apiUi/api/statemachine/reset'
+                                , ''
+                                , 'POST'
+                                , 'application/json'
+                                );
+      end;
+    rscWireMock:
+      begin
+        xmlio.apiUiServerDialog ( remoteServerConnectionXml
+                                , generateWireMockResetStateMachine
+                                , ''
+                                , 'POST'
+                                , 'application/json'
+                                );
+      end;
+    else
+      raise Exception.Create('not implemented for this remote server connection');
   end;
 end;
 
@@ -9341,6 +9561,25 @@ begin
 end;
 
 procedure TWsdlProject.LogsFromRemoteServer;
+  function _qryParamsAsHttpString (aXml: TXml): String;
+  var
+    x: Integer;
+    xSep: String;
+  begin
+    result := '';
+    if not Assigned (aXml) then
+      Exit;
+    xSep := '?';
+    for x := 0 to aXml.Items.Count - 1 do with aXml.Items.XmlItems[x] do
+    begin
+      if Checked then
+      begin
+        result := result + xSep + Name + '=' + xmlio.urlPercentEncode (xmlio.resolveAliasses (Value));
+        xSep := '&';
+      end;
+    end;
+  end;
+
 var
   x: Integer;
   s: String;
@@ -9370,6 +9609,14 @@ begin
                                      , '{}'
                                      );
         end;
+      rscSimul8r:
+        s := xmlio.apiUiServerDialog ( remoteServerConnectionXml
+                                   , '/prweb/api/Simul8Tools/v1/interactions'
+                                   , _qryParamsAsHttpString(remoteServerConnectionXml.FindUQXml('remoteServerConnection.type.pegaSimul8r.QueryParams'))
+                                   , 'GET'
+                                   , 'application/json'
+                                   , '{}'
+                                   );
     end;
 
     xLogList := TLogList.Create;
@@ -9377,6 +9624,7 @@ begin
       case remoteServerConnectionType of
         rscApiUi: OpenApiUiMessagesLog(s, False, False, xLogList, True);
         rscWireMock: OpenWireMockMessagesLog(s, False, False, xLogList, True);
+        rscSimul8r: OpenSimul8rMessagesLog(s, False, False, xLogList, True);
       end;
       for x := 0 to xLogList.Count - 1 do
       begin

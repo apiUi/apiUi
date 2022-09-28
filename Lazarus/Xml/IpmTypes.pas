@@ -34,8 +34,23 @@ type TIpmInitReply = (ipmIRNone, ipmIRCopy, ipmIRCallBack);
 type TIpmExecuteType = (ipmETCurrent, ipmETTestSet, ipmETOverview);
 type TSoapVersion = (svUnspecified, svSOAP11, svSOAP12);
 
-
+function IpmDescrTypeToStr (aType: TIpmDescrType): String;
 
 implementation
+
+function IpmDescrTypeToStr (aType: TIpmDescrType): String;
+begin
+  case aType of
+    ipmDTFreeFormat: result := 'ipmDTFreeFormat';
+    ipmDTCobol: result := 'ipmDTCobol';
+    ipmDTXml: result := 'ipmDTXml';
+    ipmDTXsd: result := 'ipmDTXsd';
+    ipmDTWsdl: result := 'ipmDTWsdl';
+    ipmDTEmailDepricated: result := 'ipmDTEmailDepricated';
+    ipmDTSwiftMTDepricated: result := 'ipmDTSwiftMTDepricated';
+    ipmDTJson: result := 'ipmDTJson';
+    else result := 'unknown';
+  end;
+end;
 
 end.

@@ -1071,31 +1071,24 @@ object MainForm: TMainForm
         ParentFont = False
         TabOrder = 0
         object ToolButton39: TToolButton
-          Left = 141
+          Left = 104
           Top = 2
           Action = ClearSnapshotsAction
         end
         object ToolButton40: TToolButton
-          Left = 75
+          Left = 38
           Top = 2
           Action = ReportOnSnapshotsAction
         end
         object ToolButton51: TToolButton
-          Left = 133
+          Left = 96
           Height = 28
           Top = 2
           Caption = 'ToolButton51'
           Style = tbsSeparator
         end
-        object ToolButton64: TToolButton
-          Left = 67
-          Height = 28
-          Top = 2
-          Caption = 'ToolButton64'
-          Style = tbsSeparator
-        end
         object ToolButton65: TToolButton
-          Left = 104
+          Left = 67
           Top = 2
           Action = SummaryReportAction
         end
@@ -1103,11 +1096,6 @@ object MainForm: TMainForm
           Left = 1
           Top = 2
           Action = SnapshotsFromFolderAction
-        end
-        object ToolButton81: TToolButton
-          Left = 38
-          Top = 2
-          Action = SnapshotsFromHttpGetAgainAction
         end
         object ToolButton80: TToolButton
           Left = 30
@@ -2502,12 +2490,6 @@ object MainForm: TMainForm
     object Action4: TAction
       Caption = 'Action4'
     end
-    object SnapshotsFromHttpGetAction: TAction
-      Category = 'Reports'
-      Caption = 'SnapshotsFromHttpGetAction'
-      Hint = 'Get snapshots from remote apiUi/apiServer'
-      ImageIndex = 104
-    end
     object NavigateHierarchyAction: TAction
       Category = 'Project'
       Caption = 'Navigate hierarchy...'
@@ -2516,13 +2498,6 @@ object MainForm: TMainForm
       OnExecute = NavigateHierarchyActionExecute
       OnUpdate = NavigateHierarchyActionUpdate
       ShortCut = 24648
-    end
-    object SnapshotsFromHttpGetAgainAction: TAction
-      Caption = 'Download snapshots from remote apiUi server'
-      Hint = 'Download snapshots from apiUi on remote server'
-      ImageIndex = 106
-      OnExecute = SnapshotsFromHttpGetAgainActionExecute
-      OnUpdate = SnapshotsFromHttpGetAgainActionUpdate
     end
     object GenerateFunctopnPrototypeListAction: TAction
       Caption = 'GenerateFunctopnPrototypeListAction'
@@ -2553,12 +2528,6 @@ object MainForm: TMainForm
       OnExecute = CheckReferencedFilesExistInCloudActionExecute
       OnUpdate = CheckReferencedFilesExistInCloudActionUpdate
       ShortCut = 57426
-    end
-    object SnapshotFromHttpGetAction: TAction
-      Category = 'Reports'
-      Caption = 'Download snapshot from remote server'
-      ImageIndex = 106
-      OnExecute = SnapshotFromHttpGetActionExecute
     end
     object SetApiServerConnectionAction: TAction
       Caption = 'Set remote server connection'
@@ -2655,6 +2624,11 @@ object MainForm: TMainForm
       ImageIndex = 115
       OnExecute = ResetCloudStateMachineExecute
       OnUpdate = ResetCloudStateMachineUpdate
+    end
+    object OperationValuesAction: TAction
+      Caption = 'OperationValuesAction'
+      OnExecute = OperationValuesActionExecute
+      ShortCut = 16452
     end
   end
   object mainImageList: TImageList
@@ -8320,12 +8294,6 @@ object MainForm: TMainForm
       Caption = 'Promote to reference'
       ImageIndex = 12
       OnClick = SnapshotPromoteToReferenceMenuItemClick
-    end
-    object MenuItem25: TMenuItem
-      Caption = '-'
-    end
-    object MenuItem62: TMenuItem
-      Action = SnapshotFromHttpGetAction
     end
     object MenuItem63: TMenuItem
       Caption = '-'
