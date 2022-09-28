@@ -1,0 +1,2 @@
+ClearSnapshots ();
+CreateSnapshot ('simul8r');

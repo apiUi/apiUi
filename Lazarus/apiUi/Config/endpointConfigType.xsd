@@ -301,52 +301,61 @@ Inbound services
 						</xs:element>
 						<xs:element name="pegaSimul8r">
 							<xs:annotation>
-								<xs:documentation># pega Simul8r as remote server
+								<xs:documentation>
+# pega Simul8r as remote server
 
-Reading logs curently only supported by an Pega Simul8r API
+The [Pega Simul8r](https://community.pega.com/marketplace/components/adk-simul8r) API curently only supports reading logs.  
+Since the Simul8r-API does not provide the URL that would be used for a servicecall (if not simulated), apiUi tries to find the operation on the reported servicename concatenated with the HTTP method.  
+Therefor, if you want to apply schema validation, introspect the API/Wsdl and choose an alias based on reported Simul8r invocation data.  
 
-Will enable to validate schema and use the [apiUi reporting features](https://www.apiui.org/reports) 
+Will enable to validate schema and use the [apiUi reporting features](https://www.apiui.org/reports)  
 </xs:documentation>
 							</xs:annotation>
 							<xs:complexType>
 								<xs:sequence>
-									<xs:element name="AccessGroup" type="xs:string" minOccurs="0"/>
-									<xs:element name="Application" type="xs:string" minOccurs="0"/>
-									<xs:element name="Operator" type="xs:string" minOccurs="0"/>
-									<xs:element name="FromDateTime" minOccurs="0">
-										<xs:simpleType>
-											<xs:restriction base="xs:string">
-												<xs:pattern value="\d{8}T\d{6}\.\d{3} GMT"/>
-											</xs:restriction>
-										</xs:simpleType>
-									</xs:element>
-									<xs:element name="ToDateTime" minOccurs="0">
-										<xs:simpleType>
-											<xs:restriction base="xs:string">
-												<xs:pattern value="\d{8}T\d{6}\.\d{3} GMT"/>
-											</xs:restriction>
-										</xs:simpleType>
-									</xs:element>
-									<xs:element name="ApplicationVersion" minOccurs="0">
-										<xs:simpleType>
-											<xs:restriction base="xs:string">
-												<xs:pattern value="\d\d\.\d\d\.\d\d"/>
-											</xs:restriction>
-										</xs:simpleType>
-									</xs:element>
-									<xs:element name="PageClass" type="xs:string" minOccurs="0"/>
-									<xs:element name="ServiceName" type="xs:string" minOccurs="0"/>
-									<xs:element name="RESTServiceMethod" minOccurs="0">
-										<xs:simpleType>
-											<xs:restriction base="xs:string">
-												<xs:enumeration value="DELETE"/>
-												<xs:enumeration value="GET"/>
-												<xs:enumeration value="HEAD"/>
-												<xs:enumeration value="POST"/>
-												<xs:enumeration value="PUT"/>
-												<xs:enumeration value="TRACE"/>
-											</xs:restriction>
-										</xs:simpleType>
+									<xs:element name="QueryParams">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="AccessGroup" type="xs:string" minOccurs="0"/>
+												<xs:element name="Application" type="xs:string"/>
+												<xs:element name="Operator" type="xs:string" minOccurs="0"/>
+												<xs:element name="FromDateTime">
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:pattern value="\d{8}T\d{6}\.\d{3} GMT"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="ToDateTime" minOccurs="0">
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:pattern value="\d{8}T\d{6}\.\d{3} GMT"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="ApplicationVersion" minOccurs="0">
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:pattern value="\d\d\.\d\d\.\d\d"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="PageClass" type="xs:string" minOccurs="0"/>
+												<xs:element name="ServiceName" type="xs:string" minOccurs="0"/>
+												<xs:element name="RESTServiceMethod" minOccurs="0">
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:enumeration value="DELETE"/>
+															<xs:enumeration value="GET"/>
+															<xs:enumeration value="HEAD"/>
+															<xs:enumeration value="POST"/>
+															<xs:enumeration value="PUT"/>
+															<xs:enumeration value="TRACE"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
 									</xs:element>
 								</xs:sequence>
 							</xs:complexType>

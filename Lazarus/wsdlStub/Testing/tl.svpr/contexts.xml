@@ -1,0 +1,14 @@
+  <contexts version="3">
+    <row>
+      <col> </col>
+      <col>Address</col>
+    </row>
+    <row>
+      <col>simul8r</col>
+      <col>https://rabo-cm-dt1.pegacloud.net</col>
+    </row>
+    <row>
+      <col>local</col>
+      <col>http://localhost:7776</col>
+    </row>
+  </contexts>

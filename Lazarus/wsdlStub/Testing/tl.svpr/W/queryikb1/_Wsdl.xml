@@ -1,0 +1,4 @@
+  <Wsdl>
+    <Name></Name>
+    <WsdlLocation>..\..\..\..\ApiUI-TabulaRasa\ApiServer\ApiServer\ServiceVirtualisation\api\yamls\queryikb1.yaml</WsdlLocation>
+  </Wsdl>

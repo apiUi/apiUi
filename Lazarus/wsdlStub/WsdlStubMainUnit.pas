@@ -88,6 +88,7 @@ type
 
   TMainForm = class(TForm)
     AboutApiServerAction: TAction;
+    OperationValuesAction: TAction;
     MenuItem39: TMenuItem;
     MenuItem40: TMenuItem;
     MenuItem48: TMenuItem;
@@ -140,6 +141,7 @@ type
       const SRC: ThtString; var Handled: Boolean);
     procedure HtmlViewerKeyDown(Sender: TObject;
       var Key: Word; Shift: TShiftState);
+    procedure OperationValuesActionExecute(Sender: TObject);
     procedure PushOperationDesignActionExecute(Sender: TObject);
     procedure PushOperationDesignActionUpdate(Sender: TObject);
     procedure PushProjectToRemoteServerActionUpdate(Sender: TObject);
@@ -183,16 +185,12 @@ type
     PasteProjectFromClipboardAction: TAction;
     LogsFromHttpGetAction: TAction;
     SetApiServerConnectionAction: TAction;
-    SnapshotFromHttpGetAction: TAction;
     CheckReferencedFilesExistInCloudAction: TAction;
     EasterEggPopupMenu: TPopupMenu;
-    MenuItem62: TMenuItem;
     MenuItem63: TMenuItem;
     PushProjectToRemoteServerAction: TAction;
     CopyRemoteApiUiProjectAction: TAction;
-    SnapshotsFromHttpGetAgainAction: TAction;
     GenerateFunctopnPrototypeListAction: TAction;
-    SnapshotsFromHttpGetAction: TAction;
     GenerateJsonSchemaInYaml: TAction;
     Action4: TAction;
     GenerateSwaggerAction: TAction;
@@ -216,7 +214,6 @@ type
     ToolButton75: TToolButton;
     ToolButton79: TToolButton;
     ToolButton80: TToolButton;
-    ToolButton81: TToolButton;
     YamlToClipboardMenuItem: TMenuItem;
     ToolButton78: TToolButton;
     OperationBrowseDocumentationAction: TAction;
@@ -294,7 +291,6 @@ type
     ShowSavepointDetailsMenuitem : TMenuItem ;
     SnapshotCompareMenuitem: TMenuItem;
     PromoteToReferenceMenuItem : TMenuItem ;
-    MenuItem25 : TMenuItem ;
     SnapshotsPopupMenu : TPopupMenu ;
     ToolBar1: TToolBar;
     ToolBar3: TToolBar;
@@ -310,7 +306,6 @@ type
     ToolButton42: TToolButton;
     ToolButton50: TToolButton;
     ToolButton51: TToolButton;
-    ToolButton64: TToolButton;
     ToolButton65 : TToolButton ;
     ToolButton66 : TToolButton ;
     ToolButton67: TToolButton;
@@ -679,9 +674,6 @@ type
     procedure ShowOperationInfoActionUpdate(Sender: TObject);
     procedure ShowProjectInfoActionExecute(Sender: TObject);
     procedure ShowProjectInfoActionUpdate(Sender: TObject);
-    procedure SnapshotFromHttpGetActionExecute(Sender: TObject);
-    procedure SnapshotsFromHttpGetAgainActionExecute(Sender: TObject);
-    procedure SnapshotsFromHttpGetAgainActionUpdate(Sender: TObject);
     procedure ToggleTrackDuplicateMessagesActionExecute(Sender: TObject);
     procedure YamlToClipboardMenuItemClick(Sender: TObject);
     procedure MessagesTabToolBarResize(Sender: TObject);
@@ -1070,11 +1062,7 @@ type
     GetAuthError: String;
     procedure GridViewUnselect;
     procedure CheckReferencedFilenamesExistsInCloud;
-    procedure SnapshotFromRemoteServer (aList: TClaimableObjectList);
-    procedure SnapshotsFromRemoteServer;
     procedure GetSnapshotsFromFolder (aList: TSnapshotList; aFolder: String);
-    procedure GetSnapshotsFromRemoteServer (slx, sln, slc: TSnapshotList);
-    procedure GetSnapshotFromRemoteServer (aSnapshot: TSnapshot);
     procedure ShowHelpDocumentation (aName: String);
     procedure EditContexts;
     function ShowProgressForm: Boolean;
@@ -12486,15 +12474,6 @@ begin
   end;
 end;
 
-procedure TMainForm.SnapshotFromRemoteServer (aList: TClaimableObjectList);
-var
-  x: Integer;
-begin
-  with aList as TSnapshotList do
-  for x := 0 to Count - 1 do
-    GetSnapshotFromRemoteServer (SnapshotItems[x]);
-end;
-
 procedure TMainForm.CheckReferencedFilesExistInCloudActionExecute(Sender: TObject);
 begin
   CheckReferencedFilenamesExistsInCloud;
@@ -12623,6 +12602,47 @@ begin
     (Sender as THtmlViewer).CopyToClipboard;
 end;
 
+procedure TMainForm.OperationValuesActionExecute(Sender: TObject);
+var
+  x: Integer;
+  s: string;
+begin
+  if Assigned (FocusedOperation) then with FocusedOperation do
+  with TXml.CreateAsString('debugOperation', '') do
+  try
+    with AddXml(TXml.CreateAsString('Service', '')) do
+    with FocusedOperation.WsdlService do
+    begin
+      AddXml (TXml.CreateAsString ('Name', thisService.Name));
+      AddXml (TXml.CreateAsString ('DescriptionType', IpmDescrTypeToStr (IpmDescrType)));
+      AddXml (TXml.CreateAsString ('FileAlias', thisService.FileAlias));
+      AddXml (TXml.CreateAsString ('openApiPath', thisService.openApiPath));
+      AddXml (TXml.CreateAsString ('logPathRegExp', thisService.logPathRegExp));
+      AddXml (TXml.CreateAsString ('logPathFormat', thisService.logPathFormat));
+      with AddXml (TXml.CreateAsString ('PathInfos', '')) do
+      for x := 0 to PathInfos.Count - 1 do
+        AddXml (TXml.CreateAsString('pathinfo', PathInfos.Strings[x]));
+    end;
+    AddXml (TXml.CreateAsString('FileAlias', FileAlias));
+    AddXml (TXml.CreateAsString('Alias', Alias));
+    AddXml (TXml.CreateAsString('Schemes', Schemes));
+    AddXml (TXml.CreateAsString('Consumes', Consumes));
+    AddXml (TXml.CreateAsString('Produces', Produces));
+    AddXml (TXml.CreateAsString('ContentType', ContentType));
+    AddXml (TXml.CreateAsString('OverruleContentType', OverruleContentType));
+    AddXml (TXml.CreateAsString('Accept', Accept));
+    AddXml (TXml.CreateAsString('BindName', BindName));
+    AddXml (TXml.CreateAsString('SoapAction', SoapAction));
+    AddXml (TXml.CreateAsString('SoapAddress', SoapAddress));
+    AddXml (TXml.CreateAsString('StubHttpAddress', StubHttpAddress));
+    AddXml (TXml.CreateAsString('httpVerb', httpVerb));
+    AddXml (TXml.CreateAsString('ResponseNo', IntToStr(ResponseNo)));
+    ShowXml(FocusedOperation.Alias, thisXml);
+  finally
+    Free;
+  end;
+end;
+
 procedure TMainForm.PushOperationDesignActionExecute(Sender: TObject);
 begin
   TProcedureThread.Create(False, False, se, PushFocusedOperationToRemoteServer);
@@ -12655,6 +12675,11 @@ end;
 
 procedure TMainForm.ResetCloudStateMachineExecute(Sender: TObject);
 begin
+  if se.remoteServerConnectionType = rscSimul8r then
+  begin
+    ShowMessage('not yet implemented for Pega Simul8r');
+    Exit;
+  end;
   se.ResetStateMachineRemoteServer;
 end;
 
@@ -13041,6 +13066,11 @@ end;
 
 procedure TMainForm.CloudProjectInformationActionExecute(Sender: TObject);
 begin
+  if se.remoteServerConnectionType = rscSimul8r then
+  begin
+    ShowMessage('not yet implemented for Pega Simul8r');
+    Exit;
+  end;
   ProjectInfoFromRemoteServer;
 end;
 
@@ -13199,138 +13229,6 @@ begin
   OpenURL (apiuiconsts.apiuiOperationContextMenu);
 end;
 
-procedure TMainForm.GetSnapshotsFromRemoteServer (slx, sln, slc: TSnapshotList);
-var
-  x, f: Integer;
-  xXml, dXml: TXml;
-  snapshot: TSnapshot;
-  xName, xUrl: String;
-  xDateTime: TDateTime;
-begin
-  xXml := TXml.Create;
-  xUrl := se.remoteServerConnectionXml.items.XmlValueByTag['Address'];
-  try
-    xXml.LoadJsonFromString ( xmlio.apiUiServerDialog ( se.remoteServerConnectionXml
-                                                      , '/apiUi/api/snapshots'
-                                                      , ''
-                                                      , 'GET'
-                                                      , 'application/json'
-                                                      )
-                            , nil
-                            );
-    dXml := xXml.FindXml('json.snapshots');
-    if not Assigned (dXml) then
-      raise Exception.Create('unexpected result from get:' + xUrl + '/apiUi/api/snapshots');
-    for x := 0 to dXml.Items.Count - 1 do
-    with dXml.Items.XmlItems[x] do
-    begin
-      xName := Items.XmlValueByTag['name'];
-      if slx.Find (xName, f) then
-      begin
-        snapshot := slx.SnapshotItems[f];
-        xDateTime := XmlToDateTime(Items.XmlValueByTag['createdOn']);
-        if xDateTime > snapshot.timeStamp then
-        begin
-          slc.SaveObject (Items.XmlValueByTag['createdOn'], snapshot);
-          xmlio.apiUiServerDownload ( se.remoteServerConnectionXml
-                                    , '/apiUi/api/snapshots/download/' + urlPercentEncode(xName)
-                                    , snapshot.FileName
-                                    );
-          xmlio.SetFileChangedTime (snapshot.FileName, xDateTime);
-        end;
-      end
-      else
-      begin
-        snapshot := TRegressionSnapshot.Create ( xName
-                                               , se.CurrentFolder + DirectorySeparator + xName + '.xml'
-                                               , se.ReferenceFolder + DirectorySeparator + xName + '.xml'
-                                               )
-                                               ;
-        snapshot.timeStamp := XmlToDateTime(Items.XmlValueByTag['createdOn']);
-        snapshot.OnReport := se.doRegressionReport;
-        sln.SaveObject(xName, snapshot);
-        xmlio.apiUiServerDownload ( se.remoteServerConnectionXml
-                                  , '/apiUi/api/snapshots/download/' + urlPercentEncode(xName)
-                                  , snapshot.FileName
-                                  );
-      end;
-    end;
-  finally
-    FreeAndNil(xXml);
-  end;
-end;
-
-procedure TMainForm.GetSnapshotFromRemoteServer(aSnapshot: TSnapshot);
-var
-  xTimeStamp: TDateTime;
-begin
-  xTimeStamp := now();
-  try
-    xmlio.apiUiServerDownload ( se.remoteServerConnectionXml
-                              , '/apiUi/api/snapshots/download/' + urlPercentEncode(aSnapshot.Name)
-                              , aSnapshot.FileName
-                              );
-    aSnapshot.Status := rsUndefined;
-    aSnapshot.timeStamp := xTimeStamp;
-  except
-    on e: Exception do
-    begin
-      aSnapshot.Message := e.Message;
-      aSnapshot.Status := rsException;
-    end;
-  end;
-end;
-
-procedure TMainForm.SnapshotsFromRemoteServer;
-var
-  x: Integer;
-  xName: String;
-  slx, sln, slc: TSnapshotList;
-  s: TSnapshot;
-begin
-  slx := TSnapshotList.Create;  // existing, displayed
-  sln := TSnapshotList.Create;  // new ones
-  slc := TSnapshotList.Create;  // changed ones (subset of slx)
-  try
-    try
-      sln.Sorted := True;
-      sln.Duplicates := dupAccept;
-      slx.Sorted := True;
-      slx.Duplicates := dupAccept;
-      se.AcquireLogLock;
-      try
-        for x := 0 to se.displayedSnapshots.Count - 1 do
-          slx.AddObject(se.displayedSnapshots.SnapshotItems[x].Name, se.displayedSnapshots.SnapshotItems[x]);
-      finally
-        se.ReleaseLogLock;
-      end;
-      GetSnapshotsFromRemoteServer (slx, sln, slc);
-      se.AcquireLogLock;
-      try
-        for x := 0 to slc.Count - 1 do with slc.SnapshotItems[x] do
-        begin
-          Status := rsUndefined;
-          timeStamp := XmlToDateTime (slc.Strings[x]);
-        end;
-        for x := 0 to sln.Count - 1 do
-          se.toDisplaySnapshots.AddObject(sln.SnapshotItems[x].Name, sln.SnapshotItems[x]);
-      finally
-        se.ReleaseLogLock;
-      end;
-      slx.Clear;
-      slc.Clear;
-      sln.Clear;
-    except
-      on e: Exception do
-        LogServerException (e.Message, True, e);
-    end;
-  finally
-    FreeAndNil(slx);
-    FreeAndNil(sln);
-    FreeAndNil(slc);
-  end;
-end;
-
 function TMainForm.EditRemoteServerConnectionParams(aCaption: String): Boolean;
 var
   xXsd: TXsd;
@@ -13364,6 +13262,11 @@ end;
 
 procedure TMainForm.PushProjectToRemoteServerActionExecute(Sender: TObject);
 begin
+  if se.remoteServerConnectionType = rscSimul8r then
+  begin
+    ShowMessage('not yet implemented for Pega Simul8r');
+    Exit;
+  end;
   TProcedureThread.Create(False, False, se, se.PushProjectToRemoteServer);
 end;
 
@@ -13408,33 +13311,6 @@ end;
 procedure TMainForm.ShowProjectInfoActionUpdate(Sender: TObject);
 begin
   ShowProjectInfoAction.Enabled := Assigned (se);
-end;
-
-procedure TMainForm.SnapshotFromHttpGetActionExecute(Sender: TObject);
-var
-  xReport: TSnapshot;
-  xNode: PVirtualNode;
-  xSnapshotList: TSnapshotList;
-begin
-  xSnapshotList := TSnapshotList.Create;
-  xNode := SnapshotsVTS.GetFirstSelected;
-  while Assigned (xNode) do
-  begin
-    xReport := NodeToSnapshot(True, SnapshotsVTS, xNode);
-    xSnapshotList.SaveObject(xReport.Name, xReport);
-    xNode := SnapshotsVTS.GetNextSelected(xNode);
-  end;
-  TProcedureThread.Create(False, True, se, SnapshotFromRemoteServer, xSnapshotList);
-end;
-
-procedure TMainForm.SnapshotsFromHttpGetAgainActionExecute(Sender: TObject);
-begin
-  TProcedureThread.Create(False, True, se, SnapshotsFromRemoteServer);
-end;
-
-procedure TMainForm.SnapshotsFromHttpGetAgainActionUpdate(Sender: TObject);
-begin
-  SnapshotsFromHttpGetAgainAction.Enabled := Assigned (se) and se.remoteServerConnectionEnabled;
 end;
 
 procedure TMainForm.ToggleTrackDuplicateMessagesActionExecute(Sender: TObject);
