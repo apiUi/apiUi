@@ -282,7 +282,7 @@ type
     procedure ExecuteAllOperationRequests(aOperation: TWsdlOperation);
     procedure OpenApiUiMessagesLog (aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList; aDoLogEventProcessing: Boolean = False);
     procedure OpenWireMockMessagesLog (aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList; aDoLogEventProcessing: Boolean = False);
-    procedure OpenSimul8rMessagesLog (aString: String; aIsFileName, aPrompt: Boolean; aLogList: TLogList; aDoLogEventProcessing: Boolean = False);
+    procedure OpenSimul8rMessagesLog (aString: String; aPrompt: Boolean; aLogList: TLogList; aDoLogEventProcessing: Boolean = False);
     procedure EnvironmentListClear;
     function MessagesRegressionReportAsXml(aReferenceFileName: String; aPromptUser: Boolean): TXml;
     function InformationAsXml: TXml;
@@ -7681,8 +7681,71 @@ begin
   end;
 end;
 
-procedure TWsdlProject.OpenSimul8rMessagesLog(aString: String; aIsFileName,
+procedure TWsdlProject.OpenSimul8rMessagesLog(aString: String;
   aPrompt: Boolean; aLogList: TLogList; aDoLogEventProcessing: Boolean);
+  function _makePathFormat (aPathFormat, aPath: String): String;
+  var
+    formatSL, pathSL: TParserStringList;
+    xf, xp: Integer;
+  begin
+    formatSl := nil;
+    pathSL := nil;
+    result := '';
+    try
+      Assert (Copy (aPathFormat, 1, 1) = '/', 'PathFormat should start with a ''/''');
+      Assert (Copy (aPath, 1, 1) = '/', 'Path should start with a ''/''');
+      formatSL := SeparatedStringList(nil, aPathFormat, '/');
+      pathSL := SeparatedStringList(nil, aPath, '/');
+      xf := formatSL.Count - 1;
+      xp := pathSL.Count - 1;
+      while (xf > 0) and (xp > 0) do
+      begin
+        if (formatSL.Strings[xf] <> '')
+        and (formatSL.Strings[xf][1] = '{') then
+          formatSL.Strings[xf] := '%s'
+        else
+          formatSL.Strings[xf] := pathSL.Strings[xp];
+        Dec (xf);
+        Dec (xp);
+      end;
+      for xf := 1 to formatSL.Count - 1 do
+        result := result + '/' + formatSL.Strings[xf];
+    finally
+      FreeAndNil(formatSL);
+      FreeAndNil(pathSL);
+    end;
+  end;
+
+  function _makeDocument (aPathFormat, aPath: String): String;
+  var
+    formatSL, pathSL: TParserStringList;
+    xf, xp: Integer;
+  begin
+    formatSl := nil;
+    pathSL := nil;
+    result := '';
+    try
+      formatSL := SeparatedStringList(nil, aPathFormat, '/');
+      pathSL := SeparatedStringList(nil, aPath, '/');
+      xf := formatSL.Count - 1;
+      xp := pathSL.Count - 1;
+      while (xf > 0) and (xp > 0) do
+      begin
+        if (formatSL.Strings[xf] = '%s') then
+          formatSL.Strings[xf] := pathSL.Strings[xp]
+        else
+          Assert(formatSL.Strings[xf] = pathSL.Strings[xp], 'Unexpected difference found');
+        Dec (xf);
+        Dec (xp);
+      end;
+      for xf := 1 to formatSL.Count - 1 do
+        result := result + '/' + formatSL.Strings[xf];
+    finally
+      FreeAndNil(formatSL);
+      FreeAndNil(pathSL);
+    end;
+  end;
+
   function _convertTimeStamp (aValue: String): String;
   begin
     result := aValue;
@@ -7710,25 +7773,20 @@ procedure TWsdlProject.OpenSimul8rMessagesLog(aString: String; aIsFileName,
     end;
   end;
 var
-  xXml, yXml, zXml, dXml: TXml;
   x, y, d: Integer;
   xLog: TLog;
   xBodiesAsBase64: Boolean;
-  xAlias: String;
+  xAlias, xPath, xQuery: String;
 begin
-  xXml :=TXml.Create;
+  with TXml.Create do
   try
-    if aIsFileName then
-      xXml.LoadJsonFromFile(aString, nil, nil)
-    else
-      xXml.LoadJsonFromString(aString, nil);
-    if xXml.Name = '' then
+    LoadJsonFromString(aString, nil);
+    if Name = '' then
       raise Exception.Create ('Unabale to parse as JSON' + LineEnding + aString);
-    yXml := xXml.Items.XmlItemByTag['interactions'];
-    if not Assigned (yXml) then
-      raise Exception.Create('Does not contain saved Simul8r messages');
-    with yXml do
+    with Items.XmlItemByTag['interactions'] do
     begin
+      if not Assigned (thisXml) then
+        raise Exception.Create('Does not contain saved Simul8r messages');
       for x := 0 to Items.Count - 1 do
       begin
         with Items.XmlItems [x] do
@@ -7755,7 +7813,10 @@ begin
               if Copy (xLog.RequestContentType, 1, 3) = 'XML' then
                 xLog.RequestContentType := 'application/xml';
             end;
-            xLog.httpUri := items.XmlValueByTag['absoluteUrl'];
+            xPath := items.XmlValueByTag['path'];
+            xLog.httpParams := items.XmlValueByTag['queryString'];
+            if Copy (xLog.httpParams, 1, 1) = '?' then
+              xLog.httpParams := Copy (xLog.httpParams, 2, MaxInt);
             xLog.httpCommand := items.XmlValueByTag['method'];
             if xLog.httpCommand = 'SOAPMethod' then
               xLog.httpCommand := 'POST';
@@ -7792,8 +7853,7 @@ begin
             end;
             xLog.ReplyBody := Items.XmlValueByTag['body'];
             xLog.httpResponseCode := StrToInt(Items.XmlValueByTag['statusCode']);
-            dXml := Items.XmlItemByTag['headers'];
-            if Assigned (dXml) then with dXml do
+            with Items.XmlItemByTag['headers'] do if Assigned (thisXml) then
             begin
               for d := 0 to Items.Count - 1 do with items.XmlItems[d] do
               begin
@@ -7801,35 +7861,28 @@ begin
               end;
             end;
           end;
-          zXml := Items.XmlItemByTag['timing'];
-          if Assigned (zXml) then with zXml.Items do
-          begin
-            xLog.DelayTimeMs := XmlIntegerByTag['addedDelay'];
-          end;
-          if xLog.httpUri <> '' then with TIdUri.Create(xLog.httpUri) do
-          try
-            xLog.httpDocument:= Path + Document;
-            xLog.PathFormat := xLog.httpDocument;
-            xLog.httpParams := Params;
-            if Uppercase (Protocol) = 'HTTP' then xLog.TransportType := ttHttp;
-            if Uppercase (Protocol) = 'HTTPS' then xLog.TransportType := ttHttps;
-          finally
-            Free;
-          end;
+          with Items.XmlItemByTag['timing'] do if Assigned (thisXml) then
+            xLog.DelayTimeMs := items.XmlIntegerByTag['addedDelay'];
           xLog.Operation := allAliasses.FindOnAliasName(xlog.OperationName);
           if Assigned (xLog.Operation) then
           begin
             xLog.ServiceName:= xlog.Operation.WsdlService.Name;
             xLog.OperationName:= xlog.Operation.Alias;
-            xLog.Mssg := xLog.Operation.MessageBasedOnRequest;
             if (xLog.Operation.WsdlService.DescriptionType <> ipmDTFreeFormat)
             and (   doValidateInboundRequests(xLog.Operation)
                  or doValidateOutboundReplies(xLog.Operation)
                 ) then
             begin
-              xLog.httpUri := xlog.Operation.WsdlService.logPathFormat;
               xlog.httpDocument := xLog.Operation.WsdlService.logPathFormat;
-              xLog.PathFormat := xLog.Operation.WsdlService.logPathFormat;
+              if xPath <> '' then
+              begin
+                xLog.PathFormat := _makePathFormat (xLog.Operation.WsdlService.logPathFormat, xPath);
+                xLog.httpDocument := _makeDocument(xLog.PathFormat, xPath);
+              end;
+              xLog.httpUri := xlog.httpDocument;
+              if xLog.httpParams <> '' then
+                xLog.httpUri := xLog.httpUri + '?' + xLog.httpParams;
+              xLog.Mssg := xLog.Operation.MessageBasedOnRequest;
               with TWsdlOperation.Create(xLog.Operation) do
               try
                 try
@@ -7877,7 +7930,7 @@ begin
       end; // for each xml
     end;
   finally
-    FreeAndNil (xXml);
+    Free;
   end;
 end;
 
@@ -9624,7 +9677,7 @@ begin
       case remoteServerConnectionType of
         rscApiUi: OpenApiUiMessagesLog(s, False, False, xLogList, True);
         rscWireMock: OpenWireMockMessagesLog(s, False, False, xLogList, True);
-        rscSimul8r: OpenSimul8rMessagesLog(s, False, False, xLogList, True);
+        rscSimul8r: OpenSimul8rMessagesLog(s, False, xLogList, True);
       end;
       for x := 0 to xLogList.Count - 1 do
       begin

@@ -1,87 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- 28/09/2022 14:35:56: Generated with apiUi 10.8.1.13251 by janbo -->
+<!-- 28/09/2022 14:38:48: Generated with apiUi 10.8.1.13251 by janbo -->
 <WsdlStubCaseMessages>
   <wsdlStub>D:\Data\gitrepo\apiUi_feature\Lazarus\wsdlStub\Testing\tl.svpr</wsdlStub>
   <refreshInfo>
-    <Index>7</Index>
-    <MessageId>uuid:a784-f9e5-5c3f-1e6b</MessageId>
+    <Index>5</Index>
+    <MessageId>uuid:5456-90a5-8a41-d775</MessageId>
   </refreshInfo>
-  <RequestReply>
-    <InboundTimeStamp>2022-09-28T12:35:48.466Z</InboundTimeStamp>
-    <OutboundTimeStamp>2022-09-28T12:35:48.412Z</OutboundTimeStamp>
-    <DelayTimeMs>0</DelayTimeMs>
-    <OperationCount>2</OperationCount>
-    <TransportType>0</TransportType>
-    <StubAction>3</StubAction>
-    <CorrelationId>pathparam1; pathparam2; headerparam1; headerparam2; queryparam1; queryparam2; bodyparam1; bodyparam2</CorrelationId>
-    <fromRemoteServer>false</fromRemoteServer>
-    <Service>/testparams/{pathparam1}/{pathparam2}</Service>
-    <Operation>/testparams/{pathparam1}/{pathparam2}:post</Operation>
-    <Reply>Default</Reply>
-    <Error></Error>
-    <Remarks></Remarks>
-    <Notifications></Notifications>
-    <httpUri>http://localhost:7776/test/simul8Tester/testparams/pathparam1/pathparam2?queryparam1=queryparam1&amp;queryparam2=queryparam2</httpUri>
-    <httpResponseCode>200</httpResponseCode>
-    <httpCommand>POST</httpCommand>
-    <httpDocument>/test/simul8Tester/testparams/pathparam1/pathparam2</httpDocument>
-    <httpParams>queryparam1=queryparam1&amp;queryparam2=queryparam2</httpParams>
-    <RequestContentType>application/json</RequestContentType>
-    <ReplyContentType>application/json</ReplyContentType>
-    <HttpRequestHeaders>Connection: keep-alive&#x0D;&#x0A;Content-Encoding: identity&#x0D;&#x0A;Content-Type: application/json; charset=utf-8&#x0D;&#x0A;Content-Length: 63&#x0D;&#x0A;headerparam1: headerparam1&#x0D;&#x0A;headerparam2: headerparam2&#x0D;&#x0A;Host: localhost:7776&#x0D;&#x0A;Accept: application/json&#x0D;&#x0A;Accept-Encoding: identity&#x0D;&#x0A;User-Agent: Mozilla/3.0 (compatible; Indy Library)&#x0D;&#x0A;</HttpRequestHeaders>
-    <HttpReplyHeaders>Connection: keep-alive&#x0D;&#x0A;Content-Type: application/json&#x0D;&#x0A;Matched-Stub-Id: a4a4efa8-7dd2-4d8e-b7ec-1da37e921a2d&#x0D;&#x0A;Matched-Stub-Name: Default&#x0D;&#x0A;Vary: Accept-Encoding, User-Agent&#x0D;&#x0A;</HttpReplyHeaders>
-    <HttpRequestBody>&#x0D;&#x0A;{ &quot;bodyparam1&quot;: &quot;bodyparam1&quot;&#x0D;&#x0A;, &quot;bodyparam2&quot;: &quot;bodyparam2&quot;&#x0D;&#x0A;}</HttpRequestBody>
-    <HttpRequestBodyMiM></HttpRequestBodyMiM>
-    <HttpReplyBody>&#x0D;&#x0A;{ &quot;bodyparam1&quot;: &quot;bodyparam1&quot;&#x0D;&#x0A;, &quot;bodyparam2&quot;: &quot;bodyparam2&quot;&#x0D;&#x0A;, &quot;headerparam1&quot;: &quot;headerparam1&quot;&#x0D;&#x0A;, &quot;headerparam2&quot;: &quot;headerparam2&quot;&#x0D;&#x0A;, &quot;pathparam1&quot;: &quot;pathparam1&quot;&#x0D;&#x0A;, &quot;pathparam2&quot;: &quot;pathparam2&quot;&#x0D;&#x0A;, &quot;queryparam1&quot;: &quot;queryparam1&quot;&#x0D;&#x0A;, &quot;queryparam2&quot;: &quot;queryparam2&quot;&#x0D;&#x0A;, &quot;noparam&quot;: &quot;no parameter&quot;&#x0D;&#x0A;}</HttpReplyBody>
-    <HttpReplyBodyMiM></HttpReplyBodyMiM>
-    <RequestValidated>true</RequestValidated>
-    <RequestValidateResult></RequestValidateResult>
-    <ReplyValidated>true</ReplyValidated>
-    <ReplyValidateResult></ReplyValidateResult>
-    <Nr>27</Nr>
-    <MessageId>uuid:310b-200d-f97e-f8a7</MessageId>
-    <ServiceName>/testparams/{pathparam1}/{pathparam2}</ServiceName>
-    <OperationName>Simul8Tester</OperationName>
-    <PathFormat>/test/simul8Tester/testparams/%s/%s</PathFormat>
-  </RequestReply>
-  <RequestReply>
-    <InboundTimeStamp>2022-09-28T12:35:49.190Z</InboundTimeStamp>
-    <OutboundTimeStamp>2022-09-28T12:35:49.131Z</OutboundTimeStamp>
-    <DelayTimeMs>0</DelayTimeMs>
-    <OperationCount>3</OperationCount>
-    <TransportType>0</TransportType>
-    <StubAction>3</StubAction>
-    <CorrelationId>pathparam1; pathparam2; headerparam1; headerparam2; queryparam1; queryparam2; bodyparam1; bodyparam2</CorrelationId>
-    <fromRemoteServer>false</fromRemoteServer>
-    <Service>/testparams/{pathparam1}/{pathparam2}</Service>
-    <Operation>/testparams/{pathparam1}/{pathparam2}:post</Operation>
-    <Reply>Default</Reply>
-    <Error></Error>
-    <Remarks></Remarks>
-    <Notifications></Notifications>
-    <httpUri>http://localhost:7776/test/simul8Tester/testparams/pathparam1/pathparam2?queryparam1=queryparam1&amp;queryparam2=queryparam2</httpUri>
-    <httpResponseCode>200</httpResponseCode>
-    <httpCommand>POST</httpCommand>
-    <httpDocument>/test/simul8Tester/testparams/pathparam1/pathparam2</httpDocument>
-    <httpParams>queryparam1=queryparam1&amp;queryparam2=queryparam2</httpParams>
-    <RequestContentType>application/json</RequestContentType>
-    <ReplyContentType>application/json</ReplyContentType>
-    <HttpRequestHeaders>Connection: keep-alive&#x0D;&#x0A;Content-Encoding: identity&#x0D;&#x0A;Content-Type: application/json; charset=utf-8&#x0D;&#x0A;Content-Length: 63&#x0D;&#x0A;headerparam1: headerparam1&#x0D;&#x0A;headerparam2: headerparam2&#x0D;&#x0A;Host: localhost:7776&#x0D;&#x0A;Accept: application/json&#x0D;&#x0A;Accept-Encoding: identity&#x0D;&#x0A;User-Agent: Mozilla/3.0 (compatible; Indy Library)&#x0D;&#x0A;</HttpRequestHeaders>
-    <HttpReplyHeaders>Connection: keep-alive&#x0D;&#x0A;Content-Type: application/json&#x0D;&#x0A;Matched-Stub-Id: a4a4efa8-7dd2-4d8e-b7ec-1da37e921a2d&#x0D;&#x0A;Matched-Stub-Name: Default&#x0D;&#x0A;Vary: Accept-Encoding, User-Agent&#x0D;&#x0A;</HttpReplyHeaders>
-    <HttpRequestBody>&#x0D;&#x0A;{ &quot;bodyparam1&quot;: &quot;bodyparam1&quot;&#x0D;&#x0A;, &quot;bodyparam2&quot;: &quot;bodyparam2&quot;&#x0D;&#x0A;}</HttpRequestBody>
-    <HttpRequestBodyMiM></HttpRequestBodyMiM>
-    <HttpReplyBody>&#x0D;&#x0A;{ &quot;bodyparam1&quot;: &quot;bodyparam1&quot;&#x0D;&#x0A;, &quot;bodyparam2&quot;: &quot;bodyparam2&quot;&#x0D;&#x0A;, &quot;headerparam1&quot;: &quot;headerparam1&quot;&#x0D;&#x0A;, &quot;headerparam2&quot;: &quot;headerparam2&quot;&#x0D;&#x0A;, &quot;pathparam1&quot;: &quot;pathparam1&quot;&#x0D;&#x0A;, &quot;pathparam2&quot;: &quot;pathparam2&quot;&#x0D;&#x0A;, &quot;queryparam1&quot;: &quot;queryparam1&quot;&#x0D;&#x0A;, &quot;queryparam2&quot;: &quot;queryparam2&quot;&#x0D;&#x0A;, &quot;noparam&quot;: &quot;no parameter&quot;&#x0D;&#x0A;}</HttpReplyBody>
-    <HttpReplyBodyMiM></HttpReplyBodyMiM>
-    <RequestValidated>true</RequestValidated>
-    <RequestValidateResult></RequestValidateResult>
-    <ReplyValidated>true</ReplyValidated>
-    <ReplyValidateResult></ReplyValidateResult>
-    <Nr>28</Nr>
-    <MessageId>uuid:c413-a7af-69b3-80da</MessageId>
-    <ServiceName>/testparams/{pathparam1}/{pathparam2}</ServiceName>
-    <OperationName>Simul8Tester</OperationName>
-    <PathFormat>/test/simul8Tester/testparams/%s/%s</PathFormat>
-  </RequestReply>
   <RequestReply>
     <InboundTimeStamp>2022-09-26T15:55:13.57Z</InboundTimeStamp>
     <OutboundTimeStamp>2022-09-26T15:55:13.58Z</OutboundTimeStamp>
@@ -114,8 +38,8 @@
     <RequestValidateResult>Value: &quot;1234567890123456&quot; Validate XML Error, reason Value violates maxLength constraint (15).&#x0D;&#x0A;The Element &quot;KlantId&quot; failed to parse</RequestValidateResult>
     <ReplyValidated>true</ReplyValidated>
     <ReplyValidateResult></ReplyValidateResult>
-    <Nr>29</Nr>
-    <MessageId>uuid:ce3b-373e-af08-1c6a</MessageId>
+    <Nr>51</Nr>
+    <MessageId>uuid:4b14-44a6-6c59-bbcd</MessageId>
     <ServiceName>/RaadplegenIKBDetails/2</ServiceName>
     <OperationName>QueryIKBDetailsPOST</OperationName>
     <PathFormat>/crmi/api/klant/RaadplegenIKBDetails/2</PathFormat>
@@ -152,8 +76,8 @@
     <RequestValidateResult></RequestValidateResult>
     <ReplyValidated>true</ReplyValidated>
     <ReplyValidateResult></ReplyValidateResult>
-    <Nr>30</Nr>
-    <MessageId>uuid:5821-b5d3-0400-7e65</MessageId>
+    <Nr>52</Nr>
+    <MessageId>uuid:492b-78ef-f5e6-26e9</MessageId>
     <ServiceName>/RaadplegenIKBDetails/2</ServiceName>
     <OperationName>QueryIKBDetailsPOST</OperationName>
     <PathFormat>/crmi/api/klant/RaadplegenIKBDetails/2</PathFormat>
@@ -190,8 +114,8 @@
     <RequestValidateResult></RequestValidateResult>
     <ReplyValidated>true</ReplyValidated>
     <ReplyValidateResult></ReplyValidateResult>
-    <Nr>31</Nr>
-    <MessageId>uuid:0507-4587-21ae-bec8</MessageId>
+    <Nr>53</Nr>
+    <MessageId>uuid:a3e1-320e-31d0-bd5e</MessageId>
     <ServiceName>/RaadplegenIKBDetails/2</ServiceName>
     <OperationName>QueryIKBDetailsPOST</OperationName>
     <PathFormat>/crmi/api/klant/RaadplegenIKBDetails/2</PathFormat>
@@ -228,8 +152,8 @@
     <RequestValidateResult></RequestValidateResult>
     <ReplyValidated>false</ReplyValidated>
     <ReplyValidateResult></ReplyValidateResult>
-    <Nr>32</Nr>
-    <MessageId>uuid:035d-82d7-b0d1-79f4</MessageId>
+    <Nr>54</Nr>
+    <MessageId>uuid:b30b-9adc-35e3-15df</MessageId>
     <ServiceName>ListBerichten</ServiceName>
     <OperationName>ListBerichtenPOST</OperationName>
     <PathFormat></PathFormat>
@@ -266,8 +190,8 @@
     <RequestValidateResult></RequestValidateResult>
     <ReplyValidated>false</ReplyValidated>
     <ReplyValidateResult></ReplyValidateResult>
-    <Nr>33</Nr>
-    <MessageId>uuid:575a-c6d7-fb5d-a6b7</MessageId>
+    <Nr>55</Nr>
+    <MessageId>uuid:c191-95b4-0985-7844</MessageId>
     <ServiceName></ServiceName>
     <OperationName>GET</OperationName>
     <PathFormat></PathFormat>
@@ -304,8 +228,8 @@
     <RequestValidateResult></RequestValidateResult>
     <ReplyValidated>false</ReplyValidated>
     <ReplyValidateResult></ReplyValidateResult>
-    <Nr>34</Nr>
-    <MessageId>uuid:a784-f9e5-5c3f-1e6b</MessageId>
+    <Nr>56</Nr>
+    <MessageId>uuid:5456-90a5-8a41-d775</MessageId>
     <ServiceName></ServiceName>
     <OperationName>POST</OperationName>
     <PathFormat></PathFormat>
