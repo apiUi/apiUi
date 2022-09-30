@@ -2630,6 +2630,10 @@ object MainForm: TMainForm
       OnExecute = OperationValuesActionExecute
       ShortCut = 16452
     end
+    object ToggleSimul8rWorkaroundAction: TAction
+      Caption = 'Toggle Simul8r Bug Workaround'
+      OnExecute = ToggleSimul8rWorkaroundActionExecute
+    end
   end
   object mainImageList: TImageList
     Left = 208
