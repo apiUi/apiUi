@@ -181,6 +181,9 @@ type
     inboundRequestSchemaValidationType, outboundReplySchemaValidationType, outboundRequestSchemaValidationType, inboundReplySchemaValidationType: TSchemaValidationType;
     schemaValidationVioloationHttpResponseCode: Integer;
     remoteServerConnectionXml, DatabaseConnectionSpecificationXml, UnknownOpsReqReplactementsXml, UnknownOpsRpyReplactementsXml: TXml;
+    doWorkAroundSimul8rBug: Boolean;
+    pegaSimul8rQueryFromDateTimeXml: TXml;
+    pegaSimul8rNextFromParamAsDateTime: TDateTime;
     DbsDatabaseName, DbsType, DbsHostName, DbsParams, DbsUserName, DbsPassword, DbsConnectionString: String;
     FreeFormatWsdl, ApiByExampleWsdl, CobolWsdl: TWsdl;
     FreeFormatService: TWsdlService;
@@ -7359,7 +7362,10 @@ begin
       if Assigned (xXml.Items.XmlCheckedItemByTag['WireMock']) then
         remoteServerConnectionType := rscWireMock;
       if Assigned (xXml.Items.XmlCheckedItemByTag['pegaSimul8r']) then
+      begin
         remoteServerConnectionType := rscSimul8r;
+        pegaSimul8rQueryFromDateTimeXml := xXml.FindUQXml('type.pegaSimul8r.QueryParams.FromDateTime');
+      end;
     end;
   end;
   xmlio.apiUiConnectionConfig := remoteServerConnectionXml;
@@ -7683,6 +7689,18 @@ end;
 
 procedure TWsdlProject.OpenSimul8rMessagesLog(aString: String;
   aPrompt: Boolean; aLogList: TLogList; aDoLogEventProcessing: Boolean);
+  procedure _replCloseOpenWithoutComma;
+  var
+    x: Integer;
+  begin
+    x := Pos ('}  {', aString);
+    while x > 0 do
+    begin
+       aString [x + 1] := ',';
+       x := Pos ('}  {', aString);
+    end;
+  end;
+
   function _makePathFormat (aPathFormat, aPath: String): String;
   var
     formatSL, pathSL: TParserStringList;
@@ -7780,6 +7798,10 @@ var
 begin
   with TXml.Create do
   try
+    if doWorkAroundSimul8rBug then
+    begin
+      _replCloseOpenWithoutComma;
+    end;
     LoadJsonFromString(aString, nil);
     if Name = '' then
       raise Exception.Create ('Unabale to parse as JSON' + LineEnding + aString);
@@ -7802,6 +7824,8 @@ begin
             with Items.XmlItemByTag['InboundTimeStamp'] do if Assigned (thisXml) then
             try
               xLog.InboundTimeStamp := xsdParseDateTime (_convertTimeStamp (thisXml.Value));
+              if xLog.InboundTimeStamp > pegaSimul8rNextFromParamAsDateTime then
+                pegaSimul8rNextFromParamAsDateTime := xLog.InboundTimeStamp;
             except
               xLog.InboundTimeStamp := TDateTime (0);
             end;
@@ -7929,6 +7953,11 @@ begin
         end;
       end; // for each xml
     end;
+    pegaSimul8rQueryFromDateTimeXml.Value := FormatDateTime('yyyymmdd', pegaSimul8rNextFromParamAsDateTime)
+                                           + 'T'
+                                           + FormatDateTime('hhnnss.zzz', pegaSimul8rNextFromParamAsDateTime)
+                                           + ' GMT'
+                                           ;
   finally
     Free;
   end;
@@ -9663,6 +9692,8 @@ begin
                                      );
         end;
       rscSimul8r:
+      begin
+        pegaSimul8rNextFromParamAsDateTime := LocalTimeToUTCTime(Now);
         s := xmlio.apiUiServerDialog ( remoteServerConnectionXml
                                    , '/prweb/api/Simul8Tools/v1/interactions'
                                    , _qryParamsAsHttpString(remoteServerConnectionXml.FindUQXml('remoteServerConnection.type.pegaSimul8r.QueryParams'))
@@ -9670,6 +9701,7 @@ begin
                                    , 'application/json'
                                    , '{}'
                                    );
+      end;
     end;
 
     xLogList := TLogList.Create;

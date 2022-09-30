@@ -5,7 +5,10 @@
       <Enabled>true</Enabled>
       <type>
         <pegaSimul8r>
-          <QueryParams></QueryParams>
+          <QueryParams>
+            <Application>JanBo</Application>
+            <FromDateTime>19990101T010101.001 GMT</FromDateTime>
+          </QueryParams>
         </pegaSimul8r>
       </type>
       <Address>${Address}</Address>

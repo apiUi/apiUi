@@ -88,6 +88,7 @@ type
 
   TMainForm = class(TForm)
     AboutApiServerAction: TAction;
+    ToggleSimul8rWorkaroundAction: TAction;
     OperationValuesAction: TAction;
     MenuItem39: TMenuItem;
     MenuItem40: TMenuItem;
@@ -151,6 +152,7 @@ type
     procedure ShowStateMachineInformationActionExecute(Sender: TObject);
     procedure SQLConnectorLog(Sender: TSQLConnection; EventType: TDBEventType;
       const Msg: String);
+    procedure ToggleSimul8rWorkaroundActionExecute(Sender: TObject);
     procedure ToggleStateMachineActionExecute(Sender: TObject);
     procedure ToggleStateMachineActionHint(var HintStr: string;
       var CanShow: Boolean);
@@ -12720,6 +12722,11 @@ begin
     detActualSQL: s := 'detActualSQL';
   end;
   try SjowMessage(s + ': ' + Msg); except end;
+end;
+
+procedure TMainForm.ToggleSimul8rWorkaroundActionExecute(Sender: TObject);
+begin
+  if Assigned (se) then se.doWorkAroundSimul8rBug := (not se.doWorkAroundSimul8rBug);
 end;
 
 procedure TMainForm.ToggleStateMachineActionExecute(Sender: TObject);
