@@ -182,8 +182,7 @@ type
     schemaValidationVioloationHttpResponseCode: Integer;
     remoteServerConnectionXml, DatabaseConnectionSpecificationXml, UnknownOpsReqReplactementsXml, UnknownOpsRpyReplactementsXml: TXml;
     doWorkAroundSimul8rBug: Boolean;
-    pegaSimul8rQueryFromDateTimeXml: TXml;
-    pegaSimul8rNextFromParamAsDateTime: TDateTime;
+    pegaSimul8rFromParamAsString, pegaSimul8rToParamAsString: String;
     DbsDatabaseName, DbsType, DbsHostName, DbsParams, DbsUserName, DbsPassword, DbsConnectionString: String;
     FreeFormatWsdl, ApiByExampleWsdl, CobolWsdl: TWsdl;
     FreeFormatService: TWsdlService;
@@ -7361,10 +7360,16 @@ begin
     begin
       if Assigned (xXml.Items.XmlCheckedItemByTag['WireMock']) then
         remoteServerConnectionType := rscWireMock;
-      if Assigned (xXml.Items.XmlCheckedItemByTag['pegaSimul8r']) then
+      with xXml.Items.XmlCheckedItemByTag['pegaSimul8r'] do if Assigned (thisXml) then
       begin
         remoteServerConnectionType := rscSimul8r;
-        pegaSimul8rQueryFromDateTimeXml := xXml.FindUQXml('type.pegaSimul8r.QueryParams.FromDateTime');
+        pegaSimul8rFromParamAsString := '19000101.000000.000 GMT';
+        pegaSimul8rToParamAsString := '';
+        with  Items.XmlCheckedItemByTag['QueryParams'] do if Assigned (thisXml) then
+        begin
+          pegaSimul8rFromParamAsString := Items.XmlValueByTagDef['FromDateTime', pegaSimul8rFromParamAsString];
+          pegaSimul8rToParamAsString := Items.XmlValueByTagDef['ToDateTime', pegaSimul8rToParamAsString];
+        end;
       end;
     end;
   end;
@@ -7824,8 +7829,6 @@ begin
             with Items.XmlItemByTag['InboundTimeStamp'] do if Assigned (thisXml) then
             try
               xLog.InboundTimeStamp := xsdParseDateTime (_convertTimeStamp (thisXml.Value));
-              if xLog.InboundTimeStamp > pegaSimul8rNextFromParamAsDateTime then
-                pegaSimul8rNextFromParamAsDateTime := xLog.InboundTimeStamp;
             except
               xLog.InboundTimeStamp := TDateTime (0);
             end;
@@ -7953,11 +7956,6 @@ begin
         end;
       end; // for each xml
     end;
-    pegaSimul8rQueryFromDateTimeXml.Value := FormatDateTime('yyyymmdd', pegaSimul8rNextFromParamAsDateTime)
-                                           + 'T'
-                                           + FormatDateTime('hhnnss.zzz', pegaSimul8rNextFromParamAsDateTime)
-                                           + ' GMT'
-                                           ;
   finally
     Free;
   end;
@@ -9643,6 +9641,19 @@ begin
 end;
 
 procedure TWsdlProject.LogsFromRemoteServer;
+  function _pegaNow: String;
+  var
+    iTime: TDateTime;
+  begin
+    itime := xsdNowUTC;
+    result := FormatDateTime('yyyymmdd', itime)
+            + 'T'
+            + FormatDateTime('hhnnss.zzz', itime)
+            + ' GMT'
+            ;
+
+  end;
+
   function _qryParamsAsHttpString (aXml: TXml): String;
   var
     x: Integer;
@@ -9693,7 +9704,13 @@ begin
         end;
       rscSimul8r:
       begin
-        pegaSimul8rNextFromParamAsDateTime := LocalTimeToUTCTime(Now);
+        if pegaSimul8rToParamAsString = '' then
+          pegaSimul8rToParamAsString := _pegaNow;
+        with remoteServerConnectionXml.FindUQXml('remoteServerConnection.type.pegaSimul8r.QueryParams').Items do
+        begin
+          XmlValueByTag ['FromDateTime'] := pegaSimul8rFromParamAsString;
+          XmlValueByTag ['ToDateTime'] := pegaSimul8rToParamAsString;
+        end;
         s := xmlio.apiUiServerDialog ( remoteServerConnectionXml
                                    , '/prweb/api/Simul8Tools/v1/interactions'
                                    , _qryParamsAsHttpString(remoteServerConnectionXml.FindUQXml('remoteServerConnection.type.pegaSimul8r.QueryParams'))
@@ -9701,6 +9718,8 @@ begin
                                    , 'application/json'
                                    , '{}'
                                    );
+        pegaSimul8rFromParamAsString := pegaSimul8rToParamAsString; // for the next query
+        pegaSimul8rToParamAsString := ''; // for the next query
       end;
     end;
 

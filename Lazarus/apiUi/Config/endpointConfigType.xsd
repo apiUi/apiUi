@@ -319,7 +319,14 @@ Will enable to validate schema and use the [apiUi reporting features](https://ww
 												<xs:element name="AccessGroup" type="xs:string" minOccurs="0"/>
 												<xs:element name="Application" type="xs:string"/>
 												<xs:element name="Operator" type="xs:string" minOccurs="0"/>
-												<xs:element name="FromDateTime">
+												<xs:element name="FromDateTime" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>
+Default "19000101T000000.000 GMT"  
+After setting a value, this value will only be used once, on the first call after setting it.  
+apiUi will update this value on each execution of a query.
+														</xs:documentation>
+													</xs:annotation>
 													<xs:simpleType>
 														<xs:restriction base="xs:string">
 															<xs:pattern value="\d{8}T\d{6}\.\d{3} GMT"/>
@@ -327,6 +334,13 @@ Will enable to validate schema and use the [apiUi reporting features](https://ww
 													</xs:simpleType>
 												</xs:element>
 												<xs:element name="ToDateTime" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>
+Default system datetime.    
+After setting a value, this value will only be used once, on the first call after setting it.  
+apiUi will update this value on each execution of a query.
+														</xs:documentation>
+													</xs:annotation>
 													<xs:simpleType>
 														<xs:restriction base="xs:string">
 															<xs:pattern value="\d{8}T\d{6}\.\d{3} GMT"/>
