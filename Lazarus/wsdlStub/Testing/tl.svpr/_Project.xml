@@ -7,7 +7,8 @@
         <pegaSimul8r>
           <QueryParams>
             <Application>JanBo</Application>
-            <FromDateTime>19990101T010101.001 GMT</FromDateTime>
+            <FromDateTime>20221001T162037.574 GMT</FromDateTime>
+            <ToDateTime>20221001T162056.293 GMT</ToDateTime>
           </QueryParams>
         </pegaSimul8r>
       </type>
