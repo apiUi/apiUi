@@ -7364,7 +7364,7 @@ begin
       begin
         remoteServerConnectionType := rscSimul8r;
         pegaSimul8rFromParamAsString := '19000101.000000.000 GMT';
-        pegaSimul8rToParamAsString := '';
+        pegaSimul8rToParamAsString := 'now';
         with  Items.XmlCheckedItemByTag['QueryParams'] do if Assigned (thisXml) then
         begin
           pegaSimul8rFromParamAsString := Items.XmlValueByTagDef['FromDateTime', pegaSimul8rFromParamAsString];
@@ -9704,22 +9704,25 @@ begin
         end;
       rscSimul8r:
       begin
-        if pegaSimul8rToParamAsString = '' then
+        if pegaSimul8rToParamAsString = 'now' then
           pegaSimul8rToParamAsString := _pegaNow;
-        with remoteServerConnectionXml.FindUQXml('remoteServerConnection.type.pegaSimul8r.QueryParams').Items do
+        with remoteServerConnectionXml.FindUQXml('remoteServerConnection.type.pegaSimul8r.QueryParams') do
         begin
-          XmlValueByTag ['FromDateTime'] := pegaSimul8rFromParamAsString;
-          XmlValueByTag ['ToDateTime'] := pegaSimul8rToParamAsString;
+          Assert (Assigned (thisXml), 'remoteServerConnection.type.pegaSimul8r.QueryParams not found');
+          Items.XmlValueByTag ['FromDateTime'] := pegaSimul8rFromParamAsString;
+          Items.XmlValueByTag ['ToDateTime'] := pegaSimul8rToParamAsString;
+          s := xmlio.apiUiServerDialog ( remoteServerConnectionXml
+                                     , '/prweb/api/Simul8Tools/v1/interactions'
+                                     , _qryParamsAsHttpString(thisXml)
+                                     , 'GET'
+                                     , 'application/json'
+                                     , '{}'
+                                     );
+          pegaSimul8rFromParamAsString := pegaSimul8rToParamAsString; // for the next query
+          pegaSimul8rToParamAsString := 'now'; // for the next query
+          Items.XmlValueByTag ['FromDateTime'] := pegaSimul8rFromParamAsString;
+          Items.XmlValueByTag ['ToDateTime'] := pegaSimul8rToParamAsString;
         end;
-        s := xmlio.apiUiServerDialog ( remoteServerConnectionXml
-                                   , '/prweb/api/Simul8Tools/v1/interactions'
-                                   , _qryParamsAsHttpString(remoteServerConnectionXml.FindUQXml('remoteServerConnection.type.pegaSimul8r.QueryParams'))
-                                   , 'GET'
-                                   , 'application/json'
-                                   , '{}'
-                                   );
-        pegaSimul8rFromParamAsString := pegaSimul8rToParamAsString; // for the next query
-        pegaSimul8rToParamAsString := ''; // for the next query
       end;
     end;
 
