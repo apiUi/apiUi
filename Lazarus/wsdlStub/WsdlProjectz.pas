@@ -7363,7 +7363,7 @@ begin
       with xXml.Items.XmlCheckedItemByTag['pegaSimul8r'] do if Assigned (thisXml) then
       begin
         remoteServerConnectionType := rscSimul8r;
-        pegaSimul8rFromParamAsString := '19000101.000000.000 GMT';
+        pegaSimul8rFromParamAsString := '19000101T000000.000 GMT';
         pegaSimul8rToParamAsString := 'now';
         with  Items.XmlCheckedItemByTag['QueryParams'] do if Assigned (thisXml) then
         begin
@@ -7799,8 +7799,10 @@ var
   x, y, d: Integer;
   xLog: TLog;
   xBodiesAsBase64: Boolean;
-  xAlias, xPath, xQuery: String;
+  xAlias, xPath, xQuery, xSortkey: String;
 begin
+  aLogList.Sorted := True;
+  aLogList.Duplicates := dupAccept;
   with TXml.Create do
   try
     if doWorkAroundSimul8rBug then
@@ -7820,6 +7822,7 @@ begin
         begin
           if TagName <> '_' then
             raise Exception.Create('serveEvents array entry expected');
+          xSortkey := '';
           xLog := TLog.Create;
           xLog.MessageId := Items.XmlValueByTagDef ['id', xLog.MessageId];
           xAlias := Items.XmlValueByTagDef['ServiceName', ''];
@@ -7866,6 +7869,7 @@ begin
           begin
             with Items.XmlItemByTag['OutBoundTimeStamp'] do if Assigned (thisXml) then
             try
+              xSortkey := thisXml.Value;
               xLog.OutBoundTimeStamp := xsdParseDateTime (_convertTimeStamp (thisXml.Value));
             except
               xLog.OutBoundTimeStamp := TDateTime (0);
@@ -7952,7 +7956,7 @@ begin
             end;
           end;
           LogFilter.Execute (xLog);
-          aLogList.SaveLog ('', xLog);
+          aLogList.SaveLog (xSortkey, xLog);
         end;
       end; // for each xml
     end;
