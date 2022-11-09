@@ -121,6 +121,7 @@ type
 
     function IsValueValid: Boolean; Override;
     function getChecked: Boolean;
+    function GetIndex (aBase: Integer): Integer;
     function GetIndexCaption: String; Override;
     function GetFullIndexCaption: String; Override;
     function getRoot: TXml;
@@ -1469,9 +1470,17 @@ function TXml.fullJsonBodyPath: String;
     if aXml.Parent = nil then
       result := aXml.GetIndexCaption
     else
-      result := _fjbp (aXml.Parent as TXml)
-              + '.'
-              + aXml.GetIndexCaption;
+    begin
+      if aXml.Parent.jsonType = jsonArray then
+        result := _fjbp (aXml.Parent as TXml)
+                + '['
+                + IntToStr(aXml.GetIndex (0))
+                + ']'
+      else
+        result := _fjbp (aXml.Parent as TXml)
+                + '.'
+                + aXml.GetIndexCaption;
+    end;
   end;
 
 begin
@@ -4081,6 +4090,26 @@ end;
 function TXml.getChecked: Boolean;
 begin
   result := inherited Checked;
+end;
+
+function TXml.GetIndex (aBase: Integer): Integer;
+var
+  i, x: Integer;
+  p: TXml;
+begin
+  result := aBase;
+  if Self = nil then Exit;
+  if Assigned (Parent) then
+  begin
+    p := Parent as TXml;
+    for x := 0 to p.Items.Count - 1 do
+    begin
+      if p.Items.XmlItems[x] = Self then
+        Exit;
+      if p.Items.XmlItems[x].TagName = TagName then
+        Inc (result);
+    end;
+  end;
 end;
 
 procedure TXml.MergePreviousChecked;

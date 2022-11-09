@@ -88,6 +88,8 @@ type
 
   TMainForm = class(TForm)
     AboutApiServerAction: TAction;
+    CopyElementPathAction: TAction;
+    MenuItem25: TMenuItem;
     ToggleSimul8rWorkaroundAction: TAction;
     OperationValuesAction: TAction;
     MenuItem39: TMenuItem;
@@ -129,6 +131,7 @@ type
     procedure AboutApiServerActionExecute(Sender: TObject);
     procedure AboutApiServerActionUpdate(Sender: TObject);
     procedure ChangeToolBarColorTestExecute(Sender: TObject);
+    procedure CopyElementPathActionExecute(Sender: TObject);
     procedure CopyRemoteApiUiProjectActionUpdate(Sender: TObject);
     procedure EditCloudEnvironmentActionUpdate(Sender: TObject);
     procedure FocusOnOperationMenuItemClick(Sender: TObject);
@@ -7934,6 +7937,7 @@ var
   xEnableCheck: Boolean;
   xEnableStamp: Boolean;
   xEnableNumberReferrable: Boolean;
+  xEnableCopyPath: Boolean;
   xExtRecurVisible: Boolean;
   xAddChildVisible: Boolean;
   xRootBase: TXsdDataType;
@@ -7947,27 +7951,35 @@ begin
   xEnableCheck := False;
   xEnableStamp := False;
   xEnableNumberReferrable := False;
-  if xBind is TXml then
-    with xBind as TXml do
+  xEnableCopyPath := False;
+  if xBind is TXml then with xBind as TXml do
+  begin
+    xEnableAddMenuItems := Assigned(Xsd) and (Xsd.maxOccurs <> '1');
+    xEnableNumberReferrable := xEnableAddMenuItems;
+    xEnableDelMenuItems := Assigned(Xsd) and
+      ((xBind as TXml).Xsd.maxOccurs <> '1') and
+      ((xBind as TXml).IndexOfRepeatableItem >= 1);
+    if Assigned(TypeDef) then
     begin
-      xEnableAddMenuItems := Assigned(Xsd) and (Xsd.maxOccurs <> '1');
-      xEnableNumberReferrable := xEnableAddMenuItems;
-      xEnableDelMenuItems := Assigned(Xsd) and
-        ((xBind as TXml).Xsd.maxOccurs <> '1') and
-        ((xBind as TXml).IndexOfRepeatableItem >= 1);
-      if Assigned(TypeDef) then
-      begin
-        if (TypeDef.IsComplex and (TypeDef.ElementDefs.Count = 0))
-        or ((TypeDef.IsBuiltIn) and (TypeDef.BaseDataTypeName = 'anyType'))
-        or (TypeDef.Manually) then
-          xAddChildVisible := True;
-        if (Items.Count = 0) and (TypeDef.ElementDefs.Count > 0) then
-          xExtRecurVisible := True;
-      end;
-      xAddChildVisible := xAddChildVisible { }{ and DebugLogMode{ } ;
-      xEnableCheck := Items.Count > 0;
-      xEnableStamp := Items.Count = 0;
+      if (TypeDef.IsComplex and (TypeDef.ElementDefs.Count = 0))
+      or ((TypeDef.IsBuiltIn) and (TypeDef.BaseDataTypeName = 'anyType'))
+      or (TypeDef.Manually) then
+        xAddChildVisible := True;
+      if (Items.Count = 0) and (TypeDef.ElementDefs.Count > 0) then
+        xExtRecurVisible := True;
     end;
+    if Assigned (Xsd) then
+    begin
+      xEnableCopyPath := Xsd.ParametersType in [oppDefault, oppBody];
+      if FocusedOperation.isSoapService then
+        CopyElementPathAction.Caption := 'XPath'
+      else
+        CopyElementPathAction.Caption := 'Json Path';
+    end;
+    xAddChildVisible := xAddChildVisible { }{ and DebugLogMode{ } ;
+    xEnableCheck := Items.Count > 0;
+    xEnableStamp := Items.Count = 0;
+  end;
   CopyCobolDataToClipboardMenuItem.Visible := (xBind is TIpmItem);
   PasteCobolDataFromClipboardMenuItem.Visible := (xBind is TIpmItem);
   WsdlItemAddMenuItem.Enabled := xEnableAddMenuItems;
@@ -7979,6 +7991,7 @@ begin
     (Assigned((xBind as TXml).Xsd)) and
     ((xBind as TXml).Xsd.IsTypeDefEnabled);
   WsdlItemChangeDataTypeMenuItem.OnClick:=nil;
+  CopyElementPathAction.Enabled := xEnableCopyPath;
   if WsdlItemChangeDataTypeMenuItem.Enabled then
   begin
     if (    ((xBind as TXml).TypeDef.xsdType = dtComplexType)
@@ -12810,6 +12823,17 @@ begin
       (Components[x] as TToolBar).Color := xColor;
 end;
 
+procedure TMainForm.CopyElementPathActionExecute(Sender: TObject);
+begin
+  with FocusedOperation do with NodeToBind(TreeView, TreeView.FocusedNode) as TXml do
+  begin
+    if isSoapService then
+      Clipboard.AsText := thisOperation.FullXPath(thisXml)
+    else
+      Clipboard.AsText := thisXml.fullJsonBodyPath;
+  end;
+end;
+
 procedure TMainForm.CopyRemoteApiUiProjectActionUpdate(Sender: TObject);
 begin
   CopyRemoteApiUiProjectAction.Enabled := Assigned (se) and se.remoteServerConnectionEnabled;
@@ -13269,11 +13293,6 @@ end;
 
 procedure TMainForm.PushProjectToRemoteServerActionExecute(Sender: TObject);
 begin
-  if se.remoteServerConnectionType = rscSimul8r then
-  begin
-    ShowMessage('not yet implemented for Pega Simul8r');
-    Exit;
-  end;
   TProcedureThread.Create(False, False, se, se.PushProjectToRemoteServer);
 end;
 

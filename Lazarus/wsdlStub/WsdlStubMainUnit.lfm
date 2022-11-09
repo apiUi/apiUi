@@ -2634,6 +2634,11 @@ object MainForm: TMainForm
       Caption = 'Toggle Simul8r Bug Workaround'
       OnExecute = ToggleSimul8rWorkaroundActionExecute
     end
+    object CopyElementPathAction: TAction
+      Category = 'Edit'
+      Caption = 'Copy Path'
+      OnExecute = CopyElementPathActionExecute
+    end
   end
   object mainImageList: TImageList
     Left = 208
@@ -7887,6 +7892,9 @@ object MainForm: TMainForm
       object MenuItem34: TMenuItem
         Caption = 'Full name'
         OnClick = MenuItem34Click
+      end
+      object MenuItem25: TMenuItem
+        Action = CopyElementPathAction
       end
     end
     object CopyCobolDataToClipboardMenuItem: TMenuItem

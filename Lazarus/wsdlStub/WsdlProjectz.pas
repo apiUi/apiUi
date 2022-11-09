@@ -548,6 +548,7 @@ uses LazVersion
    , Clipbrd
    , httpmultipart
    , wiremockmapping
+   , pegasimul8rmapping
    ;
 
 const ReadmeFilename = 'readme.txt'
@@ -618,6 +619,70 @@ begin
     result := aOper.PrepareReply(_progName, True)
   else
     raise Exception.Create(Format ('RequestAsText: Operation ''%s'' not found', [xOperationAlias]));
+end;
+
+procedure RemoveDesignMessages(aContext: TObject; xOperationAlias: String);
+  procedure _removeMessages (aProject: TWsdlProject; aOperation: TWsdlOperation);
+  var
+    x: Integer;
+  begin
+    with aOperation do
+    begin
+      if not Assigned (thisOperation) then
+        raise Exception.Create('Operation "' + xOperationAlias + '" not found');
+      AcquireLock;
+      try
+        aProject.ProgressBegin('Removing message candidates', 1000);
+        try
+          while Messages.Count > 1 do
+            Messages.DeleteMessage(Messages.Count - 1);
+          aProject.ProgressUpdate('Finishing', 900);
+          aProject.ProgressInvalidateConsole;
+        finally
+          aProject.uiInvalid := True;
+          aProject.ProgressEnd;
+        end;
+      finally
+        ReleaseLock;
+      end;
+    end;
+  end;
+
+var
+  xProject: TWsdlProject;
+  xOperation: TWsdlOperation;
+begin
+  xProject := nil; //candidate context
+  xOperation := nil; //candidate context
+  if aContext is TWsdlOperation then with aContext as TWsdlOperation do
+  begin
+    xProject := Owner as TWsdlProject;
+    xOperation := invokeList.FindOnAliasName(xOperationAlias);
+    if Assigned (xOperation) then
+    begin
+      xOperation.StubAction := saRequest;
+      try
+        _removeMessages (xProject, xOperation);
+      except
+      end;
+    end;
+  end
+  else
+  begin
+    if aContext is TWsdlProject then
+    begin
+      xProject := aContext as TWsdlProject;
+      xOperation := allAliasses.FindOnAliasName(xOperationAlias);
+      if Assigned (xOperation) then
+      try
+        _removeMessages (xProject, xOperation);
+      except
+      end;
+    end;
+  end;
+  if not Assigned (xProject)
+  or not Assigned (xOperation) then
+   raise Exception.Create(Format ('RemoveDesignMessages: Operation ''%s'' not found', [xOperationAlias]));
 end;
 
 procedure RequestOperation(aContext: TObject; xOperationAlias: String);
@@ -2695,45 +2760,45 @@ var
   xXml: TXml;
   xOperation: TWsdlOperation;
 begin
-    xOperation := allOperations.FindOnAliasName(aAliasName);
-    xXml := TXml.Create;
+  xOperation := allOperations.FindOnAliasName(aAliasName);
+  xXml := TXml.Create;
+  try
+    xXml.LoadFromString(aString, nil);
+    if xXml.Name <> 'Operation' then
+      raise Exception.CreateFmt ('Could not read operation design: %s', [xOperation.Name]);
+    if Assigned (xXml.ItemByTag['AddedTypeDefElements']) then
+      raise Exception.CreateFmt ('Not allowed because of added typedefs: %s', [xOperation.Name]);
+    xOperation.AcquireLock;
     try
-      xXml.LoadFromString(aString, nil);
-      if xXml.Name <> 'Operation' then
-        raise Exception.CreateFmt ('Could not read operation design: %s', [xOperation.Name]);
-      if Assigned (xXml.ItemByTag['AddedTypeDefElements']) then
-        raise Exception.CreateFmt ('Not allowed because of added typedefs: %s', [xOperation.Name]);
-      xOperation.AcquireLock;
+      ProgressBegin('Preparing operations', 1000);
       try
-        ProgressBegin('Preparing operations', 1000);
-        try
-          xOperation.wsaEnabled := False;
-          xOperation.wsaType := '2005/08';
-          xOperation.sslVersion := sslvTLSv1_2;
-          xOperation.sslCertificateFile := '';
-          xOperation.sslKeyFile := '';
-          xOperation.sslRootCertificateFile := '';
-          xOperation.sslPassword := '';
-          xOperation.BeforeScriptLines.Text := '';
-          xOperation.AfterScriptLines.Text := '';
-          xOperation.CorrelationBindables.ClearListOnly;
-          xOperation.LogColumns.ClearListOnly;
-          xOperation.Messages.Clear;
-          ProjectOperationDesignFromXml(projectFileName, xOperation.WsdlService, xOperation, xXml);
-          ProgressUpdate('Preparing operations', 200);
-          PrepareAllOperations;
-          ProgressUpdate('Finishing', 900);
-          ProgressInvalidateConsole;
-        finally
-          uiInvalid := True;
-          ProgressEnd;
-        end;
+        xOperation.wsaEnabled := False;
+        xOperation.wsaType := '2005/08';
+        xOperation.sslVersion := sslvTLSv1_2;
+        xOperation.sslCertificateFile := '';
+        xOperation.sslKeyFile := '';
+        xOperation.sslRootCertificateFile := '';
+        xOperation.sslPassword := '';
+        xOperation.BeforeScriptLines.Text := '';
+        xOperation.AfterScriptLines.Text := '';
+        xOperation.CorrelationBindables.ClearListOnly;
+        xOperation.LogColumns.ClearListOnly;
+        xOperation.Messages.Clear;
+        ProjectOperationDesignFromXml(projectFileName, xOperation.WsdlService, xOperation, xXml);
+        ProgressUpdate('Preparing operations', 200);
+        PrepareAllOperations;
+        ProgressUpdate('Finishing', 900);
+        ProgressInvalidateConsole;
       finally
-        xOperation.ReleaseLock;
+        uiInvalid := True;
+        ProgressEnd;
       end;
     finally
-      FreeAndNil(xXml);
+      xOperation.ReleaseLock;
     end;
+  finally
+    FreeAndNil(xXml);
+  end;
 end;
 
 procedure TWsdlProject.OperationDesignFromApiRequestString(aString, aOperationName: String);
@@ -9463,15 +9528,13 @@ begin
       on e: Exception do SjowMessage(e.Message);
     end;
   end;
-  if remoteServerConnectionType = rscWireMock then
+  if (remoteServerConnectionType = rscWireMock)
+  or (remoteServerConnectionType = rscSimul8r)
+  then
   begin
     for o := 0 to allOperations.Count - 1 do with allOperations.Operations[o] do
       if StubAction <> saRequest then
         PushOperationToRemoteServer(thisOperation);
-  end;
-  if remoteServerConnectionType = rscSimul8r then
-  begin
-    SjowMessage ('not implemented for remote server connection type');
   end;
 end;
 
@@ -9541,6 +9604,20 @@ begin
                                   , 'application/json'
                                   );
         end;
+      end;
+      if remoteServerConnectionType = rscSimul8r then
+      with remoteServerConnectionXml.FindUQXml('remoteServerConnection.type.pegaSimul8r.PushDesignParams') do
+      begin
+        if not Assigned (thisXml) then
+          raise Exception.Create ('remoteServerConnection.type.pegaSimul8r.PushDesignParams not found');
+        xmlio.apiUiServerDialog ( remoteServerConnectionXml
+                                , '/prweb/api/Simul8Tools/v1/simulations'
+                                , generatePegaSimul8rOperationSimulationsParams(thisXml, xOperation)
+                                , 'POST'
+                                , 'application/json'
+                                , generatePegaSimul8rOperationSimulations (xOperation)
+                                , 'application/json'
+                                );
       end;
     finally
       xOperation.Free;
@@ -9866,6 +9943,7 @@ initialization
   _WsdlAddRemark := AddRemark;
   _WsdlExecuteScript := ExecuteScript;
   _WsdlExecuteScriptLater := ExecuteScriptLater;
+  _WsdlRemoveDesignMessages := RemoveDesignMessages;
   _WsdlRequestOperation := RequestOperation;
   _WsdlRequestOperationLater := RequestOperationLater;
   _WsdlNewDesignMessage := NewDesignMessage;

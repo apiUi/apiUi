@@ -360,7 +360,7 @@ begin
               xReplyContentType := SeparatedStringN(nil, aOperation.Produces, LineEnding, 1);
             except
             end;
-          rXml.AddXml(TXml.CreateAsInteger('status', Xsd.ResponseNo));
+          rXml.AddXml(TXml.CreateAsInteger('status', aOperation.ResponseNo));
           mXml := rXml.AddXml(TXml.CreateAsString ('headers', ''));
           mXml.AddXml(TXml.CreateAsString('Content-Type', xReplyContentType));
           for y := 0 to Items.Count - 1 do
