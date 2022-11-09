@@ -12,7 +12,7 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <https://www.gnu.org/licenses/>.
 }
-unit pegasimul8rmapping.pas;
+unit pegasimul8rmapping;
 
 {$mode objfpc}{$H+}
 
@@ -28,20 +28,15 @@ uses Classes
    , Xsdz
    , IdURI
    , RegExpr
+   , xmlio
    ;
 
-function generatePegaSimul8rMappingMetaQuery (aOperation: TWsdlOperation): string;
-function generatePegaSimul8rMapping (aOperation: TWsdlOperation; aMessage: TWsdlMessage): string;
-function generatePegaSimul8rResetStateMachine: String;
+function generatePegaSimul8rOperationSimulations (aOperation: TWsdlOperation): string;
+function generatePegaSimul8rOperationSimulationsParams (aXml: TXml; aOperation: TWsdlOperation): string;
 
 implementation
 
-function generatePegaSimul8rMappingMetaQuery(aOperation: TWsdlOperation): string;
-begin
-  result := '{"matches": ".*_apiUi.*' + aOperation.Alias + '.*"}';
-end;
-
-function generatePegaSimul8rMapping(aOperation: TWsdlOperation; aMessage: TWsdlMessage): string;
+function generatePegaSimul8rOperationSimulations(aOperation: TWsdlOperation): string;
   function _hasResponseBody (aXml: TXml): TXml;
   var
     x: Integer;
@@ -164,257 +159,196 @@ function generatePegaSimul8rMapping(aOperation: TWsdlOperation; aMessage: TWsdlM
       _TranslateStampersToHandlebars(aXml.Items.XmlItems[x]);
   end;
 
+  procedure _genMessageXml (aXml: TXml; aMessage: TWsdlMessage; aDefaultMessage: Boolean);
+  var
+    x, y: Integer;
+    xPath, xPreparedReply, xReplyContentType: String;
+    corrXml, pathXml, arrayXml, rXml, mXml: TXml;
+  begin
+    with aXml do
+    begin
+      with aOperation.reqXml do
+      begin
+        ResetValues;
+        LoadValues((aMessage.reqBind as TXml), False, True);
+      end;
+      with aOperation.rpyXml do
+      begin
+        ResetValues;
+        LoadValues((aMessage.rpyBind as TXml), False, True);
+        _TranslateStampersToHandlebars (aOperation.rpyBind as TXml);
+      end;
+      AddXml (TXml.CreateAsString('title', aMessage.Name));
+      with AddXml (TXml.CreateAsString('request', '')) do
+      begin
+        if aOperation.isOpenApiService then
+        begin
+          if aOperation.Wsdl.ServerPathNames.Count > 0 then
+            xPath := aOperation.Wsdl.ServerPathNames[0] + aOperation.WsdlService.openApiPath
+          else
+            xPath := aOperation.WsdlService.openApiPath;
+          if aOperation.hasPathCorrelation then
+          begin
+            pathXml := AddXml (TXml.CreateAsString('pathParameters', ''));
+            pathXml.jsonType := jsonArray;
+            for x := 0 to aMessage.CorrelationBindables.Count - 1 do
+            with aMessage.CorrelationBindables.Bindables[x] as TXml do
+            begin
+              if (Xsd.ParametersType = oppPath) then
+              begin
+                arrayXml := pathXml.AddXml (TXml.CreateAsString('_', ''));
+                arrayXml.AddXml (TXml.CreateAsString('identifier', thisXml.Name));
+                arrayXml.AddXml (TXml.CreateAsString('comparator', 'regex'));
+                arrayXml.AddXml (TXml.CreateAsString('value', thisXml.CorrelationValue));
+              end;
+            end;
+          end;
+          if (not aDefaultMessage)
+          and aOperation.hasHeaderCorrelation then
+          begin
+            pathXml := AddXml (TXml.CreateAsString('headerParameters', ''));
+            pathXml.jsonType := jsonArray;
+            for x := 0 to aMessage.CorrelationBindables.Count - 1 do
+            with aMessage.CorrelationBindables.Bindables[x] as TXml do
+            begin
+              if (Xsd.ParametersType = oppHeader) then
+              begin
+                arrayXml := pathXml.AddXml (TXml.CreateAsString('_', ''));
+                arrayXml.AddXml (TXml.CreateAsString('identifier', thisXml.Name));
+                arrayXml.AddXml (TXml.CreateAsString('comparator', 'regex'));
+                arrayXml.AddXml (TXml.CreateAsString('value', thisXml.CorrelationValue));
+              end;
+            end;
+          end;
+          if (not aDefaultMessage)
+          and aOperation.hasQueryCorrelation then
+          begin
+            pathXml := AddXml (TXml.CreateAsString('queryParameters', ''));
+            pathXml.jsonType := jsonArray;
+            for x := 0 to aMessage.CorrelationBindables.Count - 1 do
+            with aMessage.CorrelationBindables.Bindables[x] as TXml do
+            begin
+              if (Xsd.ParametersType = oppQuery) then
+              begin
+                arrayXml := pathXml.AddXml (TXml.CreateAsString('_', ''));
+                arrayXml.AddXml (TXml.CreateAsString('identifier', thisXml.Name));
+                arrayXml.AddXml (TXml.CreateAsString('comparator', 'regex'));
+                arrayXml.AddXml (TXml.CreateAsString('value', thisXml.CorrelationValue));
+              end;
+            end;
+          end;
+        end;
+        if aOperation.isSoapService then
+        begin
+          with TIdUri.Create(aOperation.SoapAddress) do
+          try
+            AddXml (TXml.CreateAsString('urlPath', Path));
+          finally
+            free;
+          end;
+        end;
+        if (not aDefaultMessage)
+        and aOperation.hasBodyCorrelation then
+        begin
+          pathXml := AddXml (TXml.CreateAsString('bodyParameters', ''));
+          pathXml.jsonType := jsonArray;
+          for x := 0 to aMessage.CorrelationBindables.Count - 1 do
+          with aMessage.CorrelationBindables.Bindables[x] as TXml do
+          begin
+            if (Xsd.ParametersType in [oppDefault, oppBody]) then
+            begin
+              arrayXml := pathXml.AddXml (TXml.CreateAsString('_', ''));
+              arrayXml.AddXml (TXml.CreateAsString('path', IfThen ( aOperation.ConsumesXmlOnly
+                                                                  , aOperation.FullXPath(thisXml) + '/text()'
+                                                                  , thisXml.fullJsonBodyPath
+                                                                  )));
+              arrayXml.AddXml (TXml.CreateAsString('comparator', 'regex'));
+              arrayXml.AddXml (TXml.CreateAsString('value', thisXml.CorrelationValue));
+            end;
+          end;
+        end;
+      end;
+      rXml := AddXml (TXml.CreateAsString('response', ''));
+      if aOperation.isOpenApiService then
+      begin
+        for x := 0 to aOperation.rpyXml.Items.Count - 1 do
+        with aOperation.rpyXml.Items.XmlItems[x] do
+        begin
+          if Checked then
+          begin
+            xPreparedReply := aOperation.PrepareReply (_progName, True);
+            xReplyContentType := aOperation.apiReplyMediaType;
+            if xReplyContentType = '' then
+              try
+                xReplyContentType := SeparatedStringN(nil, aOperation.Produces, LineEnding, 1);
+              except
+              end;
+            rXml.AddXml(TXml.CreateAsInteger('status', aOperation.ResponseNo));
+            if aOperation.hasApiReplyHeader then
+            begin
+              mXml := rXml.AddXml(TXml.CreateAsString ('headers', ''));
+  //          mXml.AddXml(TXml.CreateAsString('Content-Type', xReplyContentType));
+              for y := 0 to Items.Count - 1 do
+              with Items.XmlItems[y] do
+                if Checked
+                and Assigned (Xsd)
+                and (Xsd.ParametersType = oppHeader) then
+                  mXml.AddXml(TXml.CreateAsString(Name, Value));
+            end;
+            if Assigned (_hasResponseBody (thisXml)) then
+              rXml.AddXml (TXml.CreateAsString('body', xPreparedReply));
+          end;
+        end;
+        if rXml.Items.Count = 0 then
+          rXml.AddXml(TXml.CreateAsInteger('status', 200)); // avoid PegaSimul8r complaining; same as default PegaSimul8r behaviour
+      end;
+      if aOperation.isSoapService then
+      begin
+        rXml.AddXml(TXml.CreateAsInteger('status', 200));
+        xPreparedReply := aOperation.PrepareReply (_progName, True);
+        mXml := rXml.AddXml(TXml.CreateAsString ('headers', ''));
+        mXml.AddXml(TXml.CreateAsString('Content-Type', 'application/xml'));
+        rXml.AddXml (TXml.CreateAsString('body', xPreparedReply));
+        if _hasTransformer (thisXml) then
+        with rXml.AddXml(TXml.CreateAsString ('transformers', '')) do
+        begin
+          jsonType := jsonArray;
+          AddXml (TXml.CreateAsString ('', 'response-template')).jsonType := jsonString;
+        end;
+      end;
+      if (aOperation.DelayTimeMsMin > 0)
+      or (aOperation.DelayTimeMsMax > 0) then
+      begin
+        if (aOperation.DelayTimeMsMin = aOperation.DelayTimeMsMax) then
+          rXml.AddXml(TXml.CreateAsInteger('fixedDelayMilliseconds', aOperation.DelayTimeMsMax))
+        else
+        with rXml.AddXml(TXml.CreateAsString('delayDistribution', '')) do
+        begin
+          AddXml (TXml.CreateAsString('type', 'uniform'));
+          AddXml (TXml.CreateAsInteger('lower', aOperation.DelayTimeMsMin));
+          AddXml (TXml.CreateAsInteger('upper', aOperation.DelayTimeMsMax));
+        end;
+      end;
+    end;
+  end;
 var
   xPath, xPreparedReply, xReplyContentType: String;
   xDefaultMessage: Boolean;
-  x, y, xIndex: Integer;
+  m, x, y, xIndex: Integer;
   corrXml, rXml, mXml: TXml;
+  xMessage: TWsdlMessage;
 begin
   if not Assigned (aOperation.Cloned) then
     raise Exception.Create('generatePegaSimul8rMapping: only allowed on cloned operations');
-  xIndex := aOperation.Messages.IndexOfObject(aMessage);
-  if xIndex < 0 then
-    raise Exception.Create('generatePegaSimul8rMapping: Message does not belong to operation');
-  xDefaultMessage := (xIndex = 0);
   if aOperation.isOpenApiService
   or aOperation.isSoapService then
   with TXml.CreateAsString('', '') do
   try
-    with aOperation.reqXml do
-    begin
-      ResetValues;
-      LoadValues((aMessage.reqBind as TXml), False, True);
-    end;
-    with aOperation.rpyXml do
-    begin
-      ResetValues;
-      LoadValues((aMessage.rpyBind as TXml), False, True);
-      _TranslateStampersToHandlebars (aOperation.rpyBind as TXml);
-    end;
-    AddXml (TXml.CreateAsString('name', aMessage.Name));
-    if aOperation.doUseStateMachine
-    and (not xDefaultMessage) then
-    begin
-      AddXml (TXml.CreateAsString('scenarioName', aMessage.stateMachineScenarioName));
-      AddXml (TXml.CreateAsString('requiredScenarioState', aMessage.stateMachineRequiredState));
-      AddXml (TXml.CreateAsString('newScenarioState', aMessage.stateMachineNextState));
-    end;
-    with AddXml (TXml.CreateAsString('request', '')) do
-    begin
-      AddXml (TXml.CreateAsString('method', aOperation.httpVerb));
-      if aOperation.isOpenApiService then
-      begin
-        if aOperation.Wsdl.ServerPathNames.Count > 0 then
-          xPath := aOperation.Wsdl.ServerPathNames[0] + aOperation.WsdlService.openApiPath
-        else
-          xPath := aOperation.WsdlService.openApiPath;
-        if aOperation.hasPathCorrelation then
-        begin
-          for x := 0 to aMessage.CorrelationBindables.Count - 1 do
-          with aMessage.CorrelationBindables.Bindables[x] as TXml do
-          begin
-            if (Xsd.ParametersType = oppPath) then
-            begin
-              xPath := ReplaceStr(xPath, '{' + Name + '}', CorrelationValue);
-            end;
-          end;
-          for x := 0 to aOperation.reqXml.Items.Count - 1 do
-          with aOperation.reqXml.Items.XmlItems [x] as TXml do
-          begin
-            if (Xsd.ParametersType = oppPath) then
-            begin
-              xPath := ReplaceStr(xPath, '{' + Name + '}', '.*'); // for the path params that are not correl.item
-            end;
-          end;
-          AddXml (TXml.CreateAsString('urlPathPattern', xPath));
-        end
-        else
-          AddXml (TXml.CreateAsString('urlPath', xPath));
-        if (not xDefaultMessage)
-        and aOperation.hasHeaderCorrelation then
-        begin
-          with AddXml(TXml.CreateAsString('headers', '')) do
-          begin
-            for x := 0 to aMessage.CorrelationBindables.Count - 1 do
-            with aMessage.CorrelationBindables.Bindables[x] do
-            begin
-              corrXml := thisBind as TXml;
-              if (corrXml.Xsd.ParametersType = oppHeader)
-  //          and (corrXml.CorrelationValue <> '.*')
-              then
-              begin
-                with AddXml (Txml.CreateAsString(corrXml.Name, '')) do
-                  AddXml (TXml.CreateAsString('matches', corrXml.CorrelationValue));
-              end;
-            end;
-          end;
-        end;
-        if (not xDefaultMessage)
-        and aOperation.hasQueryCorrelation then
-        begin
-          with AddXml(TXml.CreateAsString('queryParameters', '')) do
-          begin
-            for x := 0 to aMessage.CorrelationBindables.Count - 1 do
-            with aMessage.CorrelationBindables.Bindables[x] do
-            begin
-              corrXml := thisBind as TXml;
-              if (corrXml.Xsd.ParametersType = oppQuery)
-  //          and (corrXml.CorrelationValue <> '.*')
-              then
-              begin
-                with AddXml (Txml.CreateAsString(corrXml.Name, '')) do
-                  AddXml (TXml.CreateAsString('matches', corrXml.CorrelationValue));
-              end;
-            end;
-          end;
-        end;
-      end;
-      if aOperation.isSoapService then
-      begin
-        with TIdUri.Create(aOperation.SoapAddress) do
-        try
-          AddXml (TXml.CreateAsString('urlPath', Path));
-        finally
-          free;
-        end;
-      end;
-      if (not xDefaultMessage)
-      and aOperation.hasBodyCorrelation then
-      begin
-        with AddXml(TXml.CreateAsString('bodyPatterns', '')) do
-        begin
-          jsonType := jsonArray;
-          for x := 0 to aMessage.CorrelationBindables.Count - 1 do
-          with aMessage.CorrelationBindables.Bindables[x] do
-          begin
-            corrXml := thisBind as TXml;
-            if Assigned (corrXml) then
-            begin
-              if aOperation.isOpenApiService then
-              begin
-                if (corrXml.Xsd.ParametersType in [oppDefault, oppBody])
-      //          and (corrXml.CorrelationValue <> '.*')
-                then
-                begin
-                  with AddXml (Txml.CreateAsString('_', '')) do
-                  begin
-                    if aOperation.ConsumesXmlOnly then
-                    begin
-                      with AddXml (Txml.CreateAsString ( 'matchesXPath', '')) do
-                      begin
-                        AddXml (Txml.CreateAsString ( 'expression'
-                                                    , aOperation.FullXPath(corrXml) + '/text()'
-                                                    ));
-                        AddXml (Txml.CreateAsString ( 'matches'
-                                                    , corrXml.CorrelationValue
-                                                    ));
-                      end;
-                    end
-                    else
-                    begin
-                      with AddXml (Txml.CreateAsString ( 'matchesJsonPath', '')) do
-                      begin
-                        AddXml (Txml.CreateAsString ( 'expression'
-                                                    , corrXml.fullJsonBodyPath
-                                                    ));
-                        AddXml (Txml.CreateAsString ( 'matches'
-                                                    , corrXml.CorrelationValue
-                                                    ));
-                      end;
-                    end;
-                  end;
-                end;
-              end;
-              if aOperation.isSoapService then
-              begin
-                with AddXml (Txml.CreateAsString('_', '')) do
-                begin
-                  with AddXml (Txml.CreateAsString ( 'matchesXPath', '')) do
-                  begin
-                    AddXml (Txml.CreateAsString ( 'expression'
-                                                , aOperation.FullXPath(corrXml) + '/text()'
-                                                ));
-                    AddXml (Txml.CreateAsString ( 'matches'
-                                                , corrXml.CorrelationValue
-                                                ));
-                  end;
-                end;
-              end;
-            end;
-          end;
-        end;
-      end;
-    end;
-    rXml := AddXml (TXml.CreateAsString('response', ''));
-    if aOperation.isOpenApiService then
-    begin
-      for x := 0 to aOperation.rpyXml.Items.Count - 1 do
-      with aOperation.rpyXml.Items.XmlItems[x] do
-      begin
-        if Checked then
-        begin
-          xPreparedReply := aOperation.PrepareReply (_progName, True);
-          xReplyContentType := aOperation.apiReplyMediaType;
-          if xReplyContentType = '' then
-            try
-              xReplyContentType := SeparatedStringN(nil, aOperation.Produces, LineEnding, 1);
-            except
-            end;
-          rXml.AddXml(TXml.CreateAsInteger('status', Xsd.ResponseNo));
-          mXml := rXml.AddXml(TXml.CreateAsString ('headers', ''));
-          mXml.AddXml(TXml.CreateAsString('Content-Type', xReplyContentType));
-          for y := 0 to Items.Count - 1 do
-          with Items.XmlItems[y] do
-            if Checked
-            and Assigned (Xsd)
-            and (Xsd.ParametersType = oppHeader) then
-              mXml.AddXml(TXml.CreateAsString(Name, Value));
-          if Assigned (_hasResponseBody (thisXml)) then
-            rXml.AddXml (TXml.CreateAsString('body', xPreparedReply));
-          if _hasTransformer (thisXml) then
-          with rXml.AddXml(TXml.CreateAsString ('transformers', '')) do
-          begin
-            jsonType := jsonArray;
-            AddXml (TXml.CreateAsString ('', 'response-template')).jsonType := jsonString;
-          end;
-        end;
-      end;
-      if rXml.Items.Count = 0 then
-        rXml.AddXml(TXml.CreateAsInteger('status', 200)); // avoid PegaSimul8r complaining; same as default PegaSimul8r behaviour
-    end;
-    if aOperation.isSoapService then
-    begin
-      rXml.AddXml(TXml.CreateAsInteger('status', 200));
-      xPreparedReply := aOperation.PrepareReply (_progName, True);
-      mXml := rXml.AddXml(TXml.CreateAsString ('headers', ''));
-      mXml.AddXml(TXml.CreateAsString('Content-Type', 'application/xml'));
-      rXml.AddXml (TXml.CreateAsString('body', xPreparedReply));
-      if _hasTransformer (thisXml) then
-      with rXml.AddXml(TXml.CreateAsString ('transformers', '')) do
-      begin
-        jsonType := jsonArray;
-        AddXml (TXml.CreateAsString ('', 'response-template')).jsonType := jsonString;
-      end;
-    end;
-    if (aOperation.DelayTimeMsMin > 0)
-    or (aOperation.DelayTimeMsMax > 0) then
-    begin
-      if (aOperation.DelayTimeMsMin = aOperation.DelayTimeMsMax) then
-        rXml.AddXml(TXml.CreateAsInteger('fixedDelayMilliseconds', aOperation.DelayTimeMsMax))
-      else
-      with rXml.AddXml(TXml.CreateAsString('delayDistribution', '')) do
-      begin
-        AddXml (TXml.CreateAsString('type', 'uniform'));
-        AddXml (TXml.CreateAsInteger('lower', aOperation.DelayTimeMsMin));
-        AddXml (TXml.CreateAsInteger('upper', aOperation.DelayTimeMsMax));
-      end;
-    end;
-    if xDefaultMessage then
-      AddXml (TXml.CreateAsString('priority', '999999')).jsonType := jsonNumber
-    else
-      AddXml (TXml.CreateAsInteger('priority', xIndex)).jsonType := jsonNumber;
-    with AddXml (TXml.CreateAsString('metadata', '')) do
-      AddXml (TXml.CreateAsString('_apiUi', aOperation.Alias));
+    jsonType := jsonArray;
+    if aOperation.Messages.Count > 1 then
+      for m := 1 to aOperation.Messages.Count - 1 do
+        _genMessageXml (AddXml (TXml.CreateAsString('_', '')), aOperation.Messages.Messages[m], False);
+    _genMessageXml (AddXml (TXml.CreateAsString('_', '')), aOperation.Messages.Messages[0], True);
     result := StreamJSON(0, false);
   finally
     Free;
@@ -423,9 +357,28 @@ begin
     raise Exception.Create ('only implemented for openapi and soap/xml');
 end;
 
-function generatePegaSimul8rResetStateMachine: String;
+function generatePegaSimul8rOperationSimulationsParams(aXml: TXml; aOperation: TWsdlOperation): string;
+  function _ParamsAsHttpString (aXml: TXml): String;
+  var
+    x: Integer;
+    xSep: String;
+  begin
+    result := '';
+    xSep := '?';
+    for x := 0 to aXml.Items.Count - 1 do with aXml.Items.XmlItems[x] do
+    begin
+      if Checked then
+      begin
+        result := result + xSep + Name + '=' + xmlio.urlPercentEncode (xmlio.resolveAliasses (Value));
+        xSep := '&';
+      end;
+    end;
+  end;
 begin
-  result := '/__admin/scenarios/reset';
+  result := '';
+  if not Assigned (aXml) then Exit;
+  aXml.Items.XmlValueByTag['janbo'] := 'Haja';
+  result := _ParamsAsHttpString(aXml);
 end;
 
 end.

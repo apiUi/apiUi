@@ -486,6 +486,7 @@ type
       function hasPathParam: Boolean;
       function hasQueryParam: Boolean;
       function hasHeaderParam: Boolean;
+      function hasApiReplyHeader: Boolean;
       function hasPathCorrelation: Boolean;
       function hasBodyCorrelation: Boolean;
       function hasQueryCorrelation: Boolean;
@@ -615,6 +616,7 @@ procedure assignAnyType (aDstGroup, aSrcGroup: TObject);
 function wsdlRequestAsText (aObject: TObject; aOperation: String): String;
 function wsdlReplyAsText (aObject: TObject; aOperation: String): String;
 procedure wsdlNewDesignMessage (aObject: TObject; aOperation, aName: String);
+procedure wsdlRemoveDesignMessages (aObject: TObject; aOperation: String);
 procedure wsdlRequestOperation (aObject: TObject; aOperation: String);
 procedure wsdlRequestOperationLater (aObject: TObject; aOperation: String; aLaterMs: Extended);
 procedure wsdlSendOperationRequest (aOperation, aCorrelation: String);
@@ -686,6 +688,7 @@ var
   _WsdlExecSql: VFunctionOS;
   _WsdlNewDesignMessage: VFunctionOSS;
   _wsdlFetchDefaultDesignMessage: VFunctionOS;
+  _WsdlRemoveDesignMessages: VFunctionOS;
   _WsdlRequestOperation: VFunctionOS;
   _WsdlRequestOperationLater: VFunctionOSX;
   _WsdlRequestAsText, _WsdlReplyAsText: SFunctionOS;
@@ -1390,6 +1393,13 @@ begin
   if not Assigned (_WsdlReplyAsText) then
     raise Exception.Create('wsdlReplyAsText: implementation missing');
   result := _WsdlReplyAsText (aObject, aOperation);
+end;
+
+procedure wsdlRemoveDesignMessages(aObject: TObject; aOperation: String);
+begin
+  if not Assigned (_WsdlRemoveDesignMessages) then
+    raise Exception.Create('WsdlRemoveDesignMessages: implementation missing');
+  _WsdlRemoveDesignMessages (aObject, aOperation);
 end;
 
 procedure wsdlRequestOperation (aObject: TObject; aOperation: String);
@@ -3553,18 +3563,23 @@ function TWsdlOperation.FullXPath(aBind: TCustomBindable): String;
 var
   xList: TBindableList;
   x: Integer;
+  xCloned: TWsdlOperation;
 begin
   result := '';
   xList := aBind.UplineAsList;
   try
     if isSoapService then
     begin
+      if Assigned (Cloned) then
+        xCloned := Cloned
+      else
+        xCloned := Self;
       if xList.Count < 2 then
         raise Exception.Create('cannot generate (SOAP) XPath for ' + aBind.Name);
-      if (    ((xList.Bindables[0] as TXml).Xsd = (Cloned.reqBind as TXml).Xsd)
+      if (    ((xList.Bindables[0] as TXml).Xsd = (xCloned.reqBind as TXml).Xsd)
           and (xList.Bindables[0].Children.IndexOfObject(xList.Bindables[1]) < InputHeaders.Count)
          )
-      or (    ((xList.Bindables[0] as TXml).Xsd = (Cloned.rpyBind as TXml).Xsd)
+      or (    ((xList.Bindables[0] as TXml).Xsd = (xCloned.rpyBind as TXml).Xsd)
           and (xList.Bindables[0].Children.IndexOfObject(xList.Bindables[1]) < OutputHeaders.Count)
          )
       then
@@ -4031,6 +4046,7 @@ begin
     BindScriptFunction ('SeparatedString', @SeparatedStringList, SLFOSS, '(aString, aSeparator)');
     BindScriptFunction ('SeparatedStringN', @SeparatedStringN, SFOSSX, '(aString, aSeparator, aIndex)');
     BindScriptFunction ('SeparatedStringT', @SeparatedStringT, SFOSSX, '(aString, aSeparator, aIndex)');
+    BindScriptFunction ('RemoveDesignMessages', @wsdlRemoveDesignMessages, VFOS, '(aOperation)');
     BindScriptFunction ('RequestOperation', @WsdlRequestOperation, VFOS, '(aOperation)');
     BindScriptFunction ('RequestOperationLater', @WsdlRequestOperationLater, VFOSX, '(aOperation, aLaterMs)');
     BindScriptFunction ('Rounded', @RoundedX, XFXX, '(aNumber, aDecimals)');
@@ -4724,6 +4740,17 @@ begin
   for x := 0 to reqXsd.sType.ElementDefs.Count - 1 do
     if reqXsd.sType.ElementDefs.Xsds[x].ParametersType = oppHeader then
       result := True;
+end;
+
+function TWsdlOperation.hasApiReplyHeader: Boolean;
+var
+  x: Integer;
+begin
+  result := False;
+  with rpyXsd do
+    for x := 0 to sType.ElementDefs.Count - 1 do
+      if sType.ElementDefs.Xsds[x].ParametersType = oppHeader then
+        result := True;
 end;
 
 function TWsdlOperation.hasPathCorrelation: Boolean;

@@ -25,7 +25,8 @@ uses
   IdExceptionCore, IdStack, IdHTTP, WsdlStubMainUnit, snapshotz, exceptionUtils,
   htmlXmlUtilz, htmlreportz, WsdlProjectz, junitunit, StringListListUnit,
   ChooseStringUnit, EditContextsUnit, IpmGridUnit, Listenerz, wsdlListUnit,
-  httpmultipart, apiuiconsts, wiremockmapping, statemachineunit;
+  httpmultipart, apiuiconsts, wiremockmapping, statemachineunit,
+  pegasimul8rmapping;
 
 {$R *.res}
 
