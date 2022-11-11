@@ -109,6 +109,7 @@ type
     fClearedLogs: TLogList;
     fClearedSnapshots: TSnapshotList;
     fProjectContext: String;
+    function NowUTC: TDateTime;
     function GetAbortPressed: Boolean;
     function getDoClearSnapshots : Boolean ;
     function getDoClearLogs : Boolean ;
@@ -2982,7 +2983,7 @@ begin
   begin
     xLog := TLog.Create;
     try
-      xLog.InboundTimestamp := xsdNowUTC;
+      xLog.InboundTimestamp := NowUTC;
       xLog.TransportType := ttStomp;
       xLog.RequestHeaders := aFrame.GetHeaders.OutputAsXmlText;
       xLog.RequestBody := aFrame.GetBody;
@@ -3035,7 +3036,7 @@ begin
         end;
       end;
     finally
-      xLog.OutboundTimeStamp := xsdNowUTC;
+      xLog.OutboundTimeStamp := NowUTC;
       DisplayLog ('', xLog);
     end;
   end;
@@ -4154,7 +4155,7 @@ begin
         xLog.RequestValidated := True;
       end;
       xLog.RequestBody := aOperation.StreamRequest (_progName, True, True, True);
-      xLog.OutboundTimeStamp := xsdNowUTC;
+      xLog.OutboundTimeStamp := NowUTC;
       xLog.httpCommand := aOperation.httpVerb;
       try
         case aOperation.StubTransport of
@@ -4163,7 +4164,7 @@ begin
           ttNone: xLog.ReplyBody := SendNoneMessage(aOperation, xlog.RequestBody, xLog);
         end;
       finally
-        xLog.InboundTimeStamp := xsdNowUTC;
+        xLog.InboundTimeStamp := NowUTC;
       end;
       xLog.ReplyInfoToBindables(aOperation);
       if xLog.ReplyBody = S_MESSAGE_ACCEPTED then
@@ -4251,13 +4252,13 @@ begin
         with xLog do
         begin
           if InboundTimeStamp = 0 then
-            InboundTimeStamp := xsdNowUTC;
+            InboundTimeStamp := NowUTC;
 //          RequestHeaders := HttpClient.Request.CustomHeaders.Text;
           Mssg := aOperation.CorrelatedMessage;
           StubAction := aOperation.StubAction;
           Exception := e.Message;
           if OutboundTimeStamp = 0 then
-            OutboundTimeStamp := xsdNowUTC;
+            OutboundTimeStamp := NowUTC;
         end;
         Raise;
       end;
@@ -5381,6 +5382,15 @@ begin
       end;
     end;
     CheckDownline(True);
+  end;
+end;
+
+function TWsdlProject.NowUTC: TDateTime;
+begin
+  try
+    result := xsdNowUTC;
+  except
+    result := Now;
   end;
 end;
 
@@ -6732,7 +6742,7 @@ begin
     try
       xLog := TLog.Create;
       xLog.ReplyHeaders := AResponseInfo.CustomHeaders.Text;
-      xLog.InboundTimeStamp := xsdNowUTC;
+      xLog.InboundTimeStamp := NowUTC;
       xLog.httpUri := ARequestInfo.URI;
       xLog.TransportType := ttHttp;
       xLog.httpCommand := ARequestInfo.Command;
@@ -6848,7 +6858,7 @@ begin
               xLog.httpResponseCode := 500;
           end;
           DelayMS (xLog.DelayTimeMs);
-          xLog.OutboundTimeStamp := xsdNowUTC;
+          xLog.OutboundTimeStamp := NowUTC;
           DisplayLog ('', xLog);
           AResponseInfo.ResponseNo := xLog.httpResponseCode;
           if xLog.ReplyHeaders <> '' then
@@ -7256,14 +7266,14 @@ begin
   begin
     if AContext.TransferSource = tsClient then
     begin
-      InboundTimestamp := xsdNowUTC;
+      InboundTimestamp := NowUTC;
       RequestHeaders := AContext.Headers.Text;
       RequestBody := _streamToString;
       InboundBody := RequestBody;
     end;
     if AContext.TransferSource = tsServer then
     begin
-      OutBoundTimeStamp := xsdNowUTC;
+      OutBoundTimeStamp := NowUTC;
       ReplyHeaders := AContext.Headers.Text;
       ReplyBody := _streamToString;
       OutboundBody := ReplyBody;
@@ -9726,7 +9736,7 @@ procedure TWsdlProject.LogsFromRemoteServer;
   var
     iTime: TDateTime;
   begin
-    itime := xsdNowUTC;
+    itime := NowUTC;
     result := FormatDateTime('yyyymmdd', itime)
             + 'T'
             + FormatDateTime('hhnnss.zzz', itime)
@@ -9762,7 +9772,7 @@ var
   iTimeStamp: TDateTime;
 begin
   try
-    iTimeStamp := xsdNowUTC;
+    iTimeStamp := NowUTC;
     case remoteServerConnectionType of
       rscApiUi:
         begin
@@ -9829,7 +9839,7 @@ begin
     begin
       eLog := TLog.Create;
       eLog.InboundTimeStamp := iTimeStamp;
-      eLog.OutBoundTimeStamp := xsdNowUTC;
+      eLog.OutBoundTimeStamp := NowUTC;
       eLog.StubAction := saException;
       eLog.Exception := 'exception retrieving logs: ' + e.Message;
       DisplayLog('', eLog);

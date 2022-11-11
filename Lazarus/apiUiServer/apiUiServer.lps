@@ -4,13 +4,11 @@
     <PathDelim Value="\"/>
     <Version Value="11"/>
     <BuildModes Active="Default"/>
-    <Units Count="27">
+    <Units Count="32">
       <Unit0>
         <Filename Value="apiUiServer.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="446"/>
-        <CursorPos Y="609"/>
+        <CursorPos X="11" Y="28"/>
         <UsageCount Value="218"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -70,10 +68,12 @@
       </Unit7>
       <Unit8>
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="7355"/>
-        <CursorPos Y="7371"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="4225"/>
+        <CursorPos X="15" Y="4262"/>
         <UsageCount Value="208"/>
+        <Loaded Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\Xml\xmlio.pas"/>
@@ -206,13 +206,173 @@
         <CursorPos X="3" Y="46"/>
         <UsageCount Value="13"/>
       </Unit26>
+      <Unit27>
+        <Filename Value="..\Xml\xmlxsdparser.pas"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="800"/>
+        <CursorPos X="26" Y="811"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdDateTimeStamp.pas"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="27"/>
+        <CursorPos X="14" Y="43"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdCompilerDefines.inc"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="1223"/>
+        <CursorPos X="27" Y="1239"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdCompilerDefines.inc"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="1223"/>
+        <CursorPos X="27" Y="1239"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="..\Components\Indy10\Lib\System\IdGlobal.pas"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="7845"/>
+        <CursorPos X="10" Y="7860"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit31>
     </Units>
     <OtherDefines Count="3">
       <Define0 Value="ConsoleApp"/>
       <Define1 Value="UseCThreads"/>
       <Define2 Value="NoGUI"/>
     </OtherDefines>
-    <JumpHistory HistoryIndex="-1"/>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="..\Xml\xmlxsdparser.pas"/>
+        <Caret Line="412" Column="70" TopLine="390"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\Xml\xmlxsdparser.pas"/>
+        <Caret Line="418" Column="15" TopLine="404"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\Xml\xmlxsdparser.pas"/>
+        <Caret Line="523" Column="12" TopLine="509"/>
+      </Position3>
+      <Position4>
+        <Filename Value="..\Xml\xmlxsdparser.pas"/>
+        <Caret Line="1208" Column="10" TopLine="1200"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\Xml\xmlxsdparser.pas"/>
+        <Caret Line="1216" Column="14" TopLine="1200"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\Xml\xmlxsdparser.pas"/>
+        <Caret Line="1220" Column="14" TopLine="1200"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\Xml\xmlxsdparser.pas"/>
+        <Caret Line="1222" Column="12" TopLine="1200"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\Xml\xmlxsdparser.pas"/>
+        <Caret Line="1223" Column="26" TopLine="1200"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\Xml\xmlxsdparser.pas"/>
+        <Caret Line="1255" Column="12" TopLine="1242"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\Xml\xmlxsdparser.pas"/>
+        <Caret Line="1256" Column="26" TopLine="1242"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\Xml\xmlxsdparser.pas"/>
+        <Caret Line="1257" Column="5" TopLine="1242"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\Xml\xmlxsdparser.pas"/>
+        <Caret Line="1281" Column="10" TopLine="1267"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\Xml\xmlxsdparser.pas"/>
+        <Caret Line="1918" Column="3" TopLine="1911"/>
+      </Position13>
+      <Position14>
+        <Filename Value="..\Xml\xmlxsdparser.pas"/>
+        <Caret Line="1949" Column="3" TopLine="1942"/>
+      </Position14>
+      <Position15>
+        <Filename Value="..\Xml\xmlxsdparser.pas"/>
+        <Caret Line="2065" Column="3" TopLine="2058"/>
+      </Position15>
+      <Position16>
+        <Filename Value="..\Xml\xmlxsdparser.pas"/>
+        <Caret Line="2077" Column="3" TopLine="2070"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\Xml\xmlxsdparser.pas"/>
+        <Caret Line="2341" Column="44" TopLine="2334"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdDateTimeStamp.pas"/>
+        <Caret Line="43" Column="14" TopLine="27"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\Components\Indy10\Lib\Core\IdCompilerDefines.inc"/>
+        <Caret Line="1239" Column="27" TopLine="1223"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\Components\Indy10\Lib\Protocols\IdCompilerDefines.inc"/>
+        <Caret Line="1239" Column="27" TopLine="1223"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\Components\Indy10\Lib\System\IdGlobal.pas"/>
+        <Caret Line="7819" Column="9" TopLine="7803"/>
+      </Position21>
+      <Position22>
+        <Filename Value="..\Components\Indy10\Lib\System\IdGlobal.pas"/>
+        <Caret Line="7860" Column="10" TopLine="7845"/>
+      </Position22>
+      <Position23>
+        <Filename Value="..\Xml\xmlxsdparser.pas"/>
+        <Caret Line="523" Column="31" TopLine="507"/>
+      </Position23>
+      <Position24>
+        <Filename Value="apiUiServer.lpr"/>
+        <Caret Line="609" TopLine="446"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="7371" TopLine="7355"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+      </Position26>
+      <Position27>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="17" Column="12"/>
+      </Position27>
+      <Position28>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="1297" Column="20" TopLine="1265"/>
+      </Position28>
+      <Position29>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="1034" Column="6" TopLine="1002"/>
+      </Position29>
+      <Position30>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="778" Column="11" TopLine="746"/>
+      </Position30>
+    </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
       <Modes Count="0" ActiveMode="default"/>
