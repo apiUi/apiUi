@@ -1,0 +1,9 @@
+  <Service>
+    <Name>/prweb/api/Simul8Tools/v1/simulations</Name>
+    <serviceOptions>
+      <general>
+        <suppressXmlComment>false</suppressXmlComment>
+        <suppressHttp500onSoapFaults>false</suppressHttp500onSoapFaults>
+      </general>
+    </serviceOptions>
+  </Service>

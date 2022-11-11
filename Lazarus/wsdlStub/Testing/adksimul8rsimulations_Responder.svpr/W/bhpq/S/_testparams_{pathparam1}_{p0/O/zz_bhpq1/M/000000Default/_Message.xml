@@ -1,0 +1,53 @@
+  <Message>
+    <Name>Default</Name>
+    <SequenceNr>0</SequenceNr>
+    <stateMachineScenarioName>.*</stateMachineScenarioName>
+    <stateMachineRequiredState>.*</stateMachineRequiredState>
+    <stateMachineNextState>.*</stateMachineNextState>
+    <Patterns>
+      <Pattern>.*</Pattern>
+      <Pattern>.*</Pattern>
+      <Pattern>.*</Pattern>
+      <Pattern>.*</Pattern>
+      <Pattern>.*</Pattern>
+      <Pattern>.*</Pattern>
+      <Pattern>.*</Pattern>
+      <Pattern>.*</Pattern>
+    </Patterns>
+    <Reply>
+      <zz_bhpq1_post checked__="true">
+        <rspns200 checked__="false">
+          <body checked__="true">
+            <bodyparam1 checked__="true">default</bodyparam1>
+            <bodyparam2 checked__="true">default</bodyparam2>
+            <headerparam1 checked__="true">default</headerparam1>
+            <headerparam2 checked__="true">default</headerparam2>
+            <pathparam1 checked__="true">default</pathparam1>
+            <pathparam2 checked__="true">default</pathparam2>
+            <queryparam1 checked__="true">default</queryparam1>
+            <queryparam2 checked__="true">default</queryparam2>
+            <noparam checked__="true">default</noparam>
+          </body>
+        </rspns200>
+        <undefined checked__="true">
+          <responseCode checked__="true">500</responseCode>
+        </undefined>
+      </zz_bhpq1_post>
+    </Reply>
+    <Request>
+      <zz_bhpq1_post checked__="true">
+        <pathparam1 checked__="true">pathparam1</pathparam1>
+        <pathparam2 checked__="true">pathparam2</pathparam2>
+        <headerparam1 checked__="true">headerparam1</headerparam1>
+        <headerparam2 checked__="true">headerparam2</headerparam2>
+        <queryparam1 checked__="true">queryparam1</queryparam1>
+        <queryparam2 checked__="true">queryparam2</queryparam2>
+        <body checked__="true">
+          <bodyparam1 checked__="true">bodyparam1</bodyparam1>
+          <bodyparam2 checked__="true">bodyparam2</bodyparam2>
+        </body>
+      </zz_bhpq1_post>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

@@ -1,0 +1,238 @@
+---
+openapi: 3.0.0
+info:
+  title: ADKSimul8r
+  version: 1.0.1
+externalDocs:
+  description: The low code approach to simulating your integrations.
+  url: https://community.pega.com/marketplace/components/adk-simul8r
+servers:
+- url: "/"
+paths:
+  "/prweb/api/Simul8Tools/v1/simulations":
+    get:
+      summary: Get all simulations for application
+      operationId: GetSimulations
+      tags:
+      - Stub Mappings
+      parameters:
+      - name: Connector
+        description: The name of the service (pyRuleName; pyLabelOld; pxTabLabel; pyServiceName; pyLabel)
+        in: query
+        required: true
+        example: CreateServiceRequestAPI
+        schema:
+          type: string
+      - name: ClassName
+        description: The classname for the simulation (pyClassName)
+        in: query
+        required: true
+        example: RBG-Int-CreateServiceRequest-API
+        schema:
+          type: string
+      - name: Method
+        description: The http method (RESTServiceMethod)
+        in: query
+        required: true
+        example: POST
+        schema:
+          type: string
+          enum:
+          - GET
+          - DELETE
+          - PATCH
+          - PUT
+          - POST
+      - name: AccessGroup
+        description: The name of the access group
+        in: query
+        required: true
+        example: "Bereavement:Employee"
+        schema:
+          type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/OK_200_Simulations"
+    delete:
+      summary: deletes all simulations for application
+      operationId: DeleteAllAppSimulations
+      tags:
+      - Stub Mappings
+      parameters:
+      - name: Connector
+        description: The name of the service (pyRuleName; pyLabelOld; pxTabLabel; pyServiceName; pyLabel)
+        in: query
+        required: true
+        example: CreateServiceRequestAPI
+        schema:
+          type: string
+      - name: ClassName
+        description: The classname for the simulation (pyClassName)
+        in: query
+        required: true
+        example: RBG-Int-CreateServiceRequest-API
+        schema:
+          type: string
+      - name: Method
+        description: The http method (RESTServiceMethod)
+        in: query
+        required: true
+        example: POST
+        schema:
+          type: string
+          enum:
+          - GET
+          - DELETE
+          - PATCH
+          - PUT
+          - POST
+      - name: AccessGroup
+        description: The name of the access group
+        in: query
+        required: true
+        example: "Bereavement:Employee"
+        schema:
+          type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/OK_200"
+    post:
+      summary: Create simulations
+      operationId: AddSimulations
+      tags:
+      - Stub Mappings
+      parameters:
+      - name: Connector
+        description: The name of the service (pyRuleName; pyLabelOld; pxTabLabel; pyServiceName; pyLabel)
+        in: query
+        required: true
+        example: CreateServiceRequestAPI
+        schema:
+          type: string
+      - name: ClassName
+        description: The classname for the simulation (pyClassName)
+        in: query
+        required: true
+        example: RBG-Int-CreateServiceRequest-API
+        schema:
+          type: string
+      - name: Method
+        description: The http method (RESTServiceMethod)
+        in: query
+        required: true
+        example: POST
+        schema:
+          type: string
+          enum:
+          - GET
+          - DELETE
+          - PATCH
+          - PUT
+          - POST
+      - name: AccessGroup
+        description: The name of the access group
+        in: query
+        required: true
+        example: "Bereavement:Employee"
+        schema:
+          type: string
+      - name: body
+        description: List of simulations
+        in: body
+        schema:
+          $ref: "#/components/schemas/simulations"
+      responses:
+        "200":
+          $ref: "#/components/responses/OK_200"
+components:
+  responses:
+    OK_200:
+      description: OK
+    OK_200_Simulations:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+  schemas:
+    simulations:
+      type: array
+      items:
+        $ref: "#/components/schemas/simulation"
+    simulation:
+      type: object
+      required:
+      - title
+      - response
+      properties:
+        title:
+          type: string
+        request:
+          type: object
+          properties:
+            pathParameters:
+              type: array
+              items:
+                $ref: '#/components/schemas/identifierCompareItem'
+            headerParameters:
+              type: array
+              items:
+                $ref: '#/components/schemas/identifierCompareItem'
+            queryParameters:
+              type: array
+              items:
+                $ref: '#/components/schemas/identifierCompareItem'
+            bodyParameters:
+              type: array
+              items:
+                $ref: '#/components/schemas/pathCompareItem'
+        response:
+          type: object
+          required:
+          - status
+          properties:
+            status:
+              type: integer
+            body:
+              type: string
+        advanced:
+          type: object
+          properties:
+            delayResponseMS:
+              type: integer
+    identifierCompareItem:
+      type: object
+      required:
+      - identifier
+      - comparator
+      - value
+      properties:
+        identifier:
+          type: string
+        comparator:
+          type: string
+          enum:
+          - contains
+          - equals
+          - regex
+        value:
+          type: string
+    pathCompareItem:
+      type: object
+      required:
+      - path
+      - comparator
+      - value
+      properties:
+        path:
+          type: string
+        comparator:
+          type: string
+          enum:
+          - contains
+          - equals
+          - regex
+        value:
+          type: string
+        
+            

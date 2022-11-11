@@ -1,0 +1,69 @@
+  <Message>
+    <Name>Default</Name>
+    <SequenceNr>0</SequenceNr>
+    <stateMachineScenarioName>.*</stateMachineScenarioName>
+    <stateMachineRequiredState>.*</stateMachineRequiredState>
+    <stateMachineNextState>.*</stateMachineNextState>
+    <Patterns></Patterns>
+    <Reply>
+      <AddSimulations checked__="false"></AddSimulations>
+    </Reply>
+    <Request>
+      <AddSimulations checked__="true">
+        <connector checked__="true">QueryIKBDetails</connector>
+        <className checked__="true">RBG-Int-IKBDetails-API</className>
+        <method checked__="true">POST</method>
+        <accessGroup checked__="true">NotYetKnownByMe</accessGroup>
+        <body checked__="true">
+          <_ checked__="true">
+            <title checked__="true">Relation A</title>
+            <request checked__="true">
+              <bodyParameters checked__="true">
+                <_ checked__="true">
+                  <path checked__="true">$.KlantId</path>
+                  <comparator checked__="true">regex</comparator>
+                  <value checked__="true">A</value>
+                </_>
+              </bodyParameters>
+            </request>
+            <response checked__="true">
+              <status checked__="true">200</status>
+              <body checked__="true">{&quot;IKB&quot;:{&quot;KlantIKBId&quot;:&quot;do_not_use:A&quot;},&quot;KlantenLijst&quot;:{&quot;Klant&quot;:[{&quot;KlantId&quot;:&quot;A&quot;,&quot;IsRegieBank&quot;:&quot;J&quot;,&quot;BankCode&quot;:&quot;3642&quot;},{&quot;KlantId&quot;:&quot;A1&quot;,&quot;IsRegieBank&quot;:&quot;N&quot;,&quot;BankCode&quot;:&quot;3642&quot;},{&quot;KlantId&quot;:&quot;A2&quot;,&quot;IsRegieBank&quot;:&quot;N&quot;,&quot;BankCode&quot;:&quot;3642&quot;}]}}</body>
+            </response>
+          </_>
+          <_ checked__="true">
+            <title checked__="true">Relation B</title>
+            <request checked__="true">
+              <pathParameters checked__="true">
+                <_ checked__="true">
+                  <identifier checked__="true">document_key</identifier>
+                  <comparator checked__="true">regex</comparator>
+                  <value checked__="true">samplefromEkdUpdatDocumnetReferences</value>
+                </_>
+              </pathParameters>
+              <headerParameters checked__="true">
+                <_ checked__="true">
+                  <identifier checked__="true">.Header.APIGatewayKey</identifier>
+                  <comparator checked__="true">regex</comparator>
+                  <value checked__="true">.*</value>
+                </_>
+              </headerParameters>
+              <bodyParameters checked__="true">
+                <_ checked__="true">
+                  <path checked__="true">$.KlantId</path>
+                  <comparator checked__="true">regex</comparator>
+                  <value checked__="true">B</value>
+                </_>
+              </bodyParameters>
+            </request>
+            <response checked__="true">
+              <status checked__="true">200</status>
+              <body checked__="true">{&quot;IKB&quot;:{&quot;KlantIKBId&quot;:&quot;do_not_use:B&quot;},&quot;KlantenLijst&quot;:{&quot;Klant&quot;:[{&quot;KlantId&quot;:&quot;B&quot;,&quot;IsRegieBank&quot;:&quot;J&quot;,&quot;BankCode&quot;:&quot;3642&quot;}]}}</body>
+            </response>
+          </_>
+        </body>
+      </AddSimulations>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>
