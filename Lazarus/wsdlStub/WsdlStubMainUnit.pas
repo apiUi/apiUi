@@ -12672,7 +12672,7 @@ begin
            and se.remoteServerConnectionEnabled
            and se.remoteServerConnectionPushDesignAllowed
            and (   (se.remoteServerConnectionType = rscApiUi)
-                or (    (se.remoteServerConnectionType = rscWireMock)
+                or (    (se.remoteServerConnectionType in [rscWireMock, rscSimul8r])
                     and (FocusedOperation.StubAction <> saRequest)
                    )
                )

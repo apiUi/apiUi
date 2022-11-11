@@ -377,7 +377,9 @@ function generatePegaSimul8rOperationSimulationsParams(aXml: TXml; aOperation: T
 begin
   result := '';
   if not Assigned (aXml) then Exit;
-  aXml.Items.XmlValueByTag['janbo'] := 'Haja';
+  aXml.Items.XmlValueByTag['Connector'] := aOperation.Alias;
+  aXml.Items.XmlValueByTag['ClassName'] := aOperation.Alias + 'ClassName';
+  aXml.Items.XmlValueByTag['Method'] := aOperation.httpVerb;
   result := _ParamsAsHttpString(aXml);
 end;
 
