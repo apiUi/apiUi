@@ -374,7 +374,7 @@ apiUi will update this value on each execution of a query.
 									<xs:element name="PushDesignParams">
 										<xs:complexType>
 											<xs:sequence>
-												<xs:element name="accessGroup" type="xs:string"/>
+												<xs:element name="AccessGroup" type="xs:string"/>
 											</xs:sequence>
 										</xs:complexType>
 									</xs:element>
