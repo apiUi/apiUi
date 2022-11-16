@@ -1,0 +1,13 @@
+  <Message>
+    <Name>Reply2</Name>
+    <SequenceNr>20</SequenceNr>
+    <Patterns></Patterns>
+    <Reply>
+      <GetAllAppSimulations checked__="false"></GetAllAppSimulations>
+    </Reply>
+    <Request>
+      <GetAllAppSimulations checked__="false"></GetAllAppSimulations>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

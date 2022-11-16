@@ -1,0 +1,14 @@
+  <Message>
+    <Name>Request2</Name>
+    <SequenceNr>20</SequenceNr>
+    <Patterns></Patterns>
+    <Reply>
+      <CreateServiceRequestResponseMessage checked__="false"></CreateServiceRequestResponseMessage>
+    </Reply>
+    <Request>
+      <CreateServiceRequestRequestMessage checked__="false"></CreateServiceRequestRequestMessage>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+    <focusedMessage>true</focusedMessage>
+  </Message>

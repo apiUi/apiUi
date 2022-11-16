@@ -2639,6 +2639,13 @@ object MainForm: TMainForm
       Caption = 'Copy Path'
       OnExecute = CopyElementPathActionExecute
     end
+    object ShowClipboardConentAction: TAction
+      Category = 'Miscellaneous'
+      Caption = 'Show Clipboard'
+      OnExecute = ShowClipboardConentActionExecute
+      OnUpdate = ShowClipboardConentActionUpdate
+      ShortCut = 24662
+    end
   end
   object mainImageList: TImageList
     Left = 208
@@ -6680,6 +6687,12 @@ object MainForm: TMainForm
     end
     object Extra1: TMenuItem
       Caption = 'E&xtra'
+      object MenuItem50: TMenuItem
+        Action = ShowClipboardConentAction
+      end
+      object N8: TMenuItem
+        Caption = '-'
+      end
       object Options1: TMenuItem
         Action = OptionsAction
       end

@@ -1,0 +1,8 @@
+  <Script>
+    <Invoke>
+      <operations>
+        <name>CreateServiceRequest_Req</name>
+      </operations>
+    </Invoke>
+    <Name>RemoveMessages</Name>
+  </Script>

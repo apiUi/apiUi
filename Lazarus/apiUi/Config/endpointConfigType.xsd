@@ -67,6 +67,7 @@ when "true", the server will be allowed to send gzip responses (compression meth
 			<xs:enumeration value="GET"/>
 			<xs:enumeration value="HEAD"/>
 			<xs:enumeration value="OPTIONS"/>
+			<xs:enumeration value="PATCH"/>
 			<xs:enumeration value="POST"/>
 			<xs:enumeration value="PUT"/>
 			<xs:enumeration value="TRACE"/>

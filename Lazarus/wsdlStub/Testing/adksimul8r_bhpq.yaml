@@ -1,0 +1,281 @@
+---
+swagger: '2.0'
+info:
+  description: ''
+  version: ''
+  title: ''
+host: distributie-api.intern.rabobank.nl
+basePath: "/test/bhpq"
+schemes:
+- https
+paths:
+  "/testparams/{pathparam1}/{pathparam2}":
+    get:
+      summary: test passing params
+      description: ''
+      operationId: bhpq1
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: pathparam1
+        in: path
+        description: ''
+        required: true
+        type: string
+      - name: pathparam2
+        in: path
+        description: ''
+        required: true
+        type: string
+      - name: headerparam1
+        in: header
+        description: ''
+        required: true
+        type: string
+      - name: headerparam2
+        in: header
+        description: ''
+        required: true
+        type: string
+      - name: queryparam1
+        in: query
+        description: ''
+        required: true
+        type: string
+      - name: queryparam2
+        in: query
+        description: ''
+        required: true
+        type: string
+      responses:
+        '200':
+          description: Success response
+          schema:
+            "$ref": "#/definitions/bhpq_rpy"
+    delete:
+      summary: test passing params
+      description: ''
+      operationId: bhpq1
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: pathparam1
+        in: path
+        description: ''
+        required: true
+        type: string
+      - name: pathparam2
+        in: path
+        description: ''
+        required: true
+        type: string
+      - name: headerparam1
+        in: header
+        description: ''
+        required: true
+        type: string
+      - name: headerparam2
+        in: header
+        description: ''
+        required: true
+        type: string
+      - name: queryparam1
+        in: query
+        description: ''
+        required: true
+        type: string
+      - name: queryparam2
+        in: query
+        description: ''
+        required: true
+        type: string
+      responses:
+        '200':
+          description: Success response
+          schema:
+            "$ref": "#/definitions/bhpq_rpy"
+    patch:
+      summary: test passing params
+      description: ''
+      operationId: bhpq1
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: pathparam1
+        in: path
+        description: ''
+        required: true
+        type: string
+      - name: pathparam2
+        in: path
+        description: ''
+        required: true
+        type: string
+      - name: headerparam1
+        in: header
+        description: ''
+        required: true
+        type: string
+      - name: headerparam2
+        in: header
+        description: ''
+        required: true
+        type: string
+      - name: queryparam1
+        in: query
+        description: ''
+        required: true
+        type: string
+      - name: queryparam2
+        in: query
+        description: ''
+        required: true
+        type: string
+      - name: body
+        in: body
+        description: ''
+        required: true
+        schema:
+          "$ref": "#/definitions/bhpq_req"
+      responses:
+        '200':
+          description: Success response
+          schema:
+            "$ref": "#/definitions/bhpq_rpy"
+    post:
+      summary: test passing params
+      description: ''
+      operationId: bhpq1
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: pathparam1
+        in: path
+        description: ''
+        required: true
+        type: string
+      - name: pathparam2
+        in: path
+        description: ''
+        required: true
+        type: string
+      - name: headerparam1
+        in: header
+        description: ''
+        required: true
+        type: string
+      - name: headerparam2
+        in: header
+        description: ''
+        required: true
+        type: string
+      - name: queryparam1
+        in: query
+        description: ''
+        required: true
+        type: string
+      - name: queryparam2
+        in: query
+        description: ''
+        required: true
+        type: string
+      - name: body
+        in: body
+        description: ''
+        required: true
+        schema:
+          "$ref": "#/definitions/bhpq_req"
+      responses:
+        '200':
+          description: Success response
+          schema:
+            "$ref": "#/definitions/bhpq_rpy"
+    put:
+      summary: test passing params
+      description: ''
+      operationId: bhpq1
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: pathparam1
+        in: path
+        description: ''
+        required: true
+        type: string
+      - name: pathparam2
+        in: path
+        description: ''
+        required: true
+        type: string
+      - name: headerparam1
+        in: header
+        description: ''
+        required: true
+        type: string
+      - name: headerparam2
+        in: header
+        description: ''
+        required: true
+        type: string
+      - name: queryparam1
+        in: query
+        description: ''
+        required: true
+        type: string
+      - name: queryparam2
+        in: query
+        description: ''
+        required: true
+        type: string
+      - name: body
+        in: body
+        description: ''
+        required: true
+        schema:
+          "$ref": "#/definitions/bhpq_req"
+      responses:
+        '200':
+          description: Success response
+          schema:
+            "$ref": "#/definitions/bhpq_rpy"
+definitions:
+  bhpq_req: 
+    type: object
+    properties: 
+      bodyparam1: 
+        type: string
+      bodyparam2: 
+        type: string
+    required: 
+      - bodyparam1
+  bhpq_rpy: 
+    type: object
+    properties: 
+      bodyparam1: 
+        type: string
+      bodyparam2: 
+        type: string
+      headerparam1: 
+        type: string
+      headerparam2: 
+        type: string
+      pathparam1: 
+        type: string
+      pathparam2: 
+        type: string
+      queryparam1: 
+        type: string
+      queryparam2: 
+        type: string
+      noparam:
+        type: string

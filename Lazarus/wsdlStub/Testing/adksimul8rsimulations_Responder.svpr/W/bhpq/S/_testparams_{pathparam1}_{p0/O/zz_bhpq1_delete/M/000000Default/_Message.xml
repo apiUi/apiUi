@@ -1,0 +1,16 @@
+  <Message>
+    <Name>Default</Name>
+    <SequenceNr>0</SequenceNr>
+    <stateMachineScenarioName>.*</stateMachineScenarioName>
+    <stateMachineRequiredState>.*</stateMachineRequiredState>
+    <stateMachineNextState>.*</stateMachineNextState>
+    <Patterns></Patterns>
+    <Reply>
+      <zz_bhpq1_delete checked__="false"></zz_bhpq1_delete>
+    </Reply>
+    <Request>
+      <zz_bhpq1_delete checked__="false"></zz_bhpq1_delete>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>
