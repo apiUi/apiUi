@@ -1984,6 +1984,7 @@ procedure TXmlUtil.presentString(aCaption, aString: String);
       presentAsHTML(aCaption, aString);
       exit;
     end;
+    fShowProgress (Self, 2, 4);
     xXsdDescr := TXsdDescr.Create;
     xXml := TXml.Create;
     try
@@ -1996,6 +1997,14 @@ procedure TXmlUtil.presentString(aCaption, aString: String);
       begin
         try
           xXml.LoadJsonFromString(aString, nil);
+        except
+          xXml.Name := '';
+        end;
+      end;
+      if xXml.Name = '' then
+      begin
+        try
+          xXml.LoadYamlFromString(aString, nil);
         except
           xXml.Name := '';
         end;

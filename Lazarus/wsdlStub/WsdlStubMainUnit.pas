@@ -88,6 +88,9 @@ type
 
   TMainForm = class(TForm)
     AboutApiServerAction: TAction;
+    MenuItem50: TMenuItem;
+    N8: TMenuItem;
+    ShowClipboardConentAction: TAction;
     CopyElementPathAction: TAction;
     MenuItem25: TMenuItem;
     ToggleSimul8rWorkaroundAction: TAction;
@@ -152,6 +155,8 @@ type
     procedure ResetCloudStateMachineExecute(Sender: TObject);
     procedure ResetCloudStateMachineUpdate(Sender: TObject);
     procedure ResetStateMachineActionExecute(Sender: TObject);
+    procedure ShowClipboardConentActionExecute(Sender: TObject);
+    procedure ShowClipboardConentActionUpdate(Sender: TObject);
     procedure ShowStateMachineInformationActionExecute(Sender: TObject);
     procedure SQLConnectorLog(Sender: TSQLConnection; EventType: TDBEventType;
       const Msg: String);
@@ -632,6 +637,7 @@ type
     Generate1: TMenuItem;
     XSDreportinClipBoardSpreadSheet1: TMenuItem;
     SeparatorToolButton: TToolButton;
+    procedure ShowProgress (Sender: TObject; aProgress, aProgressMax: Integer);
     procedure FocusNavigatorOnOperation;
     procedure CloudProjectInformationActionExecute(Sender: TObject);
     procedure CloudProjectInformationActionUpdate(Sender: TObject);
@@ -12708,6 +12714,24 @@ begin
   se.ResetStateMachine;
 end;
 
+procedure TMainForm.ShowClipboardConentActionExecute(Sender: TObject);
+var
+  saveOnprogress: TOnprogress;
+begin
+  saveOnprogress := xmlUtil.OnProgress;
+  xmlUtil.OnProgress := ShowProgress;
+  try
+    xmlUtil.presentString('Clipboard content', Clipboard.AsText);
+  finally
+    XmlUtil.OnProgress := saveOnprogress;
+  end;
+end;
+
+procedure TMainForm.ShowClipboardConentActionUpdate(Sender: TObject);
+begin
+  ShowClipboardConentAction.Enabled := Clipboard.HasFormat(PredefinedClipboardFormat(pcfText));
+end;
+
 procedure TMainForm.ShowStateMachineInformationActionExecute(Sender: TObject);
 begin
   with se.StateMachineInfoAsXml do
@@ -13026,6 +13050,14 @@ begin
   finally
     MessagesTabControl.OnChange := saveOnEvent;
   end;
+end;
+
+procedure TMainForm.ShowProgress(Sender: TObject; aProgress,
+  aProgressMax: Integer);
+begin
+  ProgressBar.Min := 0;
+  ProgressBar.Max := aProgressMax;
+  ProgressBar.Position := aProgress;
 end;
 
 procedure TMainForm.ShowFocusedBindDocumentation;
