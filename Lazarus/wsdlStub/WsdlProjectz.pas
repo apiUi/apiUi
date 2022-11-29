@@ -511,6 +511,7 @@ var
     serviceOptionsXsd: TXsd;
     listenersConfigXsd: TXsd;
     operationOptionsXsd: TXsd;
+    PegaSimul8rConnectorDataXsd: TXsd;
 
 const _ProjectOldFileExtention = '.wsdlStub';
 const _ProjectFileExtention = '.svpr';
@@ -1357,6 +1358,7 @@ begin
       optionsXsd := XsdByName['Options'];
       ScriptsXsd := XsdByName['Scripts'];
       OperationDefsXsd := XsdByName['OperationDefs'];
+      PegaSimul8rConnectorDataXsd := XsdByName['PegaSimul8rConnectorData'];
       projectOptionsXsd := XsdByName['projectOptions'];
       serviceOptionsXsd := XsdByName['serviceOptions'];
       operationOptionsXsd := XsdByName['operationOptions'];
@@ -1374,6 +1376,7 @@ begin
     if not Assigned (projectOptionsXsd) then raise Exception.Create('XML Element definition for projectOptions not found');
     if not Assigned (serviceOptionsXsd) then raise Exception.Create('XML Element definition for serviceOptions not found');
     if not Assigned (operationOptionsXsd) then raise Exception.Create('XML Element definition for operationOptions not found');
+    if not Assigned (PegaSimul8rConnectorDataXsd) then raise Exception.Create('XML Element definition for PegaSimul8rConnectorData not found');
     if not Assigned (_WsdlListOfFilesXsd) then raise Exception.Create('XML Element definition for FileNames not found');
     if not Assigned (endpointConfigXsd) then raise Exception.Create('XML Element definition for endpointConfig not found');
     if not Assigned (replyInfoXsd) then raise Exception.Create('XML Element definition for replyInfo not found');
@@ -3082,6 +3085,10 @@ begin
       begin
         xOperation.reqBind.Name := xOperation.alias;
         xOperation.rpyBind.Name := xOperation.alias;
+      end;
+      with oXml.Items.XmlItemByTag ['PegaSimul8rConnectorData'] do if Assigned (thisXml) then
+      begin
+        xOperation.PegaSimul8rConnectorDataFromXml(thisXml);
       end;
       dXml := oXml.Items.XmlItemByTag ['AddedTypeDefElements'];
       if Assigned (dXml) then
@@ -9090,6 +9097,9 @@ begin
       and (xOperation.Alias <> '') then  }
       AddXml (TXml.CreateAsString('Alias', xOperation.Alias));
       AddXml (TXml.CreateAsString('FileAlias', xOperation.FileAlias));
+      if (xOperation.sml8rClassName <> '')
+      or (xOperation.sml8rRuleset <> '') then
+        AddXml (xOperation.PegaSimul8rConnectorDataAsXml);
       AddXml (TXml.CreateAsBoolean('HiddenFromUI', xOperation.HiddenFromUI));
       if xOperation.doUseStateMachine then
         AddXml (TXml.CreateAsBoolean('doUseStateMachine', xOperation.doUseStateMachine));

@@ -397,6 +397,26 @@ Visit http://en.wikipedia.org/wiki/Regular_expression for more information</xs:d
 			<xs:element name="Password" type="passwordType"/>
 		</xs:sequence>
 	</xs:complexType>
+	<xs:complexType name="pegaSimul8rOperationSpecType">
+		<xs:sequence>
+			<xs:element name="ClassName" type="xs:string"/>
+			<xs:element name="Ruleset" minOccurs="0">
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="accordingProject">
+							<xs:annotation>
+								<xs:documentation>Specify at  
+```
+Project->Set remote server connection
+```</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="RulesetName" type="xs:string"/>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="ApiByExampleOperationsType">
 		<xs:sequence>
 			<xs:element name="Name" type="xs:string"/>
@@ -1689,6 +1709,7 @@ The background color for names of responds elements in the message treewiew is w
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="PegaSimul8rConnectorData" type="pegaSimul8rOperationSpecType"/>
 	<xs:simpleType name="oauth2_callback_urlType">
 		<xs:annotation>
 			<xs:documentation>The callback url is used to extract a token. Should match the one you used during registration of your application</xs:documentation>

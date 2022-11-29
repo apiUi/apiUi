@@ -2,6 +2,12 @@
     <Name>/testparams/{pathparam1}/{pathparam2}:post</Name>
     <Action>0</Action>
     <Alias>zz_bhpq1_post</Alias>
+    <PegaSimul8rConnectorData>
+      <ClassName>klasse naam</ClassName>
+      <Ruleset>
+        <RulesetName>regel set</RulesetName>
+      </Ruleset>
+    </PegaSimul8rConnectorData>
     <HiddenFromUI>false</HiddenFromUI>
     <wsaEnabled>false</wsaEnabled>
     <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
@@ -59,5 +65,4 @@
     </CorrelationElements>
     <ColumnElements></ColumnElements>
     <LogColumns></LogColumns>
-    <focusedOperation>true</focusedOperation>
   </Operation>

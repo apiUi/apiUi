@@ -1,6 +1,6 @@
   <Operation>
     <Name>/testparams/{pathparam1}/{pathparam2}:patch</Name>
-    <Action>3</Action>
+    <Action>0</Action>
     <Alias>zz_bhpq1_patch</Alias>
     <HiddenFromUI>false</HiddenFromUI>
     <wsaEnabled>false</wsaEnabled>
@@ -50,4 +50,5 @@
     <CorrelationElements></CorrelationElements>
     <ColumnElements></ColumnElements>
     <LogColumns></LogColumns>
+    <focusedOperation>true</focusedOperation>
   </Operation>

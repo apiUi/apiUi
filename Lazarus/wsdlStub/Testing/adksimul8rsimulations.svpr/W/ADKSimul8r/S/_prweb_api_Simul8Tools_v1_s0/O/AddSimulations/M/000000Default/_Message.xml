@@ -10,10 +10,6 @@
     </Reply>
     <Request>
       <AddSimulations checked__="true">
-        <connector checked__="true">QueryIKBDetails</connector>
-        <className checked__="true">RBG-Int-IKBDetails-API</className>
-        <method checked__="true">POST</method>
-        <accessGroup checked__="true">NotYetKnownByMe</accessGroup>
         <body checked__="true">
           <_ checked__="true">
             <title checked__="true">Relation A</title>
@@ -36,7 +32,6 @@
             <request checked__="true">
               <pathParameters checked__="true">
                 <_ checked__="true">
-                  <identifier checked__="true">document_key</identifier>
                   <comparator checked__="true">regex</comparator>
                   <value checked__="true">samplefromEkdUpdatDocumnetReferences</value>
                 </_>

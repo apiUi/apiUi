@@ -10,10 +10,8 @@
       <type>
         <pegaSimul8r>
           <PushDesignParams>
-            <accessGroup>wtiknt</accessGroup>
-            <connector>zz_bhpq1_post</connector>
-            <className>zz_bhpq1_postCalssNamee</className>
-            <method>POST</method>
+            <AccessGroup>accgrp</AccessGroup>
+            <Ruleset>rulset:01/01.01</Ruleset>
           </PushDesignParams>
         </pegaSimul8r>
       </type>

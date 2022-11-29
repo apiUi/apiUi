@@ -10,114 +10,73 @@ servers:
 - url: "/"
 paths:
   "/prweb/api/Simul8Tools/v1/simulations":
-    get:
-      summary: Get all simulations for application
-      operationId: GetSimulations
-      tags:
-      - Stub Mappings
-      parameters:
-      - name: Connector
-        description: The name of the service (pyRuleName; pyLabelOld; pxTabLabel; pyServiceName; pyLabel)
-        in: query
-        required: true
-        example: CreateServiceRequestAPI
-        schema:
-          type: string
-      - name: ClassName
-        description: The classname for the simulation (pyClassName)
-        in: query
-        required: true
-        example: RBG-Int-CreateServiceRequest-API
-        schema:
-          type: string
-      - name: Method
-        description: The http method (RESTServiceMethod)
-        in: query
-        required: true
-        example: POST
-        schema:
-          type: string
-          enum:
-          - GET
-          - DELETE
-          - PATCH
-          - PUT
-          - POST
-      - name: AccessGroup
-        description: The name of the access group
-        in: query
-        required: true
-        example: "Bereavement:Employee"
-        schema:
-          type: string
-      responses:
-        "200":
-          $ref: "#/components/responses/OK_200_Simulations"
-    delete:
-      summary: deletes all simulations for application
-      operationId: DeleteAllAppSimulations
-      tags:
-      - Stub Mappings
-      parameters:
-      - name: Connector
-        description: The name of the service (pyRuleName; pyLabelOld; pxTabLabel; pyServiceName; pyLabel)
-        in: query
-        required: true
-        example: CreateServiceRequestAPI
-        schema:
-          type: string
-      - name: ClassName
-        description: The classname for the simulation (pyClassName)
-        in: query
-        required: true
-        example: RBG-Int-CreateServiceRequest-API
-        schema:
-          type: string
-      - name: Method
-        description: The http method (RESTServiceMethod)
-        in: query
-        required: true
-        example: POST
-        schema:
-          type: string
-          enum:
-          - GET
-          - DELETE
-          - PATCH
-          - PUT
-          - POST
-      - name: AccessGroup
-        description: The name of the access group
-        in: query
-        required: true
-        example: "Bereavement:Employee"
-        schema:
-          type: string
-      responses:
-        "200":
-          $ref: "#/components/responses/OK_200"
     post:
       summary: Create simulations
+      description: |
+        # ToDo's  
+        1. Analyse SoapXML  
+        # Decisions  
+        1. ClassName is also required  
+           Besides Connector (name) also the Pega internal ClassName is required.     
+           This is to avoid conflicts since Connector (name) is not unique.  
+           (A disadvantage is that a ContentManager has to provide extra data.)  
+        1. Ruleset will be an optional parameter  
+           Besides AccessGroup  we also need Ruleset.  
+           Optional, with on Operation level the possibility to inherit from projectlevel.    
+        1. State data (Simul8r tab) will be passed and mapped.  
+           Although the data in the State tab is not used for stubbing,  
+           we will make it possible to provide it since it has a meaning for CBT.    
       operationId: AddSimulations
       tags:
       - Stub Mappings
       parameters:
+      - name: AccessGroup
+        description: The name of the access group
+        in: query
+        required: true
+        example: "Bereavement:Employee"
+        schema:
+          type: string
+      - name: Ruleset
+        description: Optional Ruleset identifier
+        in: query
+        required: false
+        example: "Simul8Test2_Branch_SImulatorTestAPI"
+        schema:
+          type: string
       - name: Connector
-        description: The name of the service (pyRuleName; pyLabelOld; pxTabLabel; pyServiceName; pyLabel)
+        description: |
+          The name of the service (Pega Connector)  
+          $pagedata.pyRuleName  
+          $pagedata.pyDocumentTitle  
+          $pagedata.pyServiceName  
+          $pagedata.pySystemName  
+          $pagedata.pxTabLabel  
+          $pagedata.{{method}}StubList.rowdata[index].pyServiceName  
         in: query
         required: true
         example: CreateServiceRequestAPI
         schema:
           type: string
       - name: ClassName
-        description: The classname for the simulation (pyClassName)
+        description: |
+          The classname for the simulation (pyClassName)  
         in: query
         required: true
         example: RBG-Int-CreateServiceRequest-API
         schema:
           type: string
       - name: Method
-        description: The http method (RESTServiceMethod)
+        description: |
+          $pagedata.{{method}}StubList.rowdata[index].RESTServiceMethod
+          $pagedata.RoutingList.rowdata[index].HTTPMethod  
+          $pagedata.RoutingList.rowdata[index].RoutingLabel  
+          The http method (RESTServiceMethod)  
+          . GET  
+          . DELETE  
+          . PATCH  
+          . PUT  
+          . POST  
         in: query
         required: true
         example: POST
@@ -129,13 +88,6 @@ paths:
           - PATCH
           - PUT
           - POST
-      - name: AccessGroup
-        description: The name of the access group
-        in: query
-        required: true
-        example: "Bereavement:Employee"
-        schema:
-          type: string
       - name: body
         description: List of simulations
         in: body
@@ -167,23 +119,93 @@ components:
       properties:
         title:
           type: string
+          description: |
+            $pagedata.{{method}}StubList.rowdata[index].pyID    
+        description:
+          type: string
+          description: |
+            $pagedata.{{method}}StubList.rowdata[index].pyLabel    
+        state:
+          type: object
+          description: |
+            This structure plays a role in the Simul8r export for ContractBasedTesting  
+          required:
+          - description
+          properties:
+            description:
+              type: string
+              description: |
+                $pagedata.{{method}}StubList.rowdata[index].PreconditionDescription    
+            whenRule:
+              type: string
+              description: |
+                $pagedata.{{method}}StubList.rowdata[index].pyWhen    
+            setDataTransform:
+              type: string
+              description: |
+                $pagedata.{{method}}StubList.rowdata[index].PreconditionDataTransform    
         request:
           type: object
           properties:
+            contentType:
+              type: string
+              description: |
+                $pagedata.{{method}}StubList.rowdata[index].RequestType  
+                'JSON' when upercase value contains 'JSON'  
+                'XML' when upercase value contains 'XML'  
             pathParameters:
               type: array
+              description: |
+                Optional list of selection criteria on path parameters.  
+                Because the name of pathparameters in Pega may differ from the name in the schema,  
+                pathparameters are addressed by index, the first pathparameter having an index equeal 1.  
+                $pagedata.{{method}}StubList.rowdata[index].**SelectionCriteriaResourceParameters**  
+                <br/>pxObjClass = 'Embed-SimulationStubSelectionCriteria-ResourcePath'  
+                SelectionCriteriaType: RegEx  
+                pyMapFrom: Clipboard  
+                pyMapFromKey: Param.Pathparam2  
+                pyParameterName: Pathparam2  
+                pyValue: P2  
               items:
-                $ref: '#/components/schemas/identifierCompareItem'
+                $ref: '#/components/schemas/indexCompareItem'
             headerParameters:
               type: array
+              description: |
+                Optional list of selection criteria on header parameters.  
+                $pagedata.{{method}}StubList.rowdata[index].**SelectionCriteriaRequestHeaders**  
+                pxObjClass = 'Embed-SimulationStubSelectionCriteria-RequestHeader'  
+                SelectionCriteriaType: Equals  
+                pyMapFrom: CLIPBOARD  
+                pyMapFromKey: Param.headerParam2  
+                pyParameterName: headerparam2  
+                pyValue: H2  
               items:
                 $ref: '#/components/schemas/identifierCompareItem'
             queryParameters:
               type: array
+              description: |
+                Optional list of selection criteria on query parameters.  
+                $pagedata.{{method}}StubList.rowdata[index].**SelectionCriteriaRequestParameters**  
+                pxObjClass = 'Embed-SimulationStubSelectionCriteria-QueryString'  
+                SelectionCriteriaType: RegEx  
+                pyMapFrom: CLIPBOARD  
+                pyMapFromKey: Param.queryparam2  
+                pyQueryStringDisplayText: queryparam2=Param.queryparam2  
+                pyParameterName: queryparam2  
+                pyValue: Q2  
               items:
                 $ref: '#/components/schemas/identifierCompareItem'
             bodyParameters:
               type: array
+              description: |
+                Optional list of selection criteria on body parameters.  
+                Only **Matching rules** are supported.
+                $pagedata.{{method}}StubList.rowdata[index].**RequestContractMatchingCriteriaList**  
+                pxObjClass = 'Embed-SimulationStubContractMatchingCriteria'  
+                Type: Body  
+                Identifier: $.bodyparam2  
+                Comparator: equals  
+                ComparatorValue: B2  
               items:
                 $ref: '#/components/schemas/pathCompareItem'
         response:
@@ -193,13 +215,60 @@ components:
           properties:
             status:
               type: integer
+              description: |
+                [HTTP response status codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)  
+            contentType:
+              type: string
+              description: |
+                $pagedata.{{method}}StubList.rowdata[index].ResponseType  
+                'JSON' when upercase value contains 'JSON'  
+                'T.B.D.' when upercase value contains 'XML'  
             body:
               type: string
+              description: |
+                Content of the reply, complying with contentType.  
+            responseDataTransform:
+              type: string
+              description: |
+                Below text is from the Pega Simul8r screen  
+                ***For more advanced use cases you can optionally use a response data transform to override the static values defined in the response body with dynamic information,  
+                such as unique IDs, dates and timestamps.  
+                This should be used in addition to the response body, not instead of.***  
         advanced:
           type: object
           properties:
             delayResponseMS:
               type: integer
+              description: |
+                $pagedata.{{method}}StubList.rowdata[index].DelayResponseMS  
+                Delay Before Responding (ms)  
+            callBack:
+              type: object
+              description: |
+                Below text is from the Pega Simul8r screen  
+                ***Callback functionality allows you to simulate a callback from an external application. Populating the below fields will run   
+                the activity specified on a copy of the 'Int-' page, in the context of the access group specified, at the interval specified.  
+                This interval is triggered after the response is given.***  
+                <br/>The interval is determined by postponement.   
+                When this element is not delivered, no callback will be scheduled from this simulation.
+              required:
+              - activity
+              - accessGroup
+              properties:
+                activity:
+                  type: string
+                  description: |
+                    $pagedata.{{method}}StubList.rowdata[index].CallbackActivity
+                accessGroup:
+                  type: string
+                  description: |
+                    $pagedata.{{method}}StubList.rowdata[index].CallbackAccessGroup
+                postponement:
+                  type: integer
+                  description: |
+                    $pagedata.{{method}}StubList.rowdata[index].CallbackIntervalSeconds  
+                    In seconds.  
+                    Default 0 (zero, no postponement)  
     identifierCompareItem:
       type: object
       required:
@@ -209,12 +278,26 @@ components:
       properties:
         identifier:
           type: string
+          description: |
+            For more information please read the description at parent level.  
         comparator:
+          $ref: '#/components/schemas/comparator'
+        value:
           type: string
-          enum:
-          - contains
-          - equals
-          - regex
+    indexCompareItem:
+      type: object
+      required:
+      - ìndex
+      - comparator
+      - value
+      properties:
+        index:
+          type: integer
+          minimum: 1
+          description: |
+            For more information please read the description at parent level.  
+        comparator:
+          $ref: '#/components/schemas/comparator'
         value:
           type: string
     pathCompareItem:
@@ -226,13 +309,18 @@ components:
       properties:
         path:
           type: string
+          description: |
+            For more information please read the description at parent level.  
         comparator:
-          type: string
-          enum:
-          - contains
-          - equals
-          - regex
+          $ref: '#/components/schemas/comparator'
         value:
           type: string
-        
-            
+    comparator:
+      type: string
+      description:
+        Specifies how comparing will be done.  
+      enum:
+      - any
+      - contains
+      - equals
+      - regex
