@@ -1154,7 +1154,7 @@ begin
     finally
       XmlUtil.PopCursor;
     end;
-    XmlUtil.presentAsHTML('wsdlStub - Differences report', htmlXmlAsString (xXml, Stylesheet));
+    XmlUtil.presentAsHTML(_progName + ' - Differences report', htmlXmlAsString (xXml, Stylesheet));
   finally
     FreeAndNil (xXml);
   end;

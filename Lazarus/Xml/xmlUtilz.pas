@@ -113,6 +113,7 @@ public
   procedure PasteFromClipboard (aBind: TCustomBindable);
   procedure Populate (aBind: TCustomBindable; aViewType: TxvViewType);
   procedure Validate (aBind: TCustomBindable);
+  function isXmlValidateAgainstXsd (aXml: TXml; aXsd: TXsd; var aMessage: String): Boolean;
   procedure ZoomAsBase64 (aBind: TCustomBindable);
   function ShowB64EncodedDocument (aXml: TXml): Boolean;
   procedure presentString (aCaption, aString: String);
@@ -1132,6 +1133,19 @@ begin
     ShowMessage (aBind.ValidationMesssage)
   else
     ShowMessage (aBind.Name + ' validated OK');
+end;
+
+function TXmlUtil.isXmlValidateAgainstXsd(aXml: TXml; aXsd: TXsd;
+  var aMessage: String): Boolean;
+begin
+  with TXml.Create(-1000, aXsd) do
+  try
+    LoadValues(aXml, True, True);
+    aMessage := '';
+    result := TypeDef.IsValidXml(thisXml, aMessage);
+  finally
+    Free;
+  end;
 end;
 
 procedure TXmlUtil.FoundErrorInBuffer(ErrorString: String;

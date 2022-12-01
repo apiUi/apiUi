@@ -239,10 +239,11 @@ components:
           properties:
             delayResponseMS:
               type: integer
+              minimum: 0
               description: |
                 $pagedata.{{method}}StubList.rowdata[index].DelayResponseMS  
                 Delay Before Responding (ms)  
-            callBack:
+            callback:
               type: object
               description: |
                 Below text is from the Pega Simul8r screen  

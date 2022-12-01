@@ -1,7 +1,11 @@
   <Operation>
     <Name>/testparams/{pathparam1}/{pathparam2}:put</Name>
-    <Action>3</Action>
+    <Action>0</Action>
     <Alias>zz_bhpq1_put</Alias>
+    <PegaSimul8rConnectorData>
+      <ClassName>sasa</ClassName>
+      <Connector>phpqConnector</Connector>
+    </PegaSimul8rConnectorData>
     <HiddenFromUI>false</HiddenFromUI>
     <wsaEnabled>false</wsaEnabled>
     <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>

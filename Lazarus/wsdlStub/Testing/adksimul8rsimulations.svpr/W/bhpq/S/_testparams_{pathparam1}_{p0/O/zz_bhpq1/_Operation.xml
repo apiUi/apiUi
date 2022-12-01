@@ -5,8 +5,9 @@
     <PegaSimul8rConnectorData>
       <ClassName>klasse naam</ClassName>
       <Ruleset>
-        <RulesetName>regel set</RulesetName>
+        <accordingProject></accordingProject>
       </Ruleset>
+      <Connector>phpqConnector</Connector>
     </PegaSimul8rConnectorData>
     <HiddenFromUI>false</HiddenFromUI>
     <wsaEnabled>false</wsaEnabled>

@@ -327,8 +327,6 @@ type
       Owner: TObject;
       Data: TObject;
       FileAlias, Alias: String;
-      sml8rClassName, sml8rRuleset: String;
-      sml8rRulesetAccordingProject: Boolean;
       HiddenFromUI: Boolean;
       isDepricated: Boolean;
       inboundRequestSchemaValidationType, outboundReplySchemaValidationType, outboundRequestSchemaValidationType, inboundReplySchemaValidationType: TSchemaValidationType;
@@ -412,6 +410,7 @@ type
       CobolEnvironment: TCobolEnvironmentType;
       ZoomElementCaption: String;
       StateMachine: TStateMachine;
+      pegaSimul8rConnectorData: TXml;
       property Host: String read getHost;
       property DoExit: Boolean read getDoExit write setDoExit;
       property PrepareErrors: String read fPrepareErrors;
@@ -510,8 +509,6 @@ type
       function endpointConfigAsXml: TXml;
       procedure endpointConfigFromXml (aXml: TXml);
       function OptionsAsXml: TXml;
-      function PegaSimul8rConnectorDataAsXml: TXml;
-      procedure PegaSimul8rConnectorDataFromXml (aXml: TXml);
       procedure OptionsFromXml(aXml: TXml);
       function InformationAsXml: TXml;
       constructor Create (aWsdl: TWsdl); Overload;
@@ -579,6 +576,7 @@ type
       ColumnXmls: TBindableList;
       Documentation: String;
       DocumentationEdited: Boolean;
+      pegaSimul8rSimulationData: TXml;
       function thisMessage: TWsdlMessage;
       procedure corBindsInit(aOperation: TWsdlOperation);
       procedure Clean;
@@ -3697,9 +3695,6 @@ begin
   stateMachineNextState := '';
   resolveRequestAliasses := True;
   resolveReplyAliasses := True;
-  sml8rClassName := '';
-  sml8rRulesetAccordingProject := True;
-  sml8rRuleset := '';
   ReadReplyFromFileXml := TXml.CreateAsString('ReadReplyFromFile', '');
 end;
 
@@ -3745,6 +3740,7 @@ begin
     FreeAndNil (StubStompHeaderXml);
     FreeAndNil (StubCustomHeaderXml);
     FreeAndNil (ReadReplyFromFileXml);
+    FreeAndNil (pegaSimul8rConnectorData);
     FreeAndNil (fLock);
   end;
   if True then
@@ -4928,9 +4924,6 @@ begin
   self.reqTagName := xOperation.reqTagName;
   self.reqMessageName := xOperation.reqMessageName;
   self.Alias := xOperation.Alias;
-  self.sml8rClassName := xOperation.sml8rClassName;
-  self.sml8rRuleset := xOperation.sml8rRuleset;
-  self.sml8rRulesetAccordingProject := xOperation.sml8rRulesetAccordingProject;
   self.Schemes := xOperation.Schemes;
   self.Produces := xOperation.Produces;
   self.ConsumeType := xOperation.ConsumeType;
@@ -4965,6 +4958,7 @@ begin
   self.SoapBodyOutputRequired := xOperation.SoapBodyOutputRequired;
   self.SoapBodyOutputUse := xOperation.SoapBodyOutputUse;
   self.FaultXsd := xOperation.FaultXsd;
+  self.pegaSimul8rConnectorData := xOperation.pegaSimul8rConnectorData;
   if Assigned (self.FaultXsd) then
   begin
     self.fltBind := TXml.Create (-10000, self.FaultXsd);
@@ -6419,39 +6413,6 @@ begin
   end;
 end;
 
-function TWsdlOperation.PegaSimul8rConnectorDataAsXml: TXml;
-begin
-  result := TXml.CreateAsString('PegaSimul8rConnectorData', '');
-  with result do
-  begin
-    AddXml (TXml.CreateAsString('ClassName', sml8rClassName));
-    with AddXml (TXml.CreateAsString('Ruleset', '')) do
-    begin
-      if sml8rRulesetAccordingProject then
-        AddXml (TXml.CreateAsString('accordingProject', ''))
-      else
-        AddXml (TXml.CreateAsString('RulesetName', sml8rRuleset));
-    end;
-  end;
-end;
-
-procedure TWsdlOperation.PegaSimul8rConnectorDataFromXml (aXml: TXml);
-begin
-  if not Assigned (aXml) then raise Exception.Create('PegaSimul8rConnectorDatafromXml: No XML assigned');
-  if not (aXml.Name = 'PegaSimul8rConnectorData') then raise Exception.Create('PegaSimul8rConnectorDatafromXml: Illegal XML: ' + aXml.Text);
-  sml8rClassName := aXml.Items.XmlCheckedValueByTag['ClassName'];
-  sml8rRuleset := '';
-  sml8rRulesetAccordingProject := True;
-  with aXml.Items.XmlCheckedItemByTag['Ruleset'] do if Assigned (thisXml) then
-  begin
-    sml8rRulesetAccordingProject := Assigned (Items.XmlCheckedItemByTag['accordingProject']);
-    if sml8rRulesetAccordingProject then
-      sml8rRuleset := ''
-    else
-      sml8rRuleset := Items.XmlCheckedValueByTag['RulesetName'];
-  end;
-end;
-
 procedure TWsdlOperation.OptionsFromXml(aXml: TXml);
 var
   xXml, yXml, iXml: TXml;
@@ -6853,8 +6814,8 @@ end;
 function TWsdlOperation.getSml8rOk: Boolean;
 begin
   result := (StubAction <> saStub)
-         or (    (sml8rClassName <> '')
-            );
+         or Assigned (pegaSimul8rConnectorData)
+            ;
 end;
 
 { TWsdlPart }
@@ -7373,6 +7334,7 @@ begin
   CorrelationBindables.Free;
   FreeAndNil(BeforeScriptLines);
   FreeAndNil(AfterScriptLines);
+  FreeAndNil(pegaSimul8rSimulationData);
   inherited;
 end;
 

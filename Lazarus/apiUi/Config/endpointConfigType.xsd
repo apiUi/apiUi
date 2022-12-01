@@ -242,6 +242,11 @@ Often used with Active MQ</xs:documentation>
 					<xs:documentation>No Transfer Protocol
 Used to execute operation-scripts without really sending a message</xs:documentation>
 				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="0"/>
+					</xs:restriction>
+				</xs:simpleType>
 			</xs:element>
 		</xs:choice>
 	</xs:complexType>

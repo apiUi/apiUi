@@ -2,6 +2,13 @@
     <Name>/testparams/{pathparam1}/{pathparam2}:patch</Name>
     <Action>0</Action>
     <Alias>zz_bhpq1_patch</Alias>
+    <PegaSimul8rConnectorData>
+      <ClassName>patchclassname</ClassName>
+      <Ruleset>
+        <RulesetName>patchruleset</RulesetName>
+      </Ruleset>
+      <Connector>phpqConnector</Connector>
+    </PegaSimul8rConnectorData>
     <HiddenFromUI>false</HiddenFromUI>
     <wsaEnabled>false</wsaEnabled>
     <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
@@ -34,8 +41,8 @@
       </scripts>
       <ReadReplyFromFile></ReadReplyFromFile>
     </operationOptions>
-    <DelayTimeMsMin>0</DelayTimeMsMin>
-    <DelayTimeMsMax>0</DelayTimeMsMax>
+    <DelayTimeMsMin>1000</DelayTimeMsMin>
+    <DelayTimeMsMax>1000</DelayTimeMsMax>
     <endpointConfig>
       <Http>
         <Verb>PATCH</Verb>
@@ -50,5 +57,4 @@
     <CorrelationElements></CorrelationElements>
     <ColumnElements></ColumnElements>
     <LogColumns></LogColumns>
-    <focusedOperation>true</focusedOperation>
   </Operation>

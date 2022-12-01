@@ -512,6 +512,7 @@ var
     listenersConfigXsd: TXsd;
     operationOptionsXsd: TXsd;
     PegaSimul8rConnectorDataXsd: TXsd;
+    PegaSimul8rSimulationDataXsd: TXsd;
 
 const _ProjectOldFileExtention = '.wsdlStub';
 const _ProjectFileExtention = '.svpr';
@@ -1359,6 +1360,7 @@ begin
       ScriptsXsd := XsdByName['Scripts'];
       OperationDefsXsd := XsdByName['OperationDefs'];
       PegaSimul8rConnectorDataXsd := XsdByName['PegaSimul8rConnectorData'];
+      PegaSimul8rSimulationDataXsd := XsdByName['PegaSimul8rSimulationData'];
       projectOptionsXsd := XsdByName['projectOptions'];
       serviceOptionsXsd := XsdByName['serviceOptions'];
       operationOptionsXsd := XsdByName['operationOptions'];
@@ -1377,6 +1379,7 @@ begin
     if not Assigned (serviceOptionsXsd) then raise Exception.Create('XML Element definition for serviceOptions not found');
     if not Assigned (operationOptionsXsd) then raise Exception.Create('XML Element definition for operationOptions not found');
     if not Assigned (PegaSimul8rConnectorDataXsd) then raise Exception.Create('XML Element definition for PegaSimul8rConnectorData not found');
+    if not Assigned (PegaSimul8rSimulationDataXsd) then raise Exception.Create('XML Element definition for PegaSimul8rSimulationData not found');
     if not Assigned (_WsdlListOfFilesXsd) then raise Exception.Create('XML Element definition for FileNames not found');
     if not Assigned (endpointConfigXsd) then raise Exception.Create('XML Element definition for endpointConfig not found');
     if not Assigned (replyInfoXsd) then raise Exception.Create('XML Element definition for replyInfo not found');
@@ -3088,7 +3091,9 @@ begin
       end;
       with oXml.Items.XmlItemByTag ['PegaSimul8rConnectorData'] do if Assigned (thisXml) then
       begin
-        xOperation.PegaSimul8rConnectorDataFromXml(thisXml);
+        if not Assigned (xOperation.pegaSimul8rConnectorData) then
+          xOperation.pegaSimul8rConnectorData := TXml.CreateAsString(PegaSimul8rConnectorDataXsd.ElementName, '');
+        xOperation.pegaSimul8rConnectorData.CopyDownLine (thisXml, True);
       end;
       dXml := oXml.Items.XmlItemByTag ['AddedTypeDefElements'];
       if Assigned (dXml) then
@@ -3254,6 +3259,11 @@ begin
             and (rXml.Items.Count > 0) then with xMessage.FltBind as TXml do
             begin
               LoadValues(rXml, False);
+            end;
+            with Items.XmlItemByTag[PegaSimul8rSimulationDataXsd.ElementName] do if Assigned (thisXml) then
+            begin
+              xMessage.pegaSimul8rSimulationData := TXml.CreateAsString(PegaSimul8rSimulationDataXsd.ElementName, '');
+              xMessage.pegaSimul8rSimulationData.CopyDownLine (thisXml, True);
             end;
             if (r = 0)
             or (Items.XmlBooleanByTagDef['focusedMessage', False]) then
@@ -9097,9 +9107,11 @@ begin
       and (xOperation.Alias <> '') then  }
       AddXml (TXml.CreateAsString('Alias', xOperation.Alias));
       AddXml (TXml.CreateAsString('FileAlias', xOperation.FileAlias));
-      if (xOperation.sml8rClassName <> '')
-      or (xOperation.sml8rRuleset <> '') then
-        AddXml (xOperation.PegaSimul8rConnectorDataAsXml);
+      if Assigned (xOperation.pegaSimul8rConnectorData) then
+      begin
+        with AddXml (TXml.CreateAsString(PegaSimul8rConnectorDataXsd.ElementName, '')) do
+          CopyDownLine(xOperation.pegaSimul8rConnectorData, True);
+      end;
       AddXml (TXml.CreateAsBoolean('HiddenFromUI', xOperation.HiddenFromUI));
       if xOperation.doUseStateMachine then
         AddXml (TXml.CreateAsBoolean('doUseStateMachine', xOperation.doUseStateMachine));
@@ -9238,6 +9250,11 @@ begin
               AddXml (TXml.CreateAsString('BeforeScript', xMessage.BeforeScriptLines.Text));
             if Assigned (xMessage.AfterScriptLines) then
               AddXml (TXml.CreateAsString('AfterScript', xMessage.AfterScriptLines.Text));
+            if Assigned (xMessage.pegaSimul8rSimulationData) then
+            begin
+              with AddXml (TXml.CreateAsString(PegaSimul8rSimulationDataXsd.ElementName, '')) do
+                CopyDownLine(xMessage.pegaSimul8rSimulationData, True);
+            end;
             if (xMessage = xOperation.LastFocusedMessage)
             and (xMessage <> xOperation.Messages.Messages[0]) then
               AddXml (TXml.CreateAsBoolean('focusedMessage', True));
@@ -9520,7 +9537,9 @@ var
   saveSaveRelativeFileNames: Boolean;
   xReport: String;
   x, o: Integer;
+  iTimeStamp: TDateTime;
 begin
+  iTimeStamp := NowUTC;
   if remoteServerConnectionType = rscApiUi then
   begin
     try
@@ -9551,10 +9570,22 @@ begin
   if (remoteServerConnectionType = rscWireMock)
   or (remoteServerConnectionType = rscSimul8r)
   then
-  begin
+  try
     for o := 0 to allOperations.Count - 1 do with allOperations.Operations[o] do
-      if StubAction <> saRequest then
+      if (StubAction <> saRequest) and (not abortPressed) then
         PushOperationToRemoteServer(thisOperation);
+  except
+    on e: exception do
+    begin
+      with TLog.Create do
+      begin
+        InboundTimeStamp := iTimeStamp;
+        OutBoundTimeStamp := NowUTC;
+        StubAction := saException;
+        Exception := 'exception pushing project to remote server: ' + e.Message;
+        DisplayLog('', thisLog);
+      end;
+    end;
   end;
 end;
 
@@ -9563,7 +9594,9 @@ var
   X: Integer;
   xOperation: TWsdlOperation;
   mXml, oXml: TXml;
+  iTimeStamp: TDateTime;
 begin
+  iTimeStamp := NowUTC;
   try
     aOperation.AcquireLock;
     try
@@ -9626,25 +9659,36 @@ begin
         end;
       end;
       if remoteServerConnectionType = rscSimul8r then
-      with remoteServerConnectionXml.FindUQXml('remoteServerConnection.type.pegaSimul8r.PushDesignParams') do
       begin
-        if not Assigned (thisXml) then
-          raise Exception.Create ('remoteServerConnection.type.pegaSimul8r.PushDesignParams not found');
-        xmlio.apiUiServerDialog ( remoteServerConnectionXml
-                                , '/prweb/api/Simul8Tools/v1/simulations'
-                                , generatePegaSimul8rOperationSimulationsParams(thisXml, xOperation)
-                                , 'POST'
-                                , 'application/json'
-                                , generatePegaSimul8rOperationSimulations (xOperation)
-                                , 'application/json'
-                                );
+        with remoteServerConnectionXml.FindUQXml('remoteServerConnection.type.pegaSimul8r.PushDesignParams') do
+        begin
+          if not Assigned (thisXml) then
+            raise Exception.Create ('remoteServerConnection.type.pegaSimul8r.PushDesignParams not found');
+          xmlio.apiUiServerDialog ( remoteServerConnectionXml
+                                  , '/prweb/api/Simul8Tools/v1/simulations'
+                                  , generatePegaSimul8rOperationSimulationsParams(thisXml, xOperation)
+                                  , 'POST'
+                                  , 'application/json'
+                                  , generatePegaSimul8rOperationSimulations (xOperation)
+                                  , 'application/json'
+                                  );
+        end;
       end;
     finally
       xOperation.Free;
     end;
   except
-    on e: Exception do
-      SjowMessage('Push operation failed' + LineEnding + e.Message);
+    on e: exception do
+    begin
+      with TLog.Create do
+      begin
+        InboundTimeStamp := iTimeStamp;
+        OutBoundTimeStamp := NowUTC;
+        StubAction := saException;
+        Exception := 'exception pushing operation to remote server: ' + e.Message;
+        DisplayLog('', thisLog);
+      end;
+    end;
   end;
 end;
 

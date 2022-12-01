@@ -10,8 +10,8 @@
       <type>
         <pegaSimul8r>
           <PushDesignParams>
-            <AccessGroup>accgrp</AccessGroup>
-            <Ruleset>rulset:01/01.01</Ruleset>
+            <AccessGroup>projectaccgrp</AccessGroup>
+            <Ruleset>projectruleset</Ruleset>
           </PushDesignParams>
         </pegaSimul8r>
       </type>

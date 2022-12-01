@@ -917,6 +917,7 @@ type
     procedure ImportProjectActionExecute(Sender: TObject);
     procedure ExportProjectActionExecute(Sender: TObject);
     procedure EditScriptButtonClick(Sender: TObject);
+    procedure EditOperationSml8rButtonClick(Sender: TObject);
     procedure Expand2Click(Sender: TObject);
     procedure XmlZoomValueAsXMLMenuItemClick(Sender: TObject);
     procedure XmlZoomValueAsTextMenuItemClick(Sender: TObject);
@@ -1208,6 +1209,7 @@ type
     fDoScrollMessagesIntoView: Boolean;
     fdoShowDesignSplitVertical : Boolean ;
     fDoTrackDuplicateMessages: Boolean;
+    fDoUsePegaSimul8r: Boolean;
     fDoUseStateMachine: Boolean;
     fStubAction: TStubAction;
     function getHintStrDisabledWhileActive: String;
@@ -1215,6 +1217,7 @@ type
     procedure setDoScrollMessagesIntoView(AValue: Boolean);
     procedure setdoShowDesignSplitVertical (AValue : Boolean );
     procedure setDoTrackDuplicateMessages(AValue: Boolean);
+    procedure setDoUsePegaSimul8r(AValue: Boolean);
     procedure setDoUseStateMachine(AValue: Boolean);
     procedure setStubAction(AValue: TStubAction);
     procedure ShowHttpReplyAsXMLActionExecute(Sender: TObject);
@@ -1241,7 +1244,7 @@ type
     saveToDiskExtention: String;
     FileNameList: TJBStringList;
     scriptPreparedWell: Boolean;
-    beforeScriptColumn, afterScriptColumn, annotationColumn, nameColumn: Integer;
+    beforeScriptColumn, afterScriptColumn, simul8rDetailsColumn, annotationColumn, nameColumn: Integer;
     scenarioColumn, reqStateColumn, nextStateColumn: Integer;
     firstCorrleationColumn, firstDataColumn, nDataColumns: Integer;
     MainToolBarDesignedButtonCount: Integer;
@@ -1251,6 +1254,7 @@ type
     SaveGridViewOnFocusChanged: TVTFocusChangeEvent;
     SaveTreeViewOnFocusChanged: TVTFocusChangeEvent;
     SaveActionComboBoxChanged: TNotifyEvent;
+    procedure EditMessageSimul8rSimulationData;
     procedure DisableViewOnFocusChangeEvents;
     procedure EnableViewOnFocusChangeEvents;
     function setContextProperty (aName: String): String;
@@ -1266,6 +1270,7 @@ type
     property doTrackDuplicateMessages: Boolean read fDoTrackDuplicateMessages write setDoTrackDuplicateMessages;
     property StubAction: TStubAction read fStubAction write setStubAction;
     property doScrollMessagesIntoView: Boolean read fDoScrollMessagesIntoView write setDoScrollMessagesIntoView;
+    property doUsePegaSimul8r: Boolean read fDoUsePegaSimul8r write setDoUsePegaSimul8r;
     property doUseStateMachine: Boolean read fDoUseStateMachine write setDoUseStateMachine;
     property isRequestAction: Boolean read getIsRequestAction;
     property doShowDesignAtTop: Boolean read fDoShowDesignAtTop write
@@ -1394,14 +1399,16 @@ type
   TOperationsColumnEnum =
     ( operationsColumnBeforeScript
     , operationsColumnAfterScript
+    , operationsColumnSimul8rDetails
     , operationsColumnAlias
     );
   TMessagesColumnEnum =
     ( messagesColumnBeforeScript
     , messagesColumnAfterScript
+    , messagesColumnSimul8rDetails
     , messagesColumnDocumentation
     );
-  const nMessageButtonColumns = 3;
+  const nMessageButtonColumns = 4;
   const nMessageNameColumns = 1;
   const nStateMachineColumns = 3;
 
@@ -2055,6 +2062,7 @@ begin
       case GridView.FocusedColumn of
         Ord (messagesColumnBeforeScript): EditMessageScriptActionExecute(nil);
         Ord (messagesColumnAfterScript): EditMessageAfterScriptActionExecute(nil);
+        Ord (messagesColumnSimul8rDetails): EditMessageSimul8rSimulationData;
         Ord (messagesColumnDocumentation): EditMessageDocumentationActionExecute(nil);
       end;
       Exit;
@@ -2536,6 +2544,9 @@ begin
     CheckBoxClick(nil);
     se.FillStateMachine(editStateMachine);
     FocusedOperation := se.LastFocusedOperation;
+    doUsePegaSimul8r := (se.remoteServerConnectionType = rscSimul8r)
+                and se.remoteServerConnectionPushDesignAllowed;
+
   finally
     EnableViewOnFocusChangeEvents;
   end;
@@ -3009,6 +3020,42 @@ begin
     end;
   finally
     XmlUtil.PopCursor;
+  end;
+end;
+
+procedure TMainForm.EditOperationSml8rButtonClick(Sender: TObject);
+begin
+  if not Assigned(FocusedOperation) then
+    Raise Exception.Create('First get a Wsdl');
+  if (FocusedOperation.StubAction <> saStub) then Exit;
+  with TXml.CreateAsString(PegaSimul8rConnectorDataXsd.ElementName, '') do
+  try
+    if Assigned (FocusedOperation.pegaSimul8rConnectorData) then
+      thisXml.CopyDownLine(FocusedOperation.pegaSimul8rConnectorData, True);
+    if EditXmlXsdBased ( FocusedOperation.Alias + ' Pega Connector data'
+                       , ''
+                       , ''
+                       , ''
+                       , False
+                       , False
+                       , esAll
+                       , PegaSimul8rConnectorDataXsd
+                       , thisXml
+                       , True
+                       ) then
+    begin
+      FocusedOperation.AcquireLock;
+      try
+        if not Assigned (FocusedOperation.pegaSimul8rConnectorData) then
+          FocusedOperation.pegaSimul8rConnectorData := TXml.CreateAsString(PegaSimul8rConnectorDataXsd.ElementName, '');
+        FocusedOperation.pegaSimul8rConnectorData.CopyDownLine(thisXml, True);
+      finally
+        FocusedOperation.ReleaseLock;
+      end;
+      NvgtView.Invalidate;
+    end;
+  finally
+    Free;
   end;
 end;
 
@@ -3913,6 +3960,19 @@ begin
               else
                 ImageIndex := 4;
             end;
+            Exit;
+          end;
+          if Column = Ord (messagesColumnSimul8rDetails) then
+          begin
+            if FocusedOperation.StubAction = saStub then
+            begin
+              if Assigned (xMessage.pegaSimul8rSimulationData) then
+                ImageIndex := 36
+              else
+                ImageIndex := 35;
+            end
+            else
+              ImageIndex := -1;
             Exit;
           end;
           if Column = Ord (messagesColumnDocumentation) then
@@ -6200,8 +6260,9 @@ begin
     MessagesVTS.Header.Columns[X].Width := wBttn;
   for X := 0 to Ord(snapshotDateTimeColumn) - 1 do
     SnapshotsVTS.Header.Columns[X].Width := wBttn;
-  NvgtView.Header.Columns[0].Width := wBttn;
-  NvgtView.Header.Columns[1].Width := wBttn;
+  NvgtView.Header.Columns[Ord(operationsColumnBeforeScript)].Width := wBttn;
+  NvgtView.Header.Columns[Ord(operationsColumnAfterScript)].Width := wBttn;
+  NvgtView.Header.Columns[Ord(operationsColumnSimul8rDetails)].Width := wBttn;
   for x := 0 to nMessageButtonColumns - 1 do
     GridView.Header.Columns[x].Width := wBttn;
   se.projectFileName := xIniFile.StringByName['WsdlStubFileName'];
@@ -6293,6 +6354,7 @@ begin
     ['notStubbedExceptionMessage', 'No operation recognized'];
   se.doViaProxyServer := xIniFile.BooleanByName['doViaProxyServer'];
   doUseStateMachine := False;
+  doUsePegaSimul8r := False;
   doScrollMessagesIntoView := xIniFile.BooleanByNameDef
     ['doScrollMessagesIntoView', True];
   doScrollExceptionsIntoView := xIniFile.BooleanByNameDef
@@ -6935,6 +6997,36 @@ begin
   begin
     if RightStr(aCaption, 2) = decorationString then
       result := LeftStr (result, Length (Result) - Length (decorationString));
+  end;
+end;
+
+procedure TMainForm.EditMessageSimul8rSimulationData;
+begin
+  if not Assigned(FocusedOperation) then
+    Raise Exception.Create('First get a Wsdl');
+  if (FocusedOperation.StubAction <> saStub) then Exit;
+  with TXml.CreateAsString(PegaSimul8rSimulationDataXsd.ElementName, '') do
+  try
+    if Assigned (FocusedMessage.pegaSimul8rSimulationData) then
+      CopyDownLine(FocusedMessage.pegaSimul8rSimulationData, True);
+    if EditXmlXsdBased ( FocusedOperation.Alias + '/' + FocusedMessage.Name + ': Pega Simulation data'
+                       , ''
+                       , ''
+                       , ''
+                       , False
+                       , False
+                       , esAll
+                       , PegaSimul8rSimulationDataXsd
+                       , thisXml
+                       , True
+                       ) then
+    begin
+      if not Assigned (FocusedMessage.pegaSimul8rSimulationData) then
+        FocusedMessage.pegaSimul8rSimulationData := TXml.Create;
+      FocusedMessage.pegaSimul8rSimulationData.CopyDownLine(thisXml, True);
+    end;
+  finally
+    Free;
   end;
 end;
 
@@ -8394,6 +8486,33 @@ begin
   UpdateMessagesView;
 end;
 
+procedure TMainForm.setDoUsePegaSimul8r(AValue: Boolean);
+begin
+  fDoUsePegaSimul8r := AValue;
+  with NvgtView.Header do
+  begin
+    if aValue then
+    begin
+      Columns[Ord(operationsColumnSimul8rDetails)].Options := Columns[Ord(operationsColumnSimul8rDetails)].Options + [coVisible];
+    end
+    else
+    begin
+      Columns[Ord(operationsColumnSimul8rDetails)].Options := Columns[Ord(operationsColumnSimul8rDetails)].Options - [coVisible];
+    end;
+  end;
+  with GridView.Header do
+  begin
+    if aValue then
+    begin
+      Columns[Ord(messagesColumnSimul8rDetails)].Options := Columns[Ord(messagesColumnSimul8rDetails)].Options + [coVisible];
+    end
+    else
+    begin
+      Columns[Ord(messagesColumnSimul8rDetails)].Options := Columns[Ord(messagesColumnSimul8rDetails)].Options - [coVisible];
+    end;
+  end;
+end;
+
 procedure TMainForm.setDoUseStateMachine(AValue: Boolean);
 begin
   fDoUseStateMachine := AValue;
@@ -8438,6 +8557,7 @@ begin
     FocusedOperation.StubAction := AValue;
     doUseStateMachine := FocusedOperation.doUseStateMachine;
     NvgtView.Invalidate;
+    GridView.Invalidate;
     OperationDelayResponseTimeAction.Visible := (FocusedOperation.StubAction <> saRequest);
     ToggleStateMachineAction.Enabled := (FocusedOperation.StubAction <> saRequest);
     if (FocusedOperation.DelayTimeMsMin = 0)
@@ -11442,6 +11562,7 @@ begin
   case NvgtView.FocusedColumn of
     Ord (operationsColumnBeforeScript): EditScriptButtonClick(nil);
     Ord (operationsColumnAfterScript): AfterRequestScriptButtonClick(nil);
+    Ord (operationsColumnSimul8rDetails): EditOperationSml8rButtonClick(nil);
   end;
 end;
 
@@ -11482,6 +11603,20 @@ begin
             end
             else
               ImageIndex := 94;
+          end;
+        end;
+      Ord (operationsColumnSimul8rDetails):
+        begin
+          if xOperation.StubAction = saStub then
+          begin
+            if (xOperation.sml8rOk) then
+              ImageIndex := 118
+            else
+              ImageIndex := 119;
+          end
+          else
+          begin
+            ImageIndex := -1;
           end;
         end;
       end;
@@ -12677,9 +12812,10 @@ begin
            and Assigned (FocusedOperation)
            and se.remoteServerConnectionEnabled
            and se.remoteServerConnectionPushDesignAllowed
-           and (   (se.remoteServerConnectionType = rscApiUi)
-                or (    (se.remoteServerConnectionType in [rscWireMock, rscSimul8r])
-                    and (FocusedOperation.StubAction <> saRequest)
+           and (FocusedOperation.StubAction <> saRequest)
+           and (   (se.remoteServerConnectionType = rscWireMock)
+                or (    (se.remoteServerConnectionType = rscSimul8r)
+                    and Assigned (FocusedOperation.pegaSimul8rConnectorData)
                    )
                )
              ;
@@ -12791,12 +12927,13 @@ begin
   beforeScriptColumn := 0;
   afterScriptColumn := 1;
   annotationColumn := 2;
-  nameColumn := 3;
-  scenarioColumn := 4;
-  reqStateColumn := 5;
-  nextStateColumn := 6;
-  firstCorrleationColumn := 7;
-  firstDataColumn := 7;
+  simul8rDetailsColumn := 3;
+  nameColumn := 4;
+  scenarioColumn := 5;
+  reqStateColumn := 6;
+  nextStateColumn := 7;
+  firstCorrleationColumn := 8;
+  firstDataColumn := 8;
   nDataColumns := 0;
   if Assigned (FocusedOperation) then
   begin
@@ -13315,6 +13452,8 @@ begin
                        ) then
     begin
       se.remoteServerConnectionFromXml(thisXml);
+      doUsePegaSimul8r := (se.remoteServerConnectionType = rscSimul8r)
+                      and se.remoteServerConnectionPushDesignAllowed;
       stubChanged := True;
       Result := True;
     end;
@@ -13324,7 +13463,32 @@ begin
 end;
 
 procedure TMainForm.PushProjectToRemoteServerActionExecute(Sender: TObject);
+var
+  o: Integer;
+  xMessage: String;
 begin
+  if se.remoteServerConnectionType = rscSimul8r then
+  begin
+    for o := 0 to allOperations.Count - 1 do with allOperations.Operations[o] do
+    begin
+      if (StubAction = saStub) then
+      begin
+        if (not sml8rOk) then
+        begin
+          FocusedOperation := thisOperation;
+          ShowMessage ('To push operation to Simul8r, extra data is required');
+          Exit;
+        end;
+        xMessage := '';
+        if not XmlUtil.isXmlValidateAgainstXsd (pegaSimul8rConnectorData, PegaSimul8rConnectorDataXsd, xMessage) then
+        begin
+          FocusedOperation := thisOperation;
+          ShowMessage ('Some Simul8r data for ' + thisOperation.Alias + ' is incorrect or missing: ' + xMessage);
+          Exit;
+        end;
+      end;
+    end;
+  end;
   TProcedureThread.Create(False, False, se, se.PushProjectToRemoteServer);
 end;
 
@@ -13398,9 +13562,31 @@ begin
   try
     xOperation := NodeToOperation(Sender, Node);
     if Assigned(xOperation) then
-    begin;
-      LineBreakStyle := hlbDefault;
-      HintText := xOperation.Documentation.Text;
+    begin
+      case Column of
+        Ord (operationsColumnBeforeScript):
+        begin
+          if xOperation.StubAction <> saStub then
+            HintText := 'Enter Before script'
+          else
+            HintText := 'Enter operation script';
+        end;
+        Ord (operationsColumnAfterScript):
+        begin
+          if xOperation.StubAction <> saStub then
+            HintText := 'Enter After script'
+        end;
+        Ord (operationsColumnSimul8rDetails):
+        begin
+          if xOperation.StubAction = saStub then
+            HintText := 'Enter Pega/Simul8r Connector information';
+        end;
+        Ord (operationsColumnAlias):
+        begin
+          LineBreakStyle := hlbDefault;
+          HintText := xOperation.Documentation.Text;
+        end;
+      end;
     end;
   finally
   end;

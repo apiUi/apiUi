@@ -1014,7 +1014,7 @@ begin
         AddAttribute(TXmlAttribute.CreateAsString('border', '1'));
         with AddXml (Txml.CreateAsString ('tr', '')) do
         begin
-          with AddXml (TXml.CreateAsString('td', 'wsdlStub - Differences report')) do
+          with AddXml (TXml.CreateAsString('td', _progName + ' - Differences report')) do
             AddAttribute(TXmlAttribute.CreateAsString('colspan', '5'));
           with AddXml (TXml.CreateAsString('td', DateToStr(now))) do
             AddAttribute(TXmlAttribute.CreateAsString('colspan', '4'));
@@ -1146,7 +1146,7 @@ begin
     end;
     Application.CreateForm(TShowHtmlForm, ShowHtmlForm);
     try
-      ShowHtmlForm.Caption := 'wsdlStub - Differences report';
+      ShowHtmlForm.Caption := _progName + ' - Differences report';
       ShowHtmlForm.Html := xXml.asHtmlString;
       ShowHtmlForm.ShowModal;
     finally

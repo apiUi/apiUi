@@ -4,9 +4,13 @@
     <stateMachineScenarioName>.*</stateMachineScenarioName>
     <stateMachineRequiredState>.*</stateMachineRequiredState>
     <stateMachineNextState>.*</stateMachineNextState>
-    <Patterns></Patterns>
+    <Patterns>
+      <Pattern>.*</Pattern>
+    </Patterns>
     <Reply>
-      <AddSimulations checked__="false"></AddSimulations>
+      <AddSimulations checked__="true">
+        <rspns200 checked__="true"></rspns200>
+      </AddSimulations>
     </Reply>
     <Request>
       <AddSimulations checked__="true">
