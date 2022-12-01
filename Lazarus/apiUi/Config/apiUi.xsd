@@ -397,6 +397,176 @@ Visit http://en.wikipedia.org/wiki/Regular_expression for more information</xs:d
 			<xs:element name="Password" type="passwordType"/>
 		</xs:sequence>
 	</xs:complexType>
+	<xs:complexType name="pegaSimul8rOperationSpecType">
+		<xs:sequence>
+			<xs:element name="Connector">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ClassName">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Ruleset" minOccurs="0">
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="accordingProject">
+							<xs:annotation>
+								<xs:documentation>Specify at  
+```
+Project->Set remote server connection
+```</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="0"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="RulesetName">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="1"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="pegaSimul8rSimulationDataType">
+		<xs:sequence>
+			<xs:element name="state" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This structure plays a role in the Simul8r export for ContractBasedTesting</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="description" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Default value is the description from the Simulation self.  
+
+$pagedata.{{method}}StubList.rowdata[index].PreconditionDescription</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="1"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="whenRule" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>$pagedata.{{method}}StubList.rowdata[index].pyWhen</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="1"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="setDataTransform" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>$pagedata.{{method}}StubList.rowdata[index].PreconditionDataTransform</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="1"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="response" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="responseDataTransform" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Below text is from the Pega Simul8r screen  
+***
+For more advanced use cases you can optionally use a response data transform to override the static values defined in the response body with dynamic information,
+such as unique IDs, dates and timestamps.
+This should be used in addition to the response body, not instead of.  
+***
+</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="1"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="advanced" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="delayResponseMS" type="xs:nonNegativeInteger" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>$pagedata.{{method}}StubList.rowdata[index].DelayResponseMS  
+Delay Before Responding (ms)  
+Default 0</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="callback" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Below text is from the Pega Simul8r screen  
+***
+Callback functionality allows you to simulate a callback from an external application. Populating the below fields will run
+the activity specified on a copy of the 'Int-' page, in the context of the access group specified, at the interval specified.
+This interval is triggered after the response is given.  
+***
+<br/>
+The interval is determined by postponement.  
+When no Callback element is delivered, no callback will be scheduled from this simulation.  
+</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="activity">
+										<xs:annotation>
+											<xs:documentation>$pagedata.{{method}}StubList.rowdata[index].CallbackActivity</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:minLength value="1"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="accessGroup">
+										<xs:annotation>
+											<xs:documentation>$pagedata.{{method}}StubList.rowdata[index].CallbackAccessGroup</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:minLength value="1"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="postponement" type="xs:nonNegativeInteger" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>$pagedata.{{method}}StubList.rowdata[index].CallbackIntervalSeconds  
+In seconds.  
+Default 0 (zero, no postponement)  
+</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="ApiByExampleOperationsType">
 		<xs:sequence>
 			<xs:element name="Name" type="xs:string"/>
@@ -1689,6 +1859,8 @@ The background color for names of responds elements in the message treewiew is w
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="PegaSimul8rConnectorData" type="pegaSimul8rOperationSpecType"/>
+	<xs:element name="PegaSimul8rSimulationData" type="pegaSimul8rSimulationDataType"/>
 	<xs:simpleType name="oauth2_callback_urlType">
 		<xs:annotation>
 			<xs:documentation>The callback url is used to extract a token. Should match the one you used during registration of your application</xs:documentation>

@@ -306,6 +306,7 @@ type
       function getIsOpenApiService: Boolean;
       function getisSoapService: Boolean;
       function getOpenApiVersion: String;
+      function getSml8rOk: Boolean;
       procedure setDoExit (AValue : Boolean );
       function getInputXml: TXml;
       function getOutputXml: TXml;
@@ -409,6 +410,7 @@ type
       CobolEnvironment: TCobolEnvironmentType;
       ZoomElementCaption: String;
       StateMachine: TStateMachine;
+      pegaSimul8rConnectorData: TXml;
       property Host: String read getHost;
       property DoExit: Boolean read getDoExit write setDoExit;
       property PrepareErrors: String read fPrepareErrors;
@@ -430,6 +432,7 @@ type
       property ConsumesJsonOnly: Boolean read getConsumesOnlyJson;
       property ConsumesXmlOnly: Boolean read getConsumesOnlyXml;
       property DebugTokenStringBefore: String read getDebugTokenStringBefore;
+      property sml8rOk: Boolean read getSml8rOk;
       function thisOperation: TWsdlOperation;
       function AddedTypeDefElementsAsXml: TObject;
       procedure OnGetSslPassword (var aPassword: String);
@@ -573,6 +576,7 @@ type
       ColumnXmls: TBindableList;
       Documentation: String;
       DocumentationEdited: Boolean;
+      pegaSimul8rSimulationData: TXml;
       function thisMessage: TWsdlMessage;
       procedure corBindsInit(aOperation: TWsdlOperation);
       procedure Clean;
@@ -3736,6 +3740,7 @@ begin
     FreeAndNil (StubStompHeaderXml);
     FreeAndNil (StubCustomHeaderXml);
     FreeAndNil (ReadReplyFromFileXml);
+    FreeAndNil (pegaSimul8rConnectorData);
     FreeAndNil (fLock);
   end;
   if True then
@@ -4953,6 +4958,7 @@ begin
   self.SoapBodyOutputRequired := xOperation.SoapBodyOutputRequired;
   self.SoapBodyOutputUse := xOperation.SoapBodyOutputUse;
   self.FaultXsd := xOperation.FaultXsd;
+  self.pegaSimul8rConnectorData := xOperation.pegaSimul8rConnectorData;
   if Assigned (self.FaultXsd) then
   begin
     self.fltBind := TXml.Create (-10000, self.FaultXsd);
@@ -6805,6 +6811,13 @@ begin
     result := '2.0';
 end;
 
+function TWsdlOperation.getSml8rOk: Boolean;
+begin
+  result := (StubAction <> saStub)
+         or Assigned (pegaSimul8rConnectorData)
+            ;
+end;
+
 { TWsdlPart }
 
 constructor TWsdlPart.Create;
@@ -7321,6 +7334,7 @@ begin
   CorrelationBindables.Free;
   FreeAndNil(BeforeScriptLines);
   FreeAndNil(AfterScriptLines);
+  FreeAndNil(pegaSimul8rSimulationData);
   inherited;
 end;
 

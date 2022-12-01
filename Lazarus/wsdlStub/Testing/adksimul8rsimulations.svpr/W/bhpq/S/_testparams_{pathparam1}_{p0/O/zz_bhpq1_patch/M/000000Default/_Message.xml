@@ -6,11 +6,40 @@
     <stateMachineNextState>.*</stateMachineNextState>
     <Patterns></Patterns>
     <Reply>
-      <zz_bhpq1_patch checked__="false"></zz_bhpq1_patch>
+      <zz_bhpq1_patch checked__="true">
+        <rspns200 checked__="true">
+          <body checked__="true">
+            <bodyparam1 checked__="true">bodyparam1</bodyparam1>
+            <bodyparam2 checked__="true">bodyparam2</bodyparam2>
+            <headerparam1 checked__="true">headerparam1</headerparam1>
+            <headerparam2 checked__="true">headerparam2</headerparam2>
+            <pathparam1 checked__="true">pathparam1</pathparam1>
+            <pathparam2 checked__="true">pathparam2</pathparam2>
+            <queryparam1 checked__="true">queryparam1</queryparam1>
+            <queryparam2 checked__="true">queryparam2</queryparam2>
+            <noparam checked__="true">noparam</noparam>
+          </body>
+        </rspns200>
+      </zz_bhpq1_patch>
     </Reply>
     <Request>
       <zz_bhpq1_patch checked__="false"></zz_bhpq1_patch>
     </Request>
     <DocumentationEdited>false</DocumentationEdited>
     <AfterScript></AfterScript>
+    <PegaSimul8rSimulationData>
+      <advanced>
+        <callback>
+          <activity>cbact</activity>
+          <accessGroup>cbaccgrp</accessGroup>
+          <postponement>5</postponement>
+        </callback>
+        <delayResponseMS>1000</delayResponseMS>
+      </advanced>
+      <state>
+        <description>description</description>
+        <whenRule>whenRule</whenRule>
+        <setDataTransform>setDataTransform</setDataTransform>
+      </state>
+    </PegaSimul8rSimulationData>
   </Message>

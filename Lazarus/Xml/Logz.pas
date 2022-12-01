@@ -96,6 +96,7 @@ type
     ServiceName, OperationName: String;
     DelayTimeMs, OperationCount: Integer;
     PathFormat: String;
+    function thisLog: TLog;
     procedure AddRemark (aRemark: String);
     function CompareKey (aCompareBy: TCompareLogOrderBy): String;
     function SortKey (aCompareBy: TCompareLogOrderBy; aSortColumns: TJBStringList): String;
@@ -1255,6 +1256,11 @@ begin
   FreeAndNil (Stream);
 end;
 
+function TLog.thisLog: TLog;
+begin
+  result := self;
+end;
+
 procedure TLog.AddRemark(aRemark: String);
 begin
   if Remarks = '' then
@@ -1492,7 +1498,7 @@ end;
 
 procedure TLog.FoundErrorInBuffer(ErrorString: String; aObject: TObject);
 begin
-  (aObject as TIpmItem).Value := '?' + _ProgName + 'wsdlStub Error found: ' + ErrorString;
+  (aObject as TIpmItem).Value := '?' + _ProgName + ' Error found: ' + ErrorString;
 end;
 
 procedure TLog.RequestToBindables(aOperation: TWsdlOperation);

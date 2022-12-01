@@ -1,0 +1,2 @@
+if Req.AddSimulations.Method = 'PaTCH' then
+  Rpy.AddSimulations.undefined.responseCode := '502';

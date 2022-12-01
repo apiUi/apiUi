@@ -1,7 +1,14 @@
   <Operation>
     <Name>/testparams/{pathparam1}/{pathparam2}:get</Name>
-    <Action>3</Action>
+    <Action>0</Action>
     <Alias>zz_bhpq1_get</Alias>
+    <PegaSimul8rConnectorData>
+      <Connector>Connector</Connector>
+      <ClassName>ClassName</ClassName>
+      <Ruleset>
+        <RulesetName>RulesetName</RulesetName>
+      </Ruleset>
+    </PegaSimul8rConnectorData>
     <HiddenFromUI>false</HiddenFromUI>
     <wsaEnabled>false</wsaEnabled>
     <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>

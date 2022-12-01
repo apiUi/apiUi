@@ -159,11 +159,16 @@ function generatePegaSimul8rOperationSimulations(aOperation: TWsdlOperation): st
       _TranslateStampersToHandlebars(aXml.Items.XmlItems[x]);
   end;
 
+  function _comparator (aCorrelationValue: String): String;
+  begin
+    result := ifthen(aCorrelationValue = '.*', 'any', 'regex')
+  end;
+
   procedure _genMessageXml (aXml: TXml; aMessage: TWsdlMessage; aDefaultMessage: Boolean);
   var
     x, y: Integer;
     xPath, xPreparedReply, xReplyContentType: String;
-    corrXml, pathXml, arrayXml, rXml, mXml: TXml;
+    corrXml, pathXml, arrayXml, rXml, sXml, mXml: TXml;
   begin
     with aXml do
     begin
@@ -179,8 +184,13 @@ function generatePegaSimul8rOperationSimulations(aOperation: TWsdlOperation): st
         _TranslateStampersToHandlebars (aOperation.rpyBind as TXml);
       end;
       AddXml (TXml.CreateAsString('title', aMessage.Name));
+      AddXml (TXml.CreateAsString('description', aMessage.Name));
+      sXml := aMessage.pegaSimul8rSimulationData.ItemByTag['state'];
+      if Assigned (sXml) then
+        AddXml (TXml.CreateAsString(sXml.Name, '')).LoadValues(sXml, True, True);
       with AddXml (TXml.CreateAsString('request', '')) do
       begin
+        AddXml (TXml.CreateAsString('contentType', aOperation.Consumes));
         if aOperation.isOpenApiService then
         begin
           if aOperation.Wsdl.ServerPathNames.Count > 0 then
@@ -191,14 +201,16 @@ function generatePegaSimul8rOperationSimulations(aOperation: TWsdlOperation): st
           begin
             pathXml := AddXml (TXml.CreateAsString('pathParameters', ''));
             pathXml.jsonType := jsonArray;
+            y := 0;
             for x := 0 to aMessage.CorrelationBindables.Count - 1 do
             with aMessage.CorrelationBindables.Bindables[x] as TXml do
             begin
               if (Xsd.ParametersType = oppPath) then
               begin
+                Inc (y);
                 arrayXml := pathXml.AddXml (TXml.CreateAsString('_', ''));
-                arrayXml.AddXml (TXml.CreateAsString('identifier', thisXml.Name));
-                arrayXml.AddXml (TXml.CreateAsString('comparator', 'regex'));
+                arrayXml.AddXml (TXml.CreateAsString('index', IntToStr (y))).jsonType := jsonNumber;
+                arrayXml.AddXml (TXml.CreateAsString('comparator', _comparator (thisXml.CorrelationValue)));
                 arrayXml.AddXml (TXml.CreateAsString('value', thisXml.CorrelationValue));
               end;
             end;
@@ -215,7 +227,7 @@ function generatePegaSimul8rOperationSimulations(aOperation: TWsdlOperation): st
               begin
                 arrayXml := pathXml.AddXml (TXml.CreateAsString('_', ''));
                 arrayXml.AddXml (TXml.CreateAsString('identifier', thisXml.Name));
-                arrayXml.AddXml (TXml.CreateAsString('comparator', 'regex'));
+                arrayXml.AddXml (TXml.CreateAsString('comparator', _comparator (thisXml.CorrelationValue)));
                 arrayXml.AddXml (TXml.CreateAsString('value', thisXml.CorrelationValue));
               end;
             end;
@@ -232,7 +244,7 @@ function generatePegaSimul8rOperationSimulations(aOperation: TWsdlOperation): st
               begin
                 arrayXml := pathXml.AddXml (TXml.CreateAsString('_', ''));
                 arrayXml.AddXml (TXml.CreateAsString('identifier', thisXml.Name));
-                arrayXml.AddXml (TXml.CreateAsString('comparator', 'regex'));
+                arrayXml.AddXml (TXml.CreateAsString('comparator', _comparator (thisXml.CorrelationValue)));
                 arrayXml.AddXml (TXml.CreateAsString('value', thisXml.CorrelationValue));
               end;
             end;
@@ -262,13 +274,15 @@ function generatePegaSimul8rOperationSimulations(aOperation: TWsdlOperation): st
                                                                   , aOperation.FullXPath(thisXml) + '/text()'
                                                                   , thisXml.fullJsonBodyPath
                                                                   )));
-              arrayXml.AddXml (TXml.CreateAsString('comparator', 'regex'));
+              arrayXml.AddXml (TXml.CreateAsString('comparator', _comparator (thisXml.CorrelationValue)));
               arrayXml.AddXml (TXml.CreateAsString('value', thisXml.CorrelationValue));
             end;
           end;
         end;
       end;
       rXml := AddXml (TXml.CreateAsString('response', ''));
+      if aOperation.Produces <> '' then
+        rXml.AddXml (TXml.CreateAsString('contentType', aOperation.Produces));
       if aOperation.isOpenApiService then
       begin
         for x := 0 to aOperation.rpyXml.Items.Count - 1 do
@@ -316,19 +330,14 @@ function generatePegaSimul8rOperationSimulations(aOperation: TWsdlOperation): st
           AddXml (TXml.CreateAsString ('', 'response-template')).jsonType := jsonString;
         end;
       end;
-      if (aOperation.DelayTimeMsMin > 0)
-      or (aOperation.DelayTimeMsMax > 0) then
+      with aMessage.pegaSimul8rSimulationData.ItemByTag['response'] do if Assigned (thisXml) then
       begin
-        if (aOperation.DelayTimeMsMin = aOperation.DelayTimeMsMax) then
-          rXml.AddXml(TXml.CreateAsInteger('fixedDelayMilliseconds', aOperation.DelayTimeMsMax))
-        else
-        with rXml.AddXml(TXml.CreateAsString('delayDistribution', '')) do
-        begin
-          AddXml (TXml.CreateAsString('type', 'uniform'));
-          AddXml (TXml.CreateAsInteger('lower', aOperation.DelayTimeMsMin));
-          AddXml (TXml.CreateAsInteger('upper', aOperation.DelayTimeMsMax));
-        end;
+        with ItemByTag['responseDataTransform'] do if Assigned (thisXml) then
+          rXml.AddXml(TXml.CreateAsString(thisXml.Name, thisXml.Value));
       end;
+      rXml := aMessage.pegaSimul8rSimulationData.ItemByTag['advanced'];
+      if Assigned (rXml) then
+        AddXml (TXml.CreateAsString(rXml.Name, '')).CopyDownLine(rXml, True);
     end;
   end;
 var
@@ -374,13 +383,26 @@ function generatePegaSimul8rOperationSimulationsParams(aXml: TXml; aOperation: T
       end;
     end;
   end;
+var
+  rXml: TXml;
 begin
   result := '';
   if not Assigned (aXml) then Exit;
-  aXml.Items.XmlValueByTag['Connector'] := aOperation.Alias;
-  aXml.Items.XmlValueByTag['ClassName'] := aOperation.Alias + 'ClassName';
-  aXml.Items.XmlValueByTag['Method'] := aOperation.httpVerb;
-  result := _ParamsAsHttpString(aXml);
+  with TXml.CreateAsString (aXml.Name, '') do
+  try
+    CopyDownLine(aXml, True);
+    Items.XmlValueByTag['Connector'] := aOperation.pegaSimul8rConnectorData.items.XmlValueByTagDef['Connector', aOperation.Alias];
+    Items.XmlValueByTag['ClassName'] := aOperation.pegaSimul8rConnectorData.items.XmlValueByTag['ClassName'];
+    rXml := aOperation.pegaSimul8rConnectorData.FindCheckedXml('PegaSimul8rConnectorData.Ruleset.RulesetName');
+    if Assigned (rXml) then
+    begin
+      Items.XmlValueByTag['Ruleset'] := rXml.Value;
+    end;
+    Items.XmlValueByTag['Method'] := aOperation.httpVerb;
+    result := _ParamsAsHttpString(thisXml);
+  finally
+    thisXml.Free;
+  end;
 end;
 
 end.

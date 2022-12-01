@@ -2,6 +2,13 @@
     <Name>/testparams/{pathparam1}/{pathparam2}:post</Name>
     <Action>0</Action>
     <Alias>zz_bhpq1_post</Alias>
+    <PegaSimul8rConnectorData>
+      <ClassName>klasse naam</ClassName>
+      <Ruleset>
+        <accordingProject></accordingProject>
+      </Ruleset>
+      <Connector>phpqConnector</Connector>
+    </PegaSimul8rConnectorData>
     <HiddenFromUI>false</HiddenFromUI>
     <wsaEnabled>false</wsaEnabled>
     <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
@@ -59,5 +66,4 @@
     </CorrelationElements>
     <ColumnElements></ColumnElements>
     <LogColumns></LogColumns>
-    <focusedOperation>true</focusedOperation>
   </Operation>

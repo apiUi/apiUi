@@ -6,7 +6,13 @@
     <stateMachineNextState>.*</stateMachineNextState>
     <Patterns></Patterns>
     <Reply>
-      <zz_bhpq1_get checked__="false"></zz_bhpq1_get>
+      <zz_bhpq1_get checked__="true">
+        <rspns200 checked__="true">
+          <body checked__="true">
+            <bodyparam1 checked__="true"></bodyparam1>
+          </body>
+        </rspns200>
+      </zz_bhpq1_get>
     </Reply>
     <Request>
       <zz_bhpq1_get checked__="false"></zz_bhpq1_get>

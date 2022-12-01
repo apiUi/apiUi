@@ -1,7 +1,14 @@
   <Operation>
     <Name>/prweb/api/Simul8Tools/v1/simulations:post</Name>
-    <Action>3</Action>
+    <Action>0</Action>
     <Alias>AddSimulations</Alias>
+    <PegaSimul8rConnectorData>
+      <ClassName>simulclass</ClassName>
+      <Connector>Simul8r</Connector>
+      <Ruleset>
+        <accordingProject></accordingProject>
+      </Ruleset>
+    </PegaSimul8rConnectorData>
     <HiddenFromUI>false</HiddenFromUI>
     <wsaEnabled>false</wsaEnabled>
     <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
@@ -48,7 +55,9 @@
         <customHeaders></customHeaders>
       </Http>
     </endpointConfig>
-    <CorrelationElements></CorrelationElements>
+    <CorrelationElements>
+      <CorrelationElement>Req.AddSimulations.Method</CorrelationElement>
+    </CorrelationElements>
     <ColumnElements></ColumnElements>
     <LogColumns></LogColumns>
   </Operation>

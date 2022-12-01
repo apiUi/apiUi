@@ -709,7 +709,7 @@ begin
         AddAttribute(TXmlAttribute.CreateAsString('bgcolor', 'lightgray'));
         with AddXml (Txml.CreateAsString ('tr', '')) do
         begin
-          with AddXml (TXml.CreateAsString('td', 'wsdlStub - Coverage report')) do
+          with AddXml (TXml.CreateAsString('td', _progName + ' - Coverage report')) do
             AddAttribute(TXmlAttribute.CreateAsString('colspan', '1'));
           with AddXml (TXml.CreateAsString('td', DateTimeToStr(now))) do
           begin
@@ -750,7 +750,7 @@ begin
     finally
       XmlUtil.PopCursor;
     end;
-    XmlUtil.presentAsHTML('wsdlStub - Coverage report', xXml.asHtmlString);
+    XmlUtil.presentAsHTML(_progName + ' - Coverage report', xXml.asHtmlString);
   finally
     FreeAndNil (xXml);
   end;

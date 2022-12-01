@@ -6,11 +6,22 @@
     <stateMachineNextState>.*</stateMachineNextState>
     <Patterns></Patterns>
     <Reply>
-      <zz_bhpq1_delete checked__="false"></zz_bhpq1_delete>
+      <zz_bhpq1_delete checked__="true">
+        <rspns200 checked__="true">
+          <body checked__="true">
+            <bodyparam1 checked__="true">bp1</bodyparam1>
+          </body>
+        </rspns200>
+      </zz_bhpq1_delete>
     </Reply>
     <Request>
       <zz_bhpq1_delete checked__="false"></zz_bhpq1_delete>
     </Request>
     <DocumentationEdited>false</DocumentationEdited>
     <AfterScript></AfterScript>
+    <PegaSimul8rSimulationData>
+      <response>
+        <responseDataTransform>rdt</responseDataTransform>
+      </response>
+    </PegaSimul8rSimulationData>
   </Message>
