@@ -6218,6 +6218,7 @@ begin
   notifyTabImageIndex := 66;
   se := TWsdlProject.Create;
   se.hasGui := True;
+  se.doWorkAroundSimul8rBug := True;
   ProgressInterface := TProgressInterface.Create;
   se.ProgressInterface := ProgressInterface;
   se.EditContexts := EditContexts;
@@ -12793,6 +12794,13 @@ begin
     AddXml (TXml.CreateAsString('StubHttpAddress', StubHttpAddress));
     AddXml (TXml.CreateAsString('httpVerb', httpVerb));
     AddXml (TXml.CreateAsString('ResponseNo', IntToStr(ResponseNo)));
+    with AddXml (TXml.CreateAsString ('indexes', '')) do
+    begin
+      x := allAliasses.IndexOfObject(thisOperation);
+      AddXml (TXml.CreateAsString('allAliasses', IfThen (x > -1, allAliasses.Strings[x], '%not found')));
+      x := allOperations.IndexOfObject(thisOperation);
+      AddXml (TXml.CreateAsString('allOperations', IfThen (x > -1, allOperations.Strings[x], '%not found')));
+    end;
     ShowXml(FocusedOperation.Alias, thisXml);
   finally
     Free;

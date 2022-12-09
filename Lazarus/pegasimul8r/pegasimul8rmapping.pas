@@ -337,7 +337,13 @@ function generatePegaSimul8rOperationSimulations(aOperation: TWsdlOperation): st
       end;
       rXml := aMessage.pegaSimul8rSimulationData.ItemByTag['advanced'];
       if Assigned (rXml) then
-        AddXml (TXml.CreateAsString(rXml.Name, '')).CopyDownLine(rXml, True);
+      begin
+        with AddXml (TXml.CreateAsString(rXml.Name, '')) do
+        begin
+          CopyDownLine(rXml, True);
+          SetJsonTypeForIntegers;
+        end;
+      end;
     end;
   end;
 var

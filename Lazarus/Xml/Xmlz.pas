@@ -180,6 +180,7 @@ type
     function IsEditingAllowed: Boolean; Override;
     function ValueFromJsonArray (aUrlEncoded: Boolean): String;
     procedure ValueToJsonArray (aValue:String);
+    procedure SetJsonTypeForIntegers;
     procedure SeparateNsPrefixes;
     function thisXml: TXml;
     function PrefixToNameSpace(aPrefix: String): String;
@@ -1071,6 +1072,8 @@ procedure TXml.ResolveNameSpaces;
 var
   x: Integer;
 begin
+  if Name = 'QueryRelationship_Req' then
+    Name := 'QueryRelationship_Req';
   NameSpace := _ResolveNamespace(Self, NsPrefix);
   for x := 0 to Attributes.Count - 1 do with Attributes.XmlAttributes[x] do
     NameSpace := _ResolveNamespace(Self, NsPrefix);
@@ -3627,6 +3630,27 @@ begin
                       , False
                       , False
                       );
+end;
+
+procedure TXml.SetJsonTypeForIntegers;
+  procedure _set (aXml: TXml);
+  var
+    x: Integer;
+  begin
+    with aXml do
+    begin
+      if Value <> '' then
+      try
+        StrToInt (Value);
+        jsonType := jsonNumber;
+      except
+      end;
+      for x := 0 to Items.Count - 1 do
+        _set (Items.XmlItems[x]);
+    end;
+  end;
+begin
+  _set (self);
 end;
 
 procedure TXml.setText(const aValue: String);
