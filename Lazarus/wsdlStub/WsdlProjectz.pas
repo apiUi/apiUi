@@ -5520,6 +5520,7 @@ var
   URL, querySep, headerSep: String;
   x: Integer;
 begin
+  result := '';
   if aOperation.isOpenApiService then
   begin
     URL := 'http://none';
@@ -7272,6 +7273,7 @@ procedure TWsdlProject.HTTPProxyServerHTTPDocument(
   var
     s: AnsiString;
   begin
+    s := ''; // avoid compiler warning
     VStream.Position := 0;
     SetLength(s, VStream.Size);
     VStream.Read(s[1], VStream.Size);
@@ -7887,11 +7889,47 @@ procedure TWsdlProject.OpenSimul8rMessagesLog(aString: String;
               ;
     end;
   end;
+
+  function _workAroundSimul8rSoapRequestLoggingBug (aString: String): String;
+  begin
+    // workaround simul8r not logging soap stuf in request
+    result := aString;
+    with TXml.Create do
+    try
+      LoadFromString('<xml>' + aString + '</xml>', nil);
+      if (Name = '')
+      or (Items.Count = 0) then // invalid xml
+        Exit;
+
+      if (Items.Count > 0)
+      and (NameWithoutPrefix (Items.XmlItems[0].Name) = 'Envelope') then
+        Exit;
+      SeparateNsPrefixes;
+      ResolveNameSpaces;
+      if Items.Count = 2 then // header + body
+      begin
+        result := '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Header>'
+                + Items.XmlItems[0].StreamXML (True, True, 2, True, True)
+                + '</soapenv:Header><soapenv:Body>'
+                + Items.XmlItems[1].StreamXML (True, True, 2, True, True)
+                + '</soapenv:Body></soapenv:Envelope>'
+      end
+      else  // only body
+        result := '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body>'
+                + Items.XmlItems[0].StreamXML (True, True, 2, True, True)
+                + '</soapenv:Body></soapenv:Envelope>'
+                ;
+    finally
+      Free;
+    end;
+  end;
+
 var
-  x, y, d: Integer;
+  x, y, d, f: Integer;
   xLog: TLog;
   xBodiesAsBase64: Boolean;
   xAlias, xPath, xQuery, xSortkey: String;
+  xIsSoap: Boolean;
 begin
   aLogList.Sorted := True;
   aLogList.Duplicates := dupAccept;
@@ -7918,6 +7956,7 @@ begin
           xLog := TLog.Create;
           xLog.MessageId := Items.XmlValueByTagDef ['id', xLog.MessageId];
           xAlias := Items.XmlValueByTagDef['ServiceName', ''];
+          xIsSoap:=False;
           with Items.XmlItemByTag['request'] do if Assigned (thisXml) then
           begin
             xLog.ServiceName := Items.XmlValueByTag['ServiceName'];
@@ -7940,7 +7979,8 @@ begin
             if Copy (xLog.httpParams, 1, 1) = '?' then
               xLog.httpParams := Copy (xLog.httpParams, 2, MaxInt);
             xLog.httpCommand := items.XmlValueByTag['method'];
-            if xLog.httpCommand = 'SOAPMethod' then
+            xIsSoap := (xLog.httpCommand = 'SOAPMethod');
+            if xIsSoap then
               xLog.httpCommand := 'POST';
             xLog.OperationName := xLog.ServiceName + xLog.httpCommand;
             xLog.StubAction := saStub;
@@ -7956,6 +7996,11 @@ begin
             xLog.httpParams := items.XmlValueByTagDef['queryString', ''];
             xLog.RequestBody := Items.XmlValueByTag['body'];
             xLog.InboundBody := xLog.RequestBody;
+            if doWorkAroundSimul8rBug then
+            begin
+              if xIsSoap then
+                xLog.RequestBody := _workAroundSimul8rSoapRequestLoggingBug (xLog.RequestBody);
+            end;
           end;
           with Items.XmlItemByTag['response'] do if Assigned (thisXml) then
           begin
@@ -7986,7 +8031,27 @@ begin
           end;
           with Items.XmlItemByTag['timing'] do if Assigned (thisXml) then
             xLog.DelayTimeMs := items.XmlIntegerByTag['addedDelay'];
-          xLog.Operation := allAliasses.FindOnAliasName(xlog.OperationName);
+          if xIsSoap then with TXml.Create do
+          try
+            try
+              LoadFromString(xLog.RequestBody, nil);
+              if Name <> '' then
+              begin
+                SeparateNsPrefixes;
+                ResolveNameSpaces;
+                with FindUQXml('Envelope.Body') do if Assigned (thisXml) then
+                  if Items.Count = 1 then with Items.XmlItems[0] do
+                    if allOperations.Find(Name + ';' + NameSpace, f) then
+                       xLog.Operation := allOperations.Operations[f];
+              end;
+            except
+              xLog.Operation := nil;
+            end;
+          finally
+            free;
+          end
+          else
+            xLog.Operation := allAliasses.FindOnAliasName(xlog.OperationName);
           if Assigned (xLog.Operation) then
           begin
             xLog.ServiceName:= xlog.Operation.WsdlService.Name;

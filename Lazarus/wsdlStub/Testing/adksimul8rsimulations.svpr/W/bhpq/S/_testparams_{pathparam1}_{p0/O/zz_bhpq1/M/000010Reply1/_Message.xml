@@ -52,7 +52,10 @@
         <callback>
           <accessGroup>accessGroup</accessGroup>
           <activity>activity</activity>
+          <postponement>3333</postponement>
         </callback>
+        <delayResponseMS>2222</delayResponseMS>
       </advanced>
     </PegaSimul8rSimulationData>
+    <focusedMessage>true</focusedMessage>
   </Message>
