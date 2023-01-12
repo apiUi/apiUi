@@ -300,6 +300,17 @@ object ShowA2BXmlForm: TShowA2BXmlForm
       Caption = 'Ignore removing of fullcaption'
       OnClick = IgnoreRemovingFullCaptionMenuItemClick
     end
+    object MenuItem4: TMenuItem
+      Caption = '-'
+    end
+    object IgnoreAllInTagMenuItem: TMenuItem
+      Caption = 'IgnoreAllInTagMenuItem'
+      OnClick = IgnoreAllInTagMenuItemClick
+    end
+    object IgnoreAllInFullCaptionMenuItem: TMenuItem
+      Caption = 'IgnoreAllInFullCaptionMenuItem'
+      OnClick = IgnoreAllInFullCaptionMenuItemClick
+    end
     object N3: TMenuItem
       Caption = '-'
     end

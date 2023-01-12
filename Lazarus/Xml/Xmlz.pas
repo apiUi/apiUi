@@ -157,11 +157,11 @@ type
     property isSoapEnvelope: Boolean read getIsSoapEnvelope;
     property isSoapHeader: Boolean read getIsSoapHeader;
     property isSoapBody: Boolean read getIsSoapBody;
-    property ItemByTag [Index: String]: TXml read getItemByTag;
-    property AttributeValueByTagDef [Index, aDefault: String]: String read getAttributeValueByTagDef;
-    property AttributeValueByTag [Index: String]: String read getAttributeValueByTag;
-    property AttributeBooleanByTagDef [Index: String; aDefault: Boolean]: Boolean read getAttributeBooleanByTagDef;
-    property AttributeBooleanByTag [Index: String]: Boolean read getAttributeBooleanByTag;
+    property ItemByTag [LoadIndex: String]: TXml read getItemByTag;
+    property AttributeValueByTagDef [LoadIndex, aDefault: String]: String read getAttributeValueByTagDef;
+    property AttributeValueByTag [LoadIndex: String]: String read getAttributeValueByTag;
+    property AttributeBooleanByTagDef [LoadIndex: String; aDefault: Boolean]: Boolean read getAttributeBooleanByTagDef;
+    property AttributeBooleanByTag [LoadIndex: String]: Boolean read getAttributeBooleanByTag;
     property DocumentationText: String read getDocumentationText;
     property AppinfoText: String read getAppinfoText;
     property TypeDef: TXsdDataType read getTypeDef write fTypeDef;
@@ -375,7 +375,7 @@ type
     property displayNilCount: String read getDisplayNilCount;
     property displayEmptyCount: String read getDisplayEmptyCount;
     property displayDistinctValueCounter: String read getDisplayDistinctValueCounter;
-    property XmlItems [Index: integer]: TXmlCvrg read getXmlItems;
+    property XmlItems [LoadIndex: integer]: TXmlCvrg read getXmlItems;
     function AddXml (aChildXml: TXmlCvrg): TXmlCvrg;
     procedure CountUsage (dataXml: TXml; aOnlyWhenChecked: Boolean);
     constructor CreateFromXsd (aName: String; aXsd: TXsd);
@@ -1297,6 +1297,17 @@ begin
 end;
 
 procedure TXml.LoadXML (aErrorFound: TOnErrorEvent);
+  procedure _index (aXml: TXml);
+  var
+    x: Integer;
+  begin
+    for x := 0 to aXml.Items.Count - 1 do with aXml.Items.XmlItems[x] do
+    begin
+      thisXml.LoadIndex := x;
+      _index (thisXml);
+    end;
+  end;
+
 var
   XmlAnalyser: TXmlAnalyser;
 begin
@@ -1314,6 +1325,8 @@ begin
     if Assigned (XmlAnalyser.BaseXml) then
     begin
       TakeOver (XmlAnalyser.BaseXml);
+      LoadIndex := 0;
+      _index(Self);
 {
       TagName := BaseXml.TagName;
       CData := BaseXml.CData;
@@ -2208,6 +2221,7 @@ begin
     Checker := aXml.Checker;
   fChecked := aXml.Checked;
   Value := aXml.Value;
+  LoadIndex := aXml.LoadIndex;
   if (not Assigned (Xsd))
   and Assigned (aXml.Xsd) then
   begin
@@ -2240,7 +2254,10 @@ begin
       Inc (y);
     end;
     if yXml <> nil then
-      yXml.LoadValues (xXml, aAddUnknowns, aOnlyWhenChecked, aCopyCheckers, aIgnoreNamespaceDifferences)
+    begin
+      yXml.LoadValues (xXml, aAddUnknowns, aOnlyWhenChecked, aCopyCheckers, aIgnoreNamespaceDifferences);
+      yXml.LoadIndex := xXml.LoadIndex;
+    end
     else
     begin
       nXml := nil;
@@ -2259,6 +2276,7 @@ begin
                                       , nXml
                                       );
         nXml.LoadValues(xXml, aAddUnknowns, aOnlyWhenChecked, aCopyCheckers, aIgnoreNamespaceDifferences);
+        nXml.LoadIndex := xXml.LoadIndex;
       end
       else
       begin
@@ -2268,6 +2286,7 @@ begin
           nXml.TagName := xXml.TagName;
           AddXml(nXml);
           nXml.LoadValues(xXml, aAddUnknowns, aOnlyWhenChecked, aCopyCheckers, aIgnoreNamespaceDifferences);
+          nXml.LoadIndex := xXml.LoadIndex;
         end;
       end;
     end;

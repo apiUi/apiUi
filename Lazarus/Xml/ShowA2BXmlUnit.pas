@@ -45,6 +45,9 @@ type
     checkPartialFullCapMenuItem: TMenuItem;
     MenuItem2: TMenuItem;
     ColumnWidthMenuItem: TMenuItem;
+    IgnoreAllInFullCaptionMenuItem: TMenuItem;
+    IgnoreAllInTagMenuItem: TMenuItem;
+    MenuItem4: TMenuItem;
     Panel1: TPanel;
     TreeView: TVirtualStringTree;
     ActionList1: TActionList;
@@ -100,10 +103,12 @@ type
     procedure AddToSortColumnsMenuItemClick(Sender: TObject);
     procedure checkPartialFullCapMenuItemClick(Sender: TObject);
     procedure ColumnWidthMenuItemClick(Sender: TObject);
+    procedure IgnoreAllInTagMenuItemClick(Sender: TObject);
     procedure ignoreFullCaptionMenuitemClick(Sender: TObject);
     procedure CloseActionExecute(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure checkRegExpFullCapMenuItemClick(Sender: TObject);
+    procedure IgnoreAllInFullCaptionMenuItemClick(Sender: TObject);
     procedure NextDiffActionUpdate(Sender: TObject);
     procedure PrevDiffActionUpdate(Sender: TObject);
     procedure PrevDiffActionExecute(Sender: TObject);
@@ -611,6 +616,8 @@ begin
                                  or (xXml.ChangeKind = ckCopy)
                                 )
                               ;
+  IgnoreAllInTagMenuItem.Enabled := True;
+  IgnoreAllInFullCaptionMenuItem.Enabled := True;
   ignoreDiffrenvesOnMenuItem.Enabled := (Assigned (ignoreDifferencesOn))
                                     and (   (xXml.ChangeKind = ckModify)
                                         );
@@ -640,6 +647,8 @@ begin
                                    and (xXml.Items.Count = 0)
                                    and (regressionSortColumns.IndexOf(xXml.FullUQCaption) < 0)
                                      ;
+  IgnoreAllInTagMenuItem.Caption := 'Ignore all in: *.' + rmPrefix(xXml.TagName);
+  IgnoreAllInFullCaptionMenuItem.Caption := 'Ignore all in: ' + xXml.FullUQCaption;
   ignoreDiffrenvesOnMenuItem.Caption := 'Ignore differences on: *.' + rmPrefix(xXml.TagName);
   ignoreFullCaptionMenuitem.Caption := 'Ignore differences on: ' + xXml.FullUQCaption;
   checkRegExpFullCapMenuItem.Caption := 'Check regular expression on: ' + xXml.FullUQCaption + '...';
@@ -970,6 +979,19 @@ begin
   end;
 end;
 
+procedure TShowA2BXmlForm.IgnoreAllInFullCaptionMenuItemClick(Sender: TObject);
+var
+  xXml: TA2BXml;
+begin
+  xXml := nil;
+  if Assigned (TreeView.FocusedNode) then
+  begin
+    SelectedXml(xXml);
+    ignoreDifferencesOn.Add(rmPrefix(xXml.FullCaption) + '.*');
+    RefreshNeeded := True;
+  end;
+end;
+
 procedure TShowA2BXmlForm.CloseActionExecute(Sender: TObject);
 begin
   Close;
@@ -1035,6 +1057,19 @@ end;
 procedure TShowA2BXmlForm.ColumnWidthMenuItemClick(Sender: TObject);
 begin
   PromptAndSetColumnWidth(TreeView);
+end;
+
+procedure TShowA2BXmlForm.IgnoreAllInTagMenuItemClick(Sender: TObject);
+var
+  xXml: TA2BXml;
+begin
+  xXml := nil;
+  if Assigned (TreeView.FocusedNode) then
+  begin
+    SelectedXml(xXml);
+    ignoreDifferencesOn.Add(rmPrefix(xXml.TagName) + '.*');
+    RefreshNeeded := True;
+  end;
 end;
 
 procedure TShowA2BXmlForm .A2BGridMenuItemClick (Sender : TObject );

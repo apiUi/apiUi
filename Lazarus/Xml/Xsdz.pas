@@ -2647,7 +2647,7 @@ function TXsdDataType.IsValidXml(aXml: TObject; var aMessage: String): Boolean;
         ValidationMesssage := aMessage;
   end;
 var
-  x, y, n: Integer;
+  x, y, n, xLoadIndex: Integer;
   xXml: TXml;
   xXsd: TXsd;
   xResult: Boolean;
@@ -2745,7 +2745,7 @@ begin
   end;
 
   // check Choice
-  if ContentModel = tagChoice then
+  if ContentModel = 'Choice' then
   begin
     xXsd := nil;
     for x := 0 to xXml.Items.Count - 1 do with xXml.Items.XmlItems[x] do
@@ -2769,9 +2769,26 @@ begin
     end;
   end;
 
-  { TODO : check order of elements }
-  if ContentModel = tagSequence then
+  if ContentModel = 'Sequence' then
   begin
+    x := 0;
+    xLoadIndex := -1;
+    for x := 0 to xXml.Items.Count - 1 do with xXml.Items.XmlItems[x] do
+    begin
+      if Assigned (Xsd)
+      and (LoadIndex > -1) then
+      begin
+        if LoadIndex < xLoadIndex then
+        begin
+          result := False;
+          _addMsg ( xXml, Format ( 'Error in sequence for Element %s'
+                                 , [Name]
+                                 )
+                  );
+        end;
+        xLoadIndex := LoadIndex;
+      end;
+    end;
   end;
 
   for x := 0 to xXml.Items.Count - 1 do with xXml.Items do
