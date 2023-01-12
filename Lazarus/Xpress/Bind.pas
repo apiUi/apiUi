@@ -247,6 +247,7 @@ public
   CorrelationValue: String;
   Parent: TCustomBindable;
   RefId: Integer;
+  LoadIndex: Integer;
     fChecked: Boolean;
     fPrevChecked: Boolean;
   isProcessed: Boolean;
@@ -861,6 +862,7 @@ begin
   inherited Create;
   RefId := bindRefId;
   Inc (bindRefId);
+  LoadIndex := -1;
 end;
 
 procedure TCustomBindable.ExploreRelevancy;

@@ -705,6 +705,11 @@ procedure TA2BXml.Ignore(ignoreDifferencesOn, ignoreAddingOn, ignoreRemovingOn: 
   var
     x, f: Integer;
   begin
+    if Assigned (ignoreDifferencesOn)
+    and (   ignoreDifferencesOn.Find(aXml.TagName + '.*', f)
+         or ignoreDifferencesOn.Find(aXml.FullCaption + '.*' , f)
+        ) then
+      Exit;
     case aXml.ChangeKind of
       ckDelete:
         aXml.Ignored := (Assigned (ignoreAddingOn))
