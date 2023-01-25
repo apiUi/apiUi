@@ -508,6 +508,8 @@ type
       function StreamFault (aGeneratedWith: String; aGenerateTypes: Boolean): String;
       function endpointConfigAsXml: TXml;
       procedure endpointConfigFromXml (aXml: TXml);
+      function EventsAsXml: TXml;
+      procedure EventsFromXml(aXml: TXml);
       function OptionsAsXml: TXml;
       procedure OptionsFromXml(aXml: TXml);
       function InformationAsXml: TXml;
@@ -6128,6 +6130,24 @@ begin
   end;
 end;
 
+function TWsdlOperation.EventsAsXml: TXml;
+begin
+  result := TXml.CreateAsString ('operationEvents','');
+  with result do
+  begin
+    if onFetchLogFromRemoteServer <> '' then
+      AddXml (TXml.CreateAsString('onFetchLogFromRemoteServer', onFetchLogFromRemoteServer));
+  end;
+end;
+
+procedure TWsdlOperation.EventsFromXml(aXml: TXml);
+begin
+  if not Assigned (aXml) then raise Exception.Create('operationEventsFromXml: No XML assigned');
+  if not (aXml.Name = 'operationEvents') then raise Exception.Create('operationEventsFromXml: Illegal XML: ' + aXml.Text);
+  onFetchLogFromRemoteServer := '';
+  onFetchLogFromRemoteServer := aXml.Items.XmlValueByTagDef['onFetchLogFromRemoteServer', onFetchLogFromRemoteServer];
+end;
+
 procedure TWsdlOperation.BindChecker(aBind: TCustomBindable);
 var
   swapName: String;
@@ -6437,9 +6457,6 @@ begin
     end;
     with AddXml(TXml.CreateAsString('ReadReplyFromFile', '')) do
       CopyDownLine(ReadReplyFromFileXml, False);
-    if onFetchLogFromRemoteServer <> '' then
-      with AddXml (TXml.CreateAsString('events', '')) do
-        AddXml (TXml.CreateAsString('onFetchLogFromRemoteServer', onFetchLogFromRemoteServer));
   end;
 end;
 
@@ -6532,7 +6549,7 @@ begin
       end;
     end;
   end;
-  xXml := aXml.Items.XmlCheckedItemByTag['events'];
+  xXml := aXml.Items.XmlCheckedItemByTag['events']; // 10.8.1 style
   if Assigned (xXml) then
   begin
     onFetchLogFromRemoteServer := xXml.Items.XmlValueByTagDef['onFetchLogFromRemoteServer', onFetchLogFromRemoteServer];

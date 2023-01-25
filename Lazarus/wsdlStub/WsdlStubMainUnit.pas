@@ -88,6 +88,9 @@ type
 
   TMainForm = class(TForm)
     AboutApiServerAction: TAction;
+    MenuItem51: TMenuItem;
+    MenuItem62: TMenuItem;
+    OperationEventsAction: TAction;
     MenuItem50: TMenuItem;
     N8: TMenuItem;
     ShowClipboardConentAction: TAction;
@@ -148,6 +151,8 @@ type
       const SRC: ThtString; var Handled: Boolean);
     procedure HtmlViewerKeyDown(Sender: TObject;
       var Key: Word; Shift: TShiftState);
+    procedure OperationEventsActionExecute(Sender: TObject);
+    procedure OperationEventsActionUpdate(Sender: TObject);
     procedure OperationValuesActionExecute(Sender: TObject);
     procedure PushOperationDesignActionExecute(Sender: TObject);
     procedure PushOperationDesignActionUpdate(Sender: TObject);
@@ -11250,10 +11255,6 @@ begin
       xXsd.sType.Enumerations.AddObject(xEnum.Value, xEnum);
     end;
   end;
-  xXsd := operationOptionsXsd.XsdByCaption ['operationOptions.events'];
-  if Assigned (xXsd) then with xXsd.sType.ElementDefs do
-    for x := 0 to Count - 1 do
-      Xsds[x].EditProcedure := EditOperationOnEvent;
   xOperation := FocusedOperation;
   with FocusedOperation do
   begin
@@ -12757,6 +12758,56 @@ procedure TMainForm.HtmlViewerKeyDown(Sender: TObject;
 begin
   if (Key = Word('C')) and (Shift = [ssCtrl]) then
     (Sender as THtmlViewer).CopyToClipboard;
+end;
+
+procedure TMainForm.OperationEventsActionExecute(Sender: TObject);
+var
+  xXml: TXml;
+  xXsd: TXsd;
+  xEnum: TXsdEnumeration;
+  x, o: Integer;
+begin
+  if not Assigned(FocusedOperation) then
+    raise Exception.Create('No operation selected');
+  xXsd := operationEventsXsd;
+  if Assigned (xXsd) then with xXsd.sType.ElementDefs do
+    for x := 0 to Count - 1 do
+      Xsds[x].EditProcedure := EditOperationOnEvent;
+  with FocusedOperation do
+  begin
+    xXml := EventsAsXml;
+    try
+      if EditXmlXsdBased ( 'Operation events for ' + Alias
+                         , ''
+                         , ''
+                         , ''
+                         , False
+                         , False
+                         , esUsed
+                         , operationEventsXsd
+                         , xXml
+                         , True
+                         ) then
+      begin
+        AcquireLock;
+        try
+          stubChanged := True;
+          EventsFromXml(xXml);
+          BeginConsoleUpdate;
+          TProcedureThread.Create(False, False, se, se.PrepareAllOperationsShowingProgress);
+        finally
+          ReleaseLock;
+        end;
+      end;
+    finally
+      xXml.Free;
+    end;
+  end;
+end;
+
+procedure TMainForm.OperationEventsActionUpdate(Sender: TObject);
+begin
+  OperationEventsAction.Enabled := Assigned (FocusedOperation);
 end;
 
 procedure TMainForm.OperationValuesActionExecute(Sender: TObject);
