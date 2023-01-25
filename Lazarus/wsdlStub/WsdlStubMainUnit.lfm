@@ -2145,28 +2145,10 @@ object MainForm: TMainForm
     end
     object OperationOptionsAction: TAction
       Category = 'Operation'
-      Caption = 'Options'
+      Caption = 'Options...'
       Hint = 'Operation Options'
       OnExecute = OperationOptionsActionExecute
       OnUpdate = OperationOptionsActionUpdate
-    end
-    object HideAllOperationsAction: TAction
-      Category = 'Operation'
-      Caption = 'Hide all'
-      OnExecute = HideAllOperationsActionExecute
-    end
-    object UnhideAllOperationsAction: TAction
-      Category = 'Operation'
-      Caption = 'Unhide all'
-      OnExecute = UnhideAllOperationsActionExecute
-    end
-    object OperationZoomOnAction: TAction
-      Category = 'Operation'
-      Caption = 'Select zoom element'
-      Hint = 'Specify zoom element'
-      ImageIndex = 68
-      OnExecute = OperationZoomOnActionExecute
-      OnUpdate = OperationZoomOnActionUpdate
     end
     object HelpMainMenuAction: TAction
       Category = 'Help'
@@ -2194,11 +2176,6 @@ object MainForm: TMainForm
       OnExecute = LoadTestActionExecute
       OnUpdate = LoadTestActionUpdate
       ShortCut = 24647
-    end
-    object OperationAliasAction: TAction
-      Category = 'Operation'
-      Caption = 'Alias...'
-      OnExecute = OperationAliasActionExecute
     end
     object SchemasToZip: TAction
       Caption = 'SchemasToZip'
@@ -2463,12 +2440,6 @@ object MainForm: TMainForm
       OnExecute = ContextsActionExecute
       ShortCut = 24643
     end
-    object OperationBrowseDocumentationAction: TAction
-      Category = 'Operation'
-      Caption = 'Show Documentation in browser'
-      OnExecute = OperationBrowseDocumentationActionExecute
-      OnUpdate = OperationBrowseDocumentationActionUpdate
-    end
     object ToggleTrackDuplicateMessagesAction: TAction
       Category = 'Messages'
       Caption = 'Track duplicate messages'
@@ -2562,12 +2533,6 @@ object MainForm: TMainForm
       OnExecute = PasteProjectFromClipboardActionExecute
       ShortCut = 57430
     end
-    object ShowOperationInfoAction: TAction
-      Category = 'Operation'
-      Caption = 'Information'
-      OnExecute = ShowOperationInfoActionExecute
-      OnUpdate = ShowOperationInfoActionUpdate
-    end
     object ShowProjectInfoAction: TAction
       Category = 'Project'
       Caption = 'Information'
@@ -2600,15 +2565,6 @@ object MainForm: TMainForm
       Caption = 'ChangeToolBarColorTest'
       OnExecute = ChangeToolBarColorTestExecute
       ShortCut = 57424
-    end
-    object PushOperationDesignAction: TAction
-      Category = 'Operation'
-      Caption = 'Push operation to remote server'
-      Enabled = False
-      ImageIndex = 115
-      OnExecute = PushOperationDesignActionExecute
-      OnUpdate = PushOperationDesignActionUpdate
-      ShortCut = 57421
     end
     object ToggleStateMachineAction: TAction
       Category = 'StateMachine'
@@ -2656,6 +2612,56 @@ object MainForm: TMainForm
       OnExecute = ShowClipboardConentActionExecute
       OnUpdate = ShowClipboardConentActionUpdate
       ShortCut = 24662
+    end
+    object OperationEventsAction: TAction
+      Category = 'Operation'
+      Caption = 'Events...'
+      OnExecute = OperationEventsActionExecute
+      OnUpdate = OperationEventsActionUpdate
+    end
+    object HideAllOperationsAction: TAction
+      Category = 'Operation'
+      Caption = 'Hide all'
+      OnExecute = HideAllOperationsActionExecute
+    end
+    object UnhideAllOperationsAction: TAction
+      Category = 'Operation'
+      Caption = 'Unhide all'
+      OnExecute = UnhideAllOperationsActionExecute
+    end
+    object OperationZoomOnAction: TAction
+      Category = 'Operation'
+      Caption = 'Select zoom element'
+      Hint = 'Specify zoom element'
+      ImageIndex = 68
+      OnExecute = OperationZoomOnActionExecute
+      OnUpdate = OperationZoomOnActionUpdate
+    end
+    object OperationAliasAction: TAction
+      Category = 'Operation'
+      Caption = 'Alias...'
+      OnExecute = OperationAliasActionExecute
+    end
+    object OperationBrowseDocumentationAction: TAction
+      Category = 'Operation'
+      Caption = 'Show Documentation in browser'
+      OnExecute = OperationBrowseDocumentationActionExecute
+      OnUpdate = OperationBrowseDocumentationActionUpdate
+    end
+    object ShowOperationInfoAction: TAction
+      Category = 'Operation'
+      Caption = 'Information'
+      OnExecute = ShowOperationInfoActionExecute
+      OnUpdate = ShowOperationInfoActionUpdate
+    end
+    object PushOperationDesignAction: TAction
+      Category = 'Operation'
+      Caption = 'Push operation to remote server'
+      Enabled = False
+      ImageIndex = 115
+      OnExecute = PushOperationDesignActionExecute
+      OnUpdate = PushOperationDesignActionUpdate
+      ShortCut = 57421
     end
   end
   object mainImageList: TImageList
@@ -8507,9 +8513,14 @@ object MainForm: TMainForm
     end
     object MenuItem10: TMenuItem
       Action = OperationOptionsAction
-      Caption = 'Options...'
     end
     object MenuItem13: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem51: TMenuItem
+      Action = OperationEventsAction
+    end
+    object MenuItem62: TMenuItem
       Caption = '-'
     end
     object MenuItem1: TMenuItem

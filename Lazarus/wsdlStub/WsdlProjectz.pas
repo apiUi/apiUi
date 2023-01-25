@@ -511,6 +511,7 @@ var
     projectOptionsXsd: TXsd;
     serviceOptionsXsd: TXsd;
     listenersConfigXsd: TXsd;
+    operationEventsXsd: TXsd;
     operationOptionsXsd: TXsd;
     PegaSimul8rConnectorDataXsd: TXsd;
     PegaSimul8rSimulationDataXsd: TXsd;
@@ -1444,6 +1445,7 @@ begin
       PegaSimul8rSimulationDataXsd := XsdByName['PegaSimul8rSimulationData'];
       projectOptionsXsd := XsdByName['projectOptions'];
       serviceOptionsXsd := XsdByName['serviceOptions'];
+      operationEventsXsd := XsdByName['operationEvents'];
       operationOptionsXsd := XsdByName['operationOptions'];
       _WsdlListOfFilesXsd := XsdByName['FileNames'];
       endpointConfigXsd := XsdByName['endpointConfig'];
@@ -1459,6 +1461,7 @@ begin
     if not Assigned (projectOptionsXsd) then raise Exception.Create('XML Element definition for projectOptions not found');
     if not Assigned (serviceOptionsXsd) then raise Exception.Create('XML Element definition for serviceOptions not found');
     if not Assigned (operationOptionsXsd) then raise Exception.Create('XML Element definition for operationOptions not found');
+    if not Assigned (operationEventsXsd) then raise Exception.Create('XML Element definition for operationEvents not found');
     if not Assigned (PegaSimul8rConnectorDataXsd) then raise Exception.Create('XML Element definition for PegaSimul8rConnectorData not found');
     if not Assigned (PegaSimul8rSimulationDataXsd) then raise Exception.Create('XML Element definition for PegaSimul8rSimulationData not found');
     if not Assigned (_WsdlListOfFilesXsd) then raise Exception.Create('XML Element definition for FileNames not found');
@@ -3195,6 +3198,9 @@ begin
       dXml := oXml.Items.XmlCheckedItemByTag['operationOptions'];
       if Assigned (dXml) then
         xOperation.OptionsFromXml(dXml);
+      dXml := oXml.Items.XmlCheckedItemByTag['operationEvents'];
+      if Assigned (dXml) then
+        xOperation.EventsFromXml(dXml);
       xOperation.doSuppressLog := oXml.Items.XmlIntegerByTagDef ['doSuppressLog', 0];
       xOperation.DelayTimeMsMin := oXml.Items.XmlIntegerByTagDef ['DelayTimeMsMin', -1];
       if xOperation.DelayTimeMsMin = -1 then
@@ -5962,7 +5968,7 @@ begin
         then with TXml.CreateAsString('json', '') do
         try
           AddXml (TXml.CreateAsString('program', _progName + ' ' + _xmlProgVersion));
-          AddXml (TXml.CreateAsString('copyright', '© 2009 - 2022 Jan Bouwman'));
+          AddXml (TXml.CreateAsString('copyright', '© 2009 - 2023 Jan Bouwman'));
           AddXml (TXml.CreateAsString('built', 'Date: ' + {$I %date%}));
           AddXml (TXml.CreateAsString('lazarusVersion', LazVersion.laz_version));
           AddXml (TXml.CreateAsString('fpcVersion', {$I %fpcversion%}));
@@ -9296,6 +9302,7 @@ begin
         and xOperation.resolveReplyAliasses then
           Items.XmlItemByTag['ResolveAliasses'].Checked := False; // to avoid lots of changed files...
       end;
+      AddXml (xOperation.EventsAsXml);
       AddXml (TXml.CreateAsString('DelayTimeMsMin', IntToStr(xOperation.DelayTimeMsMin)));
       AddXml (TXml.CreateAsString('DelayTimeMsMax', IntToStr(xOperation.DelayTimeMsMax)));
       with AddXml (xOperation.endpointConfigAsXml) do

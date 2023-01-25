@@ -947,6 +947,19 @@ Instead of using a formal description, here you can use sample messages to creat
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="operationEvents">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="onFetchLogFromRemoteServer" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Executes when a request/response pair for this operation is retrieved from a remote server.  
+
+Press the **ellipsis** button to use the apiUi script-editor.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="operationOptions">
 		<xs:annotation>
 			<xs:documentation>Operation options;
@@ -1084,22 +1097,6 @@ On viloation an exception will be raised</xs:documentation>
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="invoke" type="invokeType" minOccurs="0"/>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-				<xs:element name="events" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation>Scripts that execute on certain events</xs:documentation>
-					</xs:annotation>
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="onFetchLogFromRemoteServer" type="xs:string" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation>Executes when a request/response pair for this operation is retrieved from a remote server.  
-
-Press the **ellipsis** button to use the apiUi script-editor.</xs:documentation>
-								</xs:annotation>
-							</xs:element>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
