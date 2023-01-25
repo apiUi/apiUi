@@ -13484,7 +13484,7 @@ begin
         if (not sml8rOk) then
         begin
           FocusedOperation := thisOperation;
-          ShowMessage ('To push operation to Simul8r, extra data is required');
+          ShowMessage (thisOperation.Alias + ': To push operation to Simul8r, extra data is required');
           Exit;
         end;
         xMessage := '';
