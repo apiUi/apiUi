@@ -328,6 +328,7 @@ type
                              ; aRequest: TWsdlMessage
                              ; aCorrelationId: String
                              );
+    procedure ExecuteOperationScript ( aOperation: TWsdlOperation);
     function SendMessageLater ( aOperation: TWsdlOperation
                                   ; aRequest: TWsdlMessage
                                   ; aCorrelationId: String
@@ -624,6 +625,48 @@ begin
     raise Exception.Create(Format ('RequestAsText: Operation ''%s'' not found', [xOperationAlias]));
 end;
 
+procedure PushOperationToRemoteServer(aContext: TObject; xOperationAlias: String);
+var
+  xProject: TWsdlProject;
+  xOperation: TWsdlOperation;
+begin
+  xProject := nil; //candidate context
+  xOperation := nil; //candidate context
+  if aContext is TWsdlOperation then with aContext as TWsdlOperation do
+  begin
+    xProject := Owner as TWsdlProject;
+    if xProject.remoteServerConnectionType = rscApiUi then
+      raise Exception.Create('PushOperationToRemoteServer not allowed for apiUi, use PushProject instead');
+    xOperation := invokeList.FindOnAliasName(xOperationAlias);
+    if Assigned (xOperation) then
+    begin
+      xOperation.StubAction := saRequest;
+      try
+        xProject.PushOperationToRemoteServer (xOperation);
+      except
+      end;
+    end;
+  end
+  else
+  begin
+    if aContext is TWsdlProject then
+    begin
+      xProject := aContext as TWsdlProject;
+      if xProject.remoteServerConnectionType = rscApiUi then
+        raise Exception.Create('PushOperationToRemoteServer not allowed for apiUi, use PushProject instead');
+      xOperation := allAliasses.FindOnAliasName(xOperationAlias);
+      if Assigned (xOperation) then
+      try
+        xProject.PushOperationToRemoteServer (xOperation);
+      except
+      end;
+    end;
+  end;
+  if not Assigned (xProject)
+  or not Assigned (xOperation) then
+   raise Exception.Create(Format ('PushOperationToRemoteServer: Operation ''%s'' not found', [xOperationAlias]));
+end;
+
 procedure RemoveDesignMessages(aContext: TObject; xOperationAlias: String);
   procedure _removeMessages (aProject: TWsdlProject; aOperation: TWsdlOperation);
   var
@@ -770,6 +813,44 @@ begin
     FreeOnTerminateRequest := True;
   end;
   xProject.SendOperationInThread(yOperation);
+end;
+
+procedure ExecuteOperationScript(aContext: TObject; xOperationAlias: String);
+var
+  xProject: TWsdlProject;
+  xOperation: TWsdlOperation;
+begin
+  xProject := nil; //candidate context
+  xOperation := nil; //candidate context
+  if aContext is TWsdlOperation then with aContext as TWsdlOperation do
+  begin
+    xProject := Owner as TWsdlProject;
+    xOperation := invokeList.FindOnAliasName(xOperationAlias);
+    if Assigned (xOperation) then
+    begin
+      xOperation.StubAction := saRequest;
+      try
+        xProject.ExecuteOperationScript (xOperation);
+      except
+      end;
+    end;
+  end
+  else
+  begin
+    if aContext is TWsdlProject then
+    begin
+      xProject := aContext as TWsdlProject;
+      xOperation := allAliasses.FindOnAliasName(xOperationAlias);
+      if Assigned (xOperation) then
+      try
+        xProject.ExecuteOperationScript (xOperation);
+      except
+      end;
+    end;
+  end;
+  if not Assigned (xProject)
+  or not Assigned (xOperation) then
+   raise Exception.Create(Format ('ExecuteOperationScript: Operation ''%s'' not found', [xOperationAlias]));
 end;
 
 procedure FetchDefaultDesignMessage(aContext: TObject; xOperationAlias: String);
@@ -4318,6 +4399,13 @@ begin
     FreeAndNil (sl);
   end;
   SendOperation(aOperation);
+end;
+
+procedure TWsdlProject.ExecuteOperationScript(aOperation: TWsdlOperation);
+begin
+  if (not aOperation.PreparedBefore) then
+    aOperation.PrepareBefore;
+  aOperation.ExecuteBefore;
 end;
 
 procedure TWsdlProject.SetAbortPressed(const Value: Boolean);
@@ -9637,7 +9725,8 @@ begin
   then
   try
     for o := 0 to allOperations.Count - 1 do with allOperations.Operations[o] do
-      if (StubAction <> saRequest) and (not abortPressed) then
+      if (StubAction <> saRequest)
+      and (not abortPressed) then
         PushOperationToRemoteServer(thisOperation);
   except
     on e: exception do
@@ -10072,9 +10161,11 @@ initialization
   _WsdlAddRemark := AddRemark;
   _WsdlExecuteScript := ExecuteScript;
   _WsdlExecuteScriptLater := ExecuteScriptLater;
+  _WsdlPushOperationToRemoteServer := PushOperationToRemoteServer;
   _WsdlRemoveDesignMessages := RemoveDesignMessages;
   _WsdlRequestOperation := RequestOperation;
   _WsdlRequestOperationLater := RequestOperationLater;
+  _WsdlExecuteOperationScript := ExecuteOperationScript;
   _WsdlNewDesignMessage := NewDesignMessage;
   _WsdlExecSql := ExecSql;
   _wsdlFetchDefaultDesignMessage := FetchDefaultDesignMessage;

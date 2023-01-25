@@ -190,7 +190,10 @@ function generatePegaSimul8rOperationSimulations(aOperation: TWsdlOperation): st
         AddXml (TXml.CreateAsString(sXml.Name, '')).LoadValues(sXml, True, True);
       with AddXml (TXml.CreateAsString('request', '')) do
       begin
-        AddXml (TXml.CreateAsString('contentType', aOperation.Consumes));
+        if aOperation.isSoapService then
+          AddXml (TXml.CreateAsString('contentType', 'application/xml'))
+        else
+          AddXml (TXml.CreateAsString('contentType', aOperation.Consumes));
         if aOperation.isOpenApiService then
         begin
           if aOperation.Wsdl.ServerPathNames.Count > 0 then
@@ -250,15 +253,6 @@ function generatePegaSimul8rOperationSimulations(aOperation: TWsdlOperation): st
             end;
           end;
         end;
-        if aOperation.isSoapService then
-        begin
-          with TIdUri.Create(aOperation.SoapAddress) do
-          try
-            AddXml (TXml.CreateAsString('urlPath', Path));
-          finally
-            free;
-          end;
-        end;
         if (not aDefaultMessage)
         and aOperation.hasBodyCorrelation then
         begin
@@ -281,8 +275,6 @@ function generatePegaSimul8rOperationSimulations(aOperation: TWsdlOperation): st
         end;
       end;
       rXml := AddXml (TXml.CreateAsString('response', ''));
-      if aOperation.Produces <> '' then
-        rXml.AddXml (TXml.CreateAsString('contentType', aOperation.Produces));
       if aOperation.isOpenApiService then
       begin
         for x := 0 to aOperation.rpyXml.Items.Count - 1 do
@@ -298,17 +290,7 @@ function generatePegaSimul8rOperationSimulations(aOperation: TWsdlOperation): st
               except
               end;
             rXml.AddXml(TXml.CreateAsInteger('status', aOperation.ResponseNo));
-            if aOperation.hasApiReplyHeader then
-            begin
-              mXml := rXml.AddXml(TXml.CreateAsString ('headers', ''));
-  //          mXml.AddXml(TXml.CreateAsString('Content-Type', xReplyContentType));
-              for y := 0 to Items.Count - 1 do
-              with Items.XmlItems[y] do
-                if Checked
-                and Assigned (Xsd)
-                and (Xsd.ParametersType = oppHeader) then
-                  mXml.AddXml(TXml.CreateAsString(Name, Value));
-            end;
+            rXml.AddXml(TXml.CreateAsString ('contentType', xReplyContentType));
             if Assigned (_hasResponseBody (thisXml)) then
               rXml.AddXml (TXml.CreateAsString('body', xPreparedReply));
           end;
@@ -318,10 +300,9 @@ function generatePegaSimul8rOperationSimulations(aOperation: TWsdlOperation): st
       end;
       if aOperation.isSoapService then
       begin
-        rXml.AddXml(TXml.CreateAsInteger('status', 200));
+        rXml.AddXml (TXml.CreateAsInteger('status', 200));
+        rXml.AddXml (TXml.CreateAsString('contentType', 'application/xml'));
         xPreparedReply := aOperation.PrepareReply (_progName, True);
-        mXml := rXml.AddXml(TXml.CreateAsString ('headers', ''));
-        mXml.AddXml(TXml.CreateAsString('Content-Type', 'application/xml'));
         rXml.AddXml (TXml.CreateAsString('body', xPreparedReply));
         if _hasTransformer (thisXml) then
         with rXml.AddXml(TXml.CreateAsString ('transformers', '')) do
@@ -394,6 +375,10 @@ var
 begin
   result := '';
   if not Assigned (aXml) then Exit;
+  if not Assigned (aOperation) then
+    raise Exception.Create('function generatePegaSimul8rOperationSimulationsParams(aXml: TXml; aOperation: TWsdlOperation): string; not assigned operation');
+  if not Assigned (aOperation.pegaSimul8rConnectorData) then
+    raise Exception.Create('function generatePegaSimul8rOperationSimulationsParams(aXml: TXml; aOperation: TWsdlOperation): string; not Assigned (aOperation.pegaSimul8rConnectorData)');
   with TXml.CreateAsString (aXml.Name, '') do
   try
     CopyDownLine(aXml, True);

@@ -620,9 +620,11 @@ procedure assignAnyType (aDstGroup, aSrcGroup: TObject);
 function wsdlRequestAsText (aObject: TObject; aOperation: String): String;
 function wsdlReplyAsText (aObject: TObject; aOperation: String): String;
 procedure wsdlNewDesignMessage (aObject: TObject; aOperation, aName: String);
+procedure wsdlPushOperationToRemoteServer (aObject: TObject; aOperation: String);
 procedure wsdlRemoveDesignMessages (aObject: TObject; aOperation: String);
 procedure wsdlRequestOperation (aObject: TObject; aOperation: String);
 procedure wsdlRequestOperationLater (aObject: TObject; aOperation: String; aLaterMs: Extended);
+procedure wsdlExecuteOperationScript (aObject: TObject; aOperation: String);
 procedure wsdlSendOperationRequest (aOperation, aCorrelation: String);
 procedure wsdlSendOperationRequestLater (aOperation, aCorrelation: String; aLater: Extended);
 function OccurrencesX (aObject: TObject): Extended;
@@ -692,9 +694,11 @@ var
   _WsdlExecSql: VFunctionOS;
   _WsdlNewDesignMessage: VFunctionOSS;
   _wsdlFetchDefaultDesignMessage: VFunctionOS;
+  _WsdlPushOperationToRemoteServer: VFunctionOS;
   _WsdlRemoveDesignMessages: VFunctionOS;
   _WsdlRequestOperation: VFunctionOS;
   _WsdlRequestOperationLater: VFunctionOSX;
+  _WsdlExecuteOperationScript: VFunctionOS;
   _WsdlRequestAsText, _WsdlReplyAsText: SFunctionOS;
   _WsdlExecuteScript: VFunctionOS;
   _WsdlExecuteScriptLater: VFunctionOSX;
@@ -1399,6 +1403,13 @@ begin
   result := _WsdlReplyAsText (aObject, aOperation);
 end;
 
+procedure wsdlPushOperationToRemoteServer(aObject: TObject; aOperation: String);
+begin
+  if not Assigned (_wsdlPushOperationToRemoteServer) then
+    raise Exception.Create('wsdlPushOperationToRemoteServer: implementation missing');
+  _wsdlPushOperationToRemoteServer (aObject, aOperation);
+end;
+
 procedure wsdlRemoveDesignMessages(aObject: TObject; aOperation: String);
 begin
   if not Assigned (_WsdlRemoveDesignMessages) then
@@ -1418,6 +1429,13 @@ begin
   if not Assigned (_WsdlRequestOperationLater) then
     raise Exception.Create('wsdlRequestOperation: implementation missing');
   _WsdlRequestOperationLater (aObject, aOperation, aLaterMs);
+end;
+
+procedure wsdlExecuteOperationScript (aObject: TObject; aOperation: String);
+begin
+  if not Assigned (_wsdlExecuteOperationScript) then
+    raise Exception.Create('wsdlExecuteOperationScript: implementation missing');
+  _wsdlExecuteOperationScript (aObject, aOperation);
 end;
 
 procedure wsdlFetchDefaultDesignMessage (aObject: TObject; aOperation: String);
@@ -1533,6 +1551,14 @@ end;
 function StrToFloatX (arg: String): Extended;
 begin
   result := StrToFloatDef(arg, 0);
+end;
+
+function CharValueX (arg: String; N: Extended): Extended;
+begin
+  if (Trunc(N) < -1)
+  or (Trunc(N) > Length (arg)) then
+    raise Exception.Create ('(CharValueX): Index for CharValueX out of range: ' + IntToStr (Trunc(N)));
+  result := Ord (arg [Trunc(N)]);
 end;
 
 function StrFromClipboard: String;
@@ -3979,6 +4005,7 @@ begin
     BindScriptFunction ('AccordingSchema', @isAccordingSchema, XFG, '(aItem)');
     BindScriptFunction ('AddRemark', @AddRemark, VFOS, '(aString)');
     BindScriptFunction ('Assigned', @isAssigned, XFG, '(aItem)');
+    BindScriptFunction ('CharValue', @CharValueX, XFSX, '(aString, aIndex)');
     BindScriptFunction ('ClearLogs', @ClearLogs, VFOV, '()');
     BindScriptFunction ('ClearSnapshots', @ClearSnapshots, VFOV, '()');
     BindScriptFunction ('AssignAnyType', @assignAnyType, VFGG, '(aDestGroup, aSrcGroup)');
@@ -3992,6 +4019,7 @@ begin
     BindScriptFunction ('DateTimeToUnix', @xDateTimeToUnix, XFD, '(aDateTime)');
     BindScriptFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
     BindScriptFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
+    BindScriptFunction ('ExecuteOperationScript', @WsdlExecuteOperationScript, VFOS, '(aOperation)');
     BindScriptFunction ('ExecuteScript', @ExecuteScript, VFOS, '(aScript)');
     BindScriptFunction ('ExecuteScriptLater', @ExecuteScriptLater, VFOSX, '(aScript, aLaterMs)');
     BindScriptFunction ('ExecSql', @wsdlExecSql, VFOS, '(aQuery)');
@@ -4047,6 +4075,7 @@ begin
     BindScriptFunction ('SqlSelectResultRow', @SqlSelectResultRow, SLFOS, '(aSqlSelectQuery)');
     BindScriptFunction ('SqlQuotedStr', @sqlQuotedString, SFS, '(aString)');
     BindScriptFunction ('OperationCount', @xsdOperationCount, XFOV, '()');
+    BindScriptFunction ('PushOperationToRemoteServer', @wsdlPushOperationToRemoteServer, VFOS, '(aOperation)');
     BindScriptFunction ('RegExprMatch', @RegExprMatchList, SLFOSS, '(aString, aRegExpr)');
     BindScriptFunction ('SeparatedString', @SeparatedStringList, SLFOSS, '(aString, aSeparator)');
     BindScriptFunction ('SeparatedStringN', @SeparatedStringN, SFOSSX, '(aString, aSeparator, aIndex)');
@@ -6119,6 +6148,7 @@ begin
       fExpressChecker.Database := _WsdlDbsConnector;
       aBind.Bind ('', fExpressChecker, 1);
       fExpressChecker.BindBoolean('Bind_.Checker', aBind.fChecked);
+      BindCheckerFunction ('CharValue', @CharValueX, XFSX, '(aString, aIndex)');
       BindCheckerFunction ('dbLookUp', @dbLookUp, SFSSSS, '(aTable, aValueColumn, aReferenceColumn, aReferenceValue)');
       BindCheckerFunction ('DecEnvNumber', @decVarNumber, XFOS, '(aKey)');
       BindCheckerFunction ('FormatDate', @FormatDateX, SFDS, '(aDate, aMask)');

@@ -194,7 +194,7 @@ end;
 
 function CeilExtended (arg: Extended): Extended;
 begin
-  result := ceil (arg);
+  result := ceil64 (arg);
 end;
 
 function CosExtended (arg: Extended): Extended;
@@ -207,7 +207,7 @@ end;
 
 function FloorExtended (arg: Extended): Extended;
 begin
-  result := floor (arg);
+  result := arg - Frac (arg);
 end;
 
 function LnExtended (arg: Extended): Extended;
