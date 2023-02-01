@@ -168,6 +168,7 @@ type
   public
     majorVersion, minorVersion, revision, build: Integer;
     hasGui: Boolean;
+    FocusedOperation: TWsdlOperation;
     ProgressInterface: TProgressInterface;
     EditContexts: TThreadMethod;
     doStartOnOpeningProject: Boolean;
@@ -684,9 +685,8 @@ procedure RemoveDesignMessages(aContext: TObject; xOperationAlias: String);
           while Messages.Count > 1 do
             Messages.DeleteMessage(Messages.Count - 1);
           aProject.ProgressUpdate('Finishing', 900);
-          aProject.ProgressInvalidateConsole;
+          uiInvalid := True;
         finally
-          aProject.uiInvalid := True;
           aProject.ProgressEnd;
         end;
       finally
@@ -935,14 +935,9 @@ begin
     for x := 0 to xMessage.CorrelationBindables.Count - 1 do with xMessage.CorrelationBindables do
       Bindables[x].CorrelationValue := Bindables[x].Value;
     xProject.UpdateMessageRow(xOperation, xMessage);
+    xOperation.uiInvalid := True;
   finally
     xOperation.ReleaseLock;
-  end;
-  xProject.AcquireLogLock;
-  try
-    xProject.uiInvalid := True;
-  finally
-    xProject.ReleaseLogLock;
   end;
 end;
 
@@ -7339,17 +7334,33 @@ begin
           xLog.ReplyValidateResult := xOperation.rpyBind.AllValidationsMessage;
           xLog.ReplyValidated := True;
         end;
+        if xLog.Operation.onAfterProxyCommand <> '' then
+        begin
+          with TWsdlOperation.Create(xLog.Operation) do
+          try
+            try
+              xLog.toBindables(thisOperation);
+              OperationScriptExecuteLater(thisOperation, onAfterProxyCommand, 0);
+            except
+            end;
+          finally
+            // Freed in Thread;
+          end;
+        end;
       finally
         xOperation.Free;
       end;
     end;
   finally
     DisplayLog ('', xLog);
+    AContext.Data := nil;
   end;
 end;
 
 procedure TWsdlProject.HTTPProxyServerHTTPBeforeCommand(
   AContext: TIdHTTPProxyServerContext);
+var
+  xQpos: Integer;
 begin
   AContext.Data := TLog.Create;
   with AContext.Data as TLog do
@@ -7357,7 +7368,18 @@ begin
     TransportType := ttHttp;
     StubAction := saForward;
     httpCommand := AContext.Command;
-    httpDocument := AContext.Document;
+    xQpos := Pos ('?', AContext.Document);
+    if xQpos > 0 then
+    begin
+      httpDocument := Copy (AContext.Document, 1, xQpos - 1);
+      httpParams := Copy (AContext.Document, xQpos + 1, MaxInt);
+    end
+    else
+    begin
+      httpDocument := AContext.Document;
+      httpParams := '';
+    end;
+    PathFormat := httpDocument;
   end;
 end;
 
@@ -7386,10 +7408,18 @@ begin
     end;
     if AContext.TransferSource = tsServer then
     begin
+      httpResponseCode := 0;
       OutBoundTimeStamp := NowUTC;
       ReplyHeaders := AContext.Headers.Text;
       ReplyBody := _streamToString;
       OutboundBody := ReplyBody;
+      with TRegExpr.Create ('\d{3}') do
+      try
+        if Exec (ReplyHeaders) then
+          httpResponseCode := StrToInt (Match[0]);
+      finally
+        Free;
+      end;
     end;
   end;
 end;
@@ -9826,7 +9856,7 @@ begin
           if not Assigned (thisXml) then
             raise Exception.Create ('remoteServerConnection.type.pegaSimul8r.PushDesignParams not found');
           xmlio.apiUiServerDialog ( remoteServerConnectionXml
-                                  , '/prweb/api/Simul8Tools/v1/simulations'
+                                  , '/prweb/api/Simul8Content/V1/contentmanagement'
                                   , generatePegaSimul8rOperationSimulationsParams(thisXml, xOperation)
                                   , 'POST'
                                   , 'application/json'

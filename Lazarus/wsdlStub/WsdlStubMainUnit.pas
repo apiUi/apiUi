@@ -1710,6 +1710,7 @@ procedure TMainForm.setFocusedOperation(const Value: TWsdlOperation);
 begin
   if (Value = fFocusedOperation) then Exit;
   fFocusedOperation := Value;
+  se.FocusedOperation := Value;
   FocusedMessage := nil;
   try
     DisableViewOnFocusChangeEvents;
@@ -1718,29 +1719,35 @@ begin
       if Assigned (fFocusedOperation)
       and (fFocusedOperation is TWsdlOperation) then
       begin
-        se.LastFocusedOperation := Value;
-        WsdlNameEdit.Text := Wsdl.FileName;
-        IpmDescrType := Value.WsdlService.DescriptionType;
-        WsdlServiceNameEdit.Text := Value.WsdlService.Name;
-        WsdlOperationNameEdit.Text := Value.Name;
-        FillInWsdlEdits;
-        GridView.Clear;
-        UpdateMessagesGrid;
-        FillGridView(GridView, FocusedOperation.Messages);
-        StubAction := FocusedOperation.StubAction;
-        doUseStateMachine := FocusedOperation.doUseStateMachine;
-        DoColorBindButtons;
-        EditBetweenScriptMenuItem.Visible := (Value.StubAction = saStub);
-        EditBeforeScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
-        EditAfterScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
-        UpdateVisibiltyTreeView(Value.WsdlService.DescriptionType = ipmDTFreeFormat);
-        UpdateMessagesView;
-        if Assigned (value.LastFocusedMessage) then
-          FocusedMessage := Value.LastFocusedMessage
-        else
-          FocusedMessage := Value.Messages.Messages[0];
-        if Assigned (FocusedMessage) then
-          FocusOnFullCaptionOrFirst(FocusedOperation.LastFullCaption);
+        FocusedOperation.AcquireLock;
+        try
+          se.LastFocusedOperation := Value;
+          WsdlNameEdit.Text := Wsdl.FileName;
+          IpmDescrType := Value.WsdlService.DescriptionType;
+          WsdlServiceNameEdit.Text := Value.WsdlService.Name;
+          WsdlOperationNameEdit.Text := Value.Name;
+          FillInWsdlEdits;
+          GridView.Clear;
+          UpdateMessagesGrid;
+          FillGridView(GridView, FocusedOperation.Messages);
+          StubAction := FocusedOperation.StubAction;
+          doUseStateMachine := FocusedOperation.doUseStateMachine;
+          DoColorBindButtons;
+          EditBetweenScriptMenuItem.Visible := (Value.StubAction = saStub);
+          EditBeforeScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
+          EditAfterScriptMenuItem.Visible := not EditBetweenScriptMenuItem.Visible;
+          UpdateVisibiltyTreeView(Value.WsdlService.DescriptionType = ipmDTFreeFormat);
+          UpdateMessagesView;
+          FocusedOperation.uiInvalid := False;
+          if Assigned (value.LastFocusedMessage) then
+            FocusedMessage := Value.LastFocusedMessage
+          else
+            FocusedMessage := Value.Messages.Messages[0];
+          if Assigned (FocusedMessage) then
+            FocusOnFullCaptionOrFirst(FocusedOperation.LastFullCaption);
+        finally
+          FocusedOperation.ReleaseLock;
+        end;
       end
       else
       begin
@@ -1876,11 +1883,14 @@ var
   Data: PXmlTreeRec;
 begin
   result := nil;
-  if Assigned(aNode) then
-  begin
-    Data := aTreeView.GetNodeData(aNode);
-    if Assigned(Data) then
-      result := Data.Bind;
+  try
+    if Assigned(aNode) then
+    begin
+      Data := aTreeView.GetNodeData(aNode);
+      if Assigned(Data) then
+        result := Data.Bind;
+    end;
+  except
   end;
 end;
 
@@ -1889,13 +1899,16 @@ var
   Data: PMessageTreeRec;
 begin
   result := nil;
-  if Assigned(aNode) then
-  begin
-    Data := aTreeView.GetNodeData(aNode);
-    if Assigned(Data) then
+  try
+    if Assigned(aNode) then
     begin
-      result := Data.Message;
+      Data := aTreeView.GetNodeData(aNode);
+      if Assigned(Data) then
+      begin
+        result := Data.Message;
+      end;
     end;
+  except
   end;
 end;
 
@@ -2088,6 +2101,8 @@ begin
       Exit;
     end;
     xBind := NodeToBind(TreeView, TreeView.FocusedNode);
+    if not Assigned (xBind) then
+      Exit;
     if xmlUtil.isExtendAdviced(xBind) then
       ExtendRecursivityMenuItemClick(nil)
     else
@@ -4141,7 +4156,11 @@ begin
       CellText := '?';
   except
     on e: Exception do
+    begin
       CellText := e.Message;
+      if Assigned (FocusedOperation) then
+        FocusedOperation.uiInvalid := True;
+    end;
   end;
 end;
 
@@ -6612,80 +6631,83 @@ var
   xMessage: TWsdlMessage;
   x, n: Integer;
 begin
-  xMessage := NodeToMessage(Sender, Node);
-  if Column < nMessageButtonColumns then exit;
-  if Assigned (xMessage.Duplicates) then
-    TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsUnderline];
-
-  if (Column = nameColumn) then
-  begin
-    if Assigned (xMessage.DuplicatesName)
-//  or (not xmlio.isFileNameAllowed(xMessage.Name))
-    then
-      TargetCanvas.Font.Color := clRed;
-    exit;
-  end;
-  if (Column < firstDataColumn) then
-    exit;
-  xBind := nil;
   try
-    xBind := xMessage.ColumnXmls.Bindables [Column - firstDataColumn];
-  except
-  end;
-  if not Assigned(xBind) then
-    exit;
-  Xml := nil;
-  XmlAttr := nil;
-  if xBind is TXmlAttribute then
-    XmlAttr := xBind as TXmlAttribute;
-  if xBind is TXml then
-    Xml := xBind as TXml;
+    xMessage := NodeToMessage(Sender, Node);
+    if Column < nMessageButtonColumns then exit;
+    if Assigned (xMessage.Duplicates) then
+      TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsUnderline];
 
-  if xBind is TXmlAttribute then
-  begin
-    if ((Assigned(XmlAttr.XsdAttr)) and (XmlAttr.XsdAttr.Use = 'required')) then
+    if (Column = nameColumn) then
     begin
-      TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsBold];
-      if (Sender.FocusedNode <> Node) or (Sender.FocusedColumn <> Column) then
-      begin
-        if (not XmlAttr.Checked) and (XmlAttr.Parent as TXml).CheckedAllUp then
-          TargetCanvas.Font.Color := clRed;
-      end;
-    end;
-    exit;
-  end;
-  if xBind is TXml then
-  begin
-    if (not Assigned(Xml.Xsd)) then
-    begin
+      if Assigned (xMessage.DuplicatesName)
+  //  or (not xmlio.isFileNameAllowed(xMessage.Name))
+      then
+        TargetCanvas.Font.Color := clRed;
       exit;
     end;
+    if (Column < firstDataColumn) then
+      exit;
+    xBind := nil;
     try
-      if Assigned(Xml.Xsd)
-      and (StrToIntDef(Xml.Xsd.minOccurs, 0) > 0)
-      and Assigned(Xml.Parent)
-      and Assigned(TXml(Xml.Parent).Xsd)
-      and (TXml(Xml.Parent).TypeDef.ContentModel <> 'Choice') then
+      xBind := xMessage.ColumnXmls.Bindables [Column - firstDataColumn];
+    except
+    end;
+    if not Assigned(xBind) then
+      exit;
+    Xml := nil;
+    XmlAttr := nil;
+    if xBind is TXmlAttribute then
+      XmlAttr := xBind as TXmlAttribute;
+    if xBind is TXml then
+      Xml := xBind as TXml;
+
+    if xBind is TXmlAttribute then
+    begin
+      if ((Assigned(XmlAttr.XsdAttr)) and (XmlAttr.XsdAttr.Use = 'required')) then
       begin
         TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsBold];
         if (Sender.FocusedNode <> Node) or (Sender.FocusedColumn <> Column) then
         begin
-          if (not Xml.Checked) and (Xml.Parent as TXml).CheckedAllUp then
+          if (not XmlAttr.Checked) and (XmlAttr.Parent as TXml).CheckedAllUp then
             TargetCanvas.Font.Color := clRed;
         end;
-      end
-      else
-      begin
-        if (Sender.FocusedNode <> Node) or (Sender.FocusedColumn <> Column) then
-        begin
-          if not(Xml.Parent as TXml).CheckedAllUp then
-            TargetCanvas.Font.Color := clBlue;
-        end;
       end;
-    except
-      ShowMessage('Error in logic for paintext [' + Xml.TagName + ';' + IntToStr
-          (Column) + ']');
+      exit;
     end;
+    if xBind is TXml then
+    begin
+      if (not Assigned(Xml.Xsd)) then
+      begin
+        exit;
+      end;
+      try
+        if Assigned(Xml.Xsd)
+        and (StrToIntDef(Xml.Xsd.minOccurs, 0) > 0)
+        and Assigned(Xml.Parent)
+        and Assigned(TXml(Xml.Parent).Xsd)
+        and (TXml(Xml.Parent).TypeDef.ContentModel <> 'Choice') then
+        begin
+          TargetCanvas.Font.Style := TargetCanvas.Font.Style + [fsBold];
+          if (Sender.FocusedNode <> Node) or (Sender.FocusedColumn <> Column) then
+          begin
+            if (not Xml.Checked) and (Xml.Parent as TXml).CheckedAllUp then
+              TargetCanvas.Font.Color := clRed;
+          end;
+        end
+        else
+        begin
+          if (Sender.FocusedNode <> Node) or (Sender.FocusedColumn <> Column) then
+          begin
+            if not(Xml.Parent as TXml).CheckedAllUp then
+              TargetCanvas.Font.Color := clBlue;
+          end;
+        end;
+      except
+        ShowMessage('Error in logic for paintext [' + Xml.TagName + ';' + IntToStr
+            (Column) + ']');
+      end;
+    end;
+  except
   end;
 end;
 
@@ -8411,7 +8433,8 @@ begin
   finally
     se.ReleaseLogLock;
   end;
-  if uiInvalidated then
+  if uiInvalidated
+  or (Assigned (FocusedOperation) and FocusedOperation.uiInvalid) then
   begin
     xFocusedOperation := FocusedOperation;
     FocusedOperation := nil;
