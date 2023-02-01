@@ -957,6 +957,22 @@ Instead of using a formal description, here you can use sample messages to creat
 Press the **ellipsis** button to use the apiUi script-editor.</xs:documentation>
 					</xs:annotation>
 				</xs:element>
+				<xs:element name="onAfterProxyCommand" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Executes after a proxy request was processed.  
+Press the **ellipsis** button to use the apiUi script-editor.  
+
+ 
+
+Note:  
+This script will be executed in a separate context.  
+In this context, data from the request and response are available.  
+Assigning values to request or reply will have **no effect** on traffic to the target server or the loggged data.  
+
+
+</xs:documentation>
+					</xs:annotation>
+				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

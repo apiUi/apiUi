@@ -255,7 +255,7 @@ type
     CorrelationBindables: TBindableList;
     BeforeScriptLines: TJBStringList;
     AfterScriptLines: TJBStringList;
-    onFetchLogFromRemoteServer: String;
+    onFetchLogFromRemoteServer, onAfterProxyCommand: String;
     stateMachineScenarioName, stateMachineRequiredState, stateMachineNextState: String;
     Duplicates, DuplicatesName: TWsdlBinder;
     _compareString: String;
@@ -322,6 +322,7 @@ type
     function getDebugTokenStringBefore: String;
     public
       _processing: Boolean;
+      uiInvalid: Boolean;
       WsdlService: TWsdlService;
       Wsdl: TWsdl;
       Owner: TObject;
@@ -3717,6 +3718,7 @@ begin
   StubCustomHeaderXml := TXml.CreateAsString('customHeaders', '');
   doReadReplyFromFile := False;
   onFetchLogFromRemoteServer := '';
+  onAfterProxyCommand := '';
   doUseStateMachine := False;
   stateMachineScenarioName := '';
   stateMachineRequiredState := '';
@@ -5040,6 +5042,7 @@ begin
   self.BeforeScriptLines := xOperation.BeforeScriptLines;
   self.AfterScriptLines := xOperation.AfterScriptLines;
   self.onFetchLogFromRemoteServer := xOperation.onFetchLogFromRemoteServer;
+  self.onAfterProxyCommand := xOperation.onAfterProxyCommand;
   self.doUseStateMachine := xOperation.doUseStateMachine;
   self.stateMachineScenarioName := xOperation.stateMachineScenarioName;
   self.stateMachineRequiredState := xOperation.stateMachineRequiredState;
@@ -6137,6 +6140,8 @@ begin
   begin
     if onFetchLogFromRemoteServer <> '' then
       AddXml (TXml.CreateAsString('onFetchLogFromRemoteServer', onFetchLogFromRemoteServer));
+    if onAfterProxyCommand <> '' then
+      AddXml (TXml.CreateAsString('onAfterProxyCommand', onAfterProxyCommand));
   end;
 end;
 
@@ -6145,7 +6150,9 @@ begin
   if not Assigned (aXml) then raise Exception.Create('operationEventsFromXml: No XML assigned');
   if not (aXml.Name = 'operationEvents') then raise Exception.Create('operationEventsFromXml: Illegal XML: ' + aXml.Text);
   onFetchLogFromRemoteServer := '';
+  onAfterProxyCommand := '';
   onFetchLogFromRemoteServer := aXml.Items.XmlValueByTagDef['onFetchLogFromRemoteServer', onFetchLogFromRemoteServer];
+  onAfterProxyCommand := aXml.Items.XmlValueByTagDef['onAfterProxyCommand', onAfterProxyCommand];
 end;
 
 procedure TWsdlOperation.BindChecker(aBind: TCustomBindable);
@@ -6471,6 +6478,7 @@ begin
   doReadReplyFromFile := False;
   ReadReplyFromFileXml.Items.Clear;
   onFetchLogFromRemoteServer := '';
+  onAfterProxyCommand := '';
   inboundRequestSchemaValidationType := svAccordingProject;
   outboundReplySchemaValidationType := svAccordingProject;
   outboundRequestSchemaValidationType := svAccordingProject;
