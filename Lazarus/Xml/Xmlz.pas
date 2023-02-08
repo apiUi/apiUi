@@ -144,6 +144,7 @@ type
     function GetFullCaption: String;
     function GetFullUQCaption: String;
     function GetGroup: Boolean;
+    procedure _LoadValues (srcXml: TXml; aAddUnknowns, aOnlyWhenChecked, aCopyCheckers, aIgnoreNamespaceDifferences: Boolean); Overload;
   public
     CData: Boolean;
     NameSpace: String;
@@ -223,7 +224,7 @@ type
     function AddAttribute (aAttr: TXmlAttribute): TXmlAttribute;
     function DeleteChild (aXml: TXml): TXml;
     procedure DeleteAttribute (aAttr: TXmlAttribute);
-    procedure LoadValues (aXml: TXml; aAddUnknowns, aOnlyWhenChecked, aCopyCheckers, aIgnoreNamespaceDifferences: Boolean); Overload;
+    procedure LoadValues (srcXml: TXml; aAddUnknowns, aOnlyWhenChecked, aCopyCheckers, aIgnoreNamespaceDifferences: Boolean); Overload;
     procedure LoadValues (aXml: TXml; aAddUnknowns, aOnlyWhenChecked: Boolean); Overload;
     procedure LoadValues (aXml: TXml; aAddUnknowns: Boolean); Overload;
     procedure CopyValues (aXml: TXml; aDoReset, aSkipAssignments: Boolean);
@@ -2107,235 +2108,13 @@ begin
   result := TXmlAttribute (Objects [index]);
 end;
 
-procedure TXml.LoadValues(aXml: TXml; aAddUnknowns, aOnlyWhenChecked, aCopyCheckers, aIgnoreNamespaceDifferences: Boolean);
-  function _getExtendedTypedef (aName: String; aTypeDef: TXsdDataType): TXsdDataType;
-    function __get (aTypeDef: TXsdDataType): TXsdDataType;
-    var
-      x: Integer;
-    begin
-      result := nil;
-      if aTypeDef.Name = aName then
-        result := aTypeDef
-      else
-      begin
-        for x := 0 to aTypeDef.ExtendedByList.Count - 1 do
-        begin
-          result := __get(aTypeDef.ExtendedByList.XsdDataTypes[x]);
-          if Assigned (result) then
-            Exit;
-        end;
-      end;
-    end;
-  begin
-    result := nil;
-    while aTypeDef.IsExtention and Assigned (aTypeDef.BaseDataType) do
-      aTypeDef := aTypeDef.BaseDataType;
-    result := __Get (aTypeDef);
-  end;
+procedure TXml.LoadValues(srcXml: TXml; aAddUnknowns, aOnlyWhenChecked, aCopyCheckers, aIgnoreNamespaceDifferences: Boolean);
 var
   x: Integer;
-  y: Integer;
-  xXml: TXml;
-  cXml: TXml; {xml with corr. tagname but checked}
-  yXml: TXml; {xml with corr. tagname and unchecked}
-  nXml: TXml; {new xml in case only cXml found}
-  xXmlAttr: TXmlAttribute;
-  xtndDatatype: TXsdDataType;
-  _Checked: Boolean;
-  _Name: String;
 begin
   if self = nil then exit;
-  if aXml = nil then exit;
-  if not (self is TXml) then
-    raise Exception.Create('Self is not an XML');
-  if not (aXml is TXml) then
-    raise Exception.Create ( 'Not valid XML data ');
-  if aOnlyWhenChecked and (not aXml.Checked) then Exit;
-  if (NameWithoutPrefix (TagName) <> NameWithoutPrefix (aXml.TagName))
-  or (    (not aIgnoreNamespaceDifferences)
-      and (NameSpace <> aXml.NameSpace)
-      and (NameSpace <> '')
-      and (aXml.NameSpace <> '')
-     )
-  then
-    exit;
-  for x := 0 to Items.Count - 1 do
-    Items.XmlItems[x].isProcessed := False;
-  if (aXml.Items.Count > 0)
-  and (Items.Count = 0) then
-    ExtendRecursivity;
-  if aXml.Value <> '' then
-    if Group then
-      aXml.Value := '';
-
-  //if (   (aXml.Group and (Value <> ''))
-  //    or ((aXml.Value <> '') and Group)
-  //   )
-  //then begin
-  //  raise Exception.Create ( 'Mismatch on grouping for tag: '
-  //                         + TagName
-  //                         );
-  //end; {if aXml.Group <> aIpmItem.Group}
-
-  if Assigned (Xsd) then
-  begin
-    if Assigned (TypeDef)
-    and (   (TypeDef.IsExtention and Assigned (TypeDef.BaseDataType))
-         or (TypeDef.ExtendedByList.Count > 0)
-        ) then
-    begin
-      if Assigned (aXml.Xsd) then
-      begin
-        if TypeDef <> aXml.TypeDef then
-        begin
-          xtndDatatype := _getExtendedTypedef (aXml.TypeDef.Name, Xsd.sType);
-          if Assigned (xtndDatatype)
-          and (xtndDatatype <> TypeDef) then
-          begin
-            TypeDef := xtndDatatype;
-            XsdCreate(0, Xsd);
-          end;
-        end;
-      end
-      else
-      begin // in case aXml loaded from a string, maybe there is a xsi:type
-        for x := 0 to aXml.Attributes.Count - 1 do
-        begin
-          if (NameWithoutPrefix (aXml.Attributes.XmlAttributes[x].Name) = tagType)
-          and (ExpandPrefixedName(aXml.NameSpace, aXml.Attributes.XmlAttributes[x].Name) = scXMLSchemaInstanceURI)
-          then
-          begin
-            xtndDatatype := _getExtendedTypedef (NameWithoutPrefix (aXml.Attributes.XmlAttributes[x].Value), Xsd.sType);
-            if Assigned (xtndDatatype)
-            and (xtndDatatype <> TypeDef) then
-            begin
-              TypeDef := xtndDatatype;
-              XsdCreate(0, Xsd);
-            end;
-          end;
-        end;
-      end;
-    end;
-  end;
-  if aCopyCheckers then
-    Checker := aXml.Checker;
-  fChecked := aXml.Checked;
-  Value := aXml.Value;
-  LoadIndex := aXml.LoadIndex;
-  if (not Assigned (Xsd))
-  and Assigned (aXml.Xsd) then
-  begin
-    Xsd := aXml.Xsd;
-    TypeDef := aXml.TypeDef;
-    jsonType := aXml.jsonType;
-  end;
-//jsonType := aXml.jsonType;
-  for x := 0 to aXml.Items.Count - 1 do
-  begin
-    xXml := aXml.Items.XmlItems [x];
-    y := 0;
-    yXml := nil;
-    cXml := nil;
-    while (y < Items.Count)
-    and (yXml = nil)
-    do begin
-      if (NameWithoutPrefix (Items.XmlItems [y].TagName) = NameWithoutPrefix (xXml.TagName))
-      and (   (aIgnoreNamespaceDifferences)
-           or (Items.XmlItems[y].NameSpace = xXml.NameSpace)
-           or (Items.XmlItems[y].NameSpace = '')
-           or (xXml.NameSpace = '')
-          )
-      then
-      begin
-        cXml := Items.XmlItems [y];
-        if (Items.XmlItems [y].isProcessed = False) then
-          yXml := Items.XmlItems [y];
-      end;
-      Inc (y);
-    end;
-    if yXml <> nil then
-    begin
-      yXml.LoadValues (xXml, aAddUnknowns, aOnlyWhenChecked, aCopyCheckers, aIgnoreNamespaceDifferences);
-      yXml.LoadIndex := xXml.LoadIndex;
-    end
-    else
-    begin
-      nXml := nil;
-      if cXml <> nil then
-      begin
-        if Assigned (cXml.Xsd) then
-          nXml := TXml.Create(0, cXml.Xsd)
-        else
-        begin
-          nXml := TXml.Create;
-          nXml.TagName := xXml.TagName;
-        end;
-        nXml.Parent := self;
-        Items.InsertObject( Items.IndexOfObject (cXml) + 1
-                                      , nXml.TagName
-                                      , nXml
-                                      );
-        nXml.LoadValues(xXml, aAddUnknowns, aOnlyWhenChecked, aCopyCheckers, aIgnoreNamespaceDifferences);
-        nXml.LoadIndex := xXml.LoadIndex;
-      end
-      else
-      begin
-        if aAddUnknowns then
-        begin
-          nXml := TXml.Create;
-          nXml.TagName := xXml.TagName;
-          AddXml(nXml);
-          nXml.LoadValues(xXml, aAddUnknowns, aOnlyWhenChecked, aCopyCheckers, aIgnoreNamespaceDifferences);
-          nXml.LoadIndex := xXml.LoadIndex;
-        end;
-      end;
-    end;
-  end; {for every xml.item}
-  for y := 0 to aXml.Attributes.Count - 1 do
-  begin
-    if aXml.Attributes.XmlAttributes[y].Name = CheckedAtttributeName then
-      fChecked := aXml.Attributes.XmlAttributes[y].ValueAsBoolean
-    else
-    begin
-      if (   (not aOnlyWhenChecked)
-          or aXml.Attributes.XmlAttributes [y].Checked
-         )
-      and (  (not Assigned (Xsd))
-           or (    (not aXml.Attributes.XmlAttributes [y].isXmlNsAttribute)
-               and (not aXml.Attributes.XmlAttributes [y].isXmlTypeDefAttribute)
-              )
-          )
-      then
-      begin
-        _Checked := True;
-        _Name := NameWithoutPrefix (aXml.Attributes.XmlAttributes [y].Name);
-        if AnsiStartsStr (UncheckedAtttributeName, _Name) then
-        begin
-          _Checked := False;
-          _Name := StuffString(_Name, 1, Length(UncheckedAtttributeName), '');
-        end;
-        xXmlAttr := nil;
-        for x := 0 to Attributes.Count - 1 do
-        begin
-          if NameWithoutPrefix (Attributes.XmlAttributes [x].Name)
-           = _Name then
-            xXmlAttr := Attributes.XmlAttributes[x];
-        end;
-        if (not Assigned (xXmlAttr))
-        and aAddUnknowns then
-        begin
-          xXmlAttr := TXmlAttribute.CreateAsString(_Name, '');
-          AddAttribute (xXmlAttr);
-        end;
-        if Assigned (xXmlAttr) then
-        begin
-          xXmlAttr.Value := aXml.Attributes.XmlAttributes [y].Value;
-          xXmlAttr.Checked := _Checked;
-        end;
-      end;
-    end;
-  end;
-  isProcessed := True;
+  isProcessed := False;
+  _LoadValues(srcXml, aAddUnknowns, aOnlyWhenChecked, aCopyCheckers, aIgnoreNamespaceDifferences);
 end;
 
 procedure TXml.LoadValues(aXml: TXml; aAddUnknowns, aOnlyWhenChecked: Boolean);
@@ -2761,7 +2540,11 @@ begin
   CData := False;
   Items := TXmlList.Create;
   Attributes := TXmlAttributeList.Create;
-  TagName := aXsd.ElementName;
+  try
+    Name := aXsd.ElementName;
+  except
+    Checked := False;
+  end;
   TypeDef := aXsd.sType;
   Parent := aParent;
   XsdCreate(aLevel, aXsd, aParent);
@@ -3329,6 +3112,327 @@ end;
 function TXml.GetGroup: Boolean;
 begin
   result := (Items.Count > 0)
+end;
+
+procedure TXml._LoadValues(srcXml: TXml; aAddUnknowns, aOnlyWhenChecked,
+  aCopyCheckers, aIgnoreNamespaceDifferences: Boolean);
+  function _getExtendedTypedef (aName: String; aTypeDef: TXsdDataType): TXsdDataType;
+    function __get (aTypeDef: TXsdDataType): TXsdDataType;
+    var
+      x: Integer;
+    begin
+      result := nil;
+      if aTypeDef.Name = aName then
+        result := aTypeDef
+      else
+      begin
+        for x := 0 to aTypeDef.ExtendedByList.Count - 1 do
+        begin
+          result := __get(aTypeDef.ExtendedByList.XsdDataTypes[x]);
+          if Assigned (result) then
+            Exit;
+        end;
+      end;
+    end;
+  begin
+    result := nil;
+    while aTypeDef.IsExtention and Assigned (aTypeDef.BaseDataType) do
+      aTypeDef := aTypeDef.BaseDataType;
+    result := __Get (aTypeDef);
+  end;
+
+  function _findOrCreateDstChild (aXml: TXml): TXml;
+  var
+    y: Integer;
+    xXml: TXml;
+  begin
+    result := nil;
+    y := 0;
+    xXml := nil;
+    while (y < Items.Count)
+    and (result = nil)
+    do begin
+      if (NameWithoutPrefix (Items.XmlItems [y].TagName) = NameWithoutPrefix (aXml.TagName))
+      and (   (aIgnoreNamespaceDifferences)
+           or (Items.XmlItems[y].NameSpace = aXml.NameSpace)
+           or (Items.XmlItems[y].NameSpace = '')
+           or (aXml.NameSpace = '')
+          )
+      then
+      begin
+        xXml := Items.XmlItems [y];
+        if (Items.XmlItems [y].isProcessed = False) then
+          result := Items.XmlItems [y];
+      end;
+      Inc (y);
+    end;
+    if result = nil then
+    begin
+      if xXml <> nil then
+      begin
+        if Assigned (xXml.Xsd) then
+          result := TXml.Create(0, xXml.Xsd)
+        else
+        begin
+          result := TXml.Create;
+          result.TagName := xXml.TagName;
+        end;
+        result.Parent := self;
+        Items.InsertObject( Items.IndexOfObject (xXml) + 1
+                                      , aXml.TagName
+                                      , result
+                                      );
+      end
+    end;
+    if (result = nil)
+    and aAddUnknowns then
+    begin
+      result := TXml.Create;
+      result.Name := aXml.Name;
+      AddXml(result);
+    end;
+  end;
+
+  procedure _repeatingxmlFromJsonarray (dParentXml, sXml: TXml);
+  var
+    x: Integer;
+    xName: String;
+  begin
+    if SXml.jsonType <> jsonArray then
+      raise Exception.Create ('illegalargument for procedure _jsonarray2repeatingxml (aXml: TXml)');
+    xName := sXml.Name;
+    sXml.Name := dParentXml.Name;
+    sXml.jsonType := jsonObject;
+    try
+      for x := 0 to sXml.Items.Count - 1 do
+        if sXml.Items.XmlItems[x].Name = '_' then  // just to be sure
+          sXml.Items.XmlItems[x].Name := xName;
+      dParentXml._LoadValues(sXml, aAddUnknowns,aOnlyWhenChecked,aCopyCheckers,aIgnoreNamespaceDifferences);
+      dParentXml.LoadIndex := sXml.LoadIndex;
+    finally
+      sXml.Name := xName;
+      sXml.jsonType := jsonArray;
+      for x := 0 to sXml.Items.Count - 1 do
+        if sXml.Items.XmlItems[x].Name = xName then
+          sXml.Items.XmlItems[x].Name := '_';
+    end;
+  end;
+
+  procedure _jsonarrayFromRepeatingxml (dXml, sXml: TXml);
+    function _findOrCreateItemXml: TXml;
+    var
+      x: Integer;
+      sampleXml: TXml;
+    begin
+      result := nil;
+      sampleXml := nil;
+      x := 0;
+      while (x < dXml.Items.Count)
+      and (not Assigned (result)) do
+      begin
+        if dXml.Items.XmlItems[x].Name = '_' then
+        begin
+          sampleXml := dXml.Items.XmlItems[x];
+          if (not dXml.Items.XmlItems[x].isProcessed) then
+            result := dXml.Items.XmlItems[x];
+        end;
+        Inc (x);
+      end;
+      if not Assigned (result) then
+      begin
+        if Assigned (sampleXml)
+        and Assigned(sampleXml.Xsd) then
+          result := dXml.AddXml (TXml.Create(0, sampleXml.Xsd))
+        else
+          result := dXml.AddXml (TXml.CreateAsString('_', ''));
+      end;
+      dXml.fChecked := srcXml.Checked;
+    end;
+
+  var
+    sName: String;
+  begin
+//dst(repeatingElement)._.* from src.repeatingElement.*;
+//sjowmessage ('self:' + Name + ' dest: ' + dXml.Name + ' srce: ' + sXml.Name);
+
+    sName := sXml.Name;
+    sXml.Name := '_';
+    try
+      with _findOrCreateItemXml do
+      begin
+        _LoadValues(sXml, aAddUnknowns,aOnlyWhenChecked,aCopyCheckers,aIgnoreNamespaceDifferences);
+        LoadIndex := sXml.LoadIndex;
+      end;
+    finally
+      sXml.Name := sName;
+    end;
+  end;
+
+var
+  x: Integer;
+  y: Integer;
+  srcChildXml: TXml;
+  dstChildXml: TXml;
+  xXmlAttr: TXmlAttribute;
+  xtndDatatype: TXsdDataType;
+  _Checked: Boolean;
+  _Name: String;
+begin
+  if self = nil then exit;
+  if srcXml = nil then exit;
+  if not (self is TXml) then
+    raise Exception.Create('Self is not an XML');
+  if not (srcXml is TXml) then
+    raise Exception.Create ( 'Not valid XML data ');
+  if aOnlyWhenChecked and (not srcXml.Checked) then Exit;
+  if (NameWithoutPrefix (TagName) <> NameWithoutPrefix (srcXml.TagName))
+  or (    (not aIgnoreNamespaceDifferences)
+      and (NameSpace <> srcXml.NameSpace)
+      and (NameSpace <> '')
+      and (srcXml.NameSpace <> '')
+     )
+  then
+    exit;
+  for x := 0 to Items.Count - 1 do
+    Items.XmlItems[x].isProcessed := False;
+  if (srcXml.Items.Count > 0)
+  and (Items.Count = 0) then
+    ExtendRecursivity;
+  if srcXml.Value <> '' then
+    if Group then
+      srcXml.Value := '';
+
+  //if (   (srcXml.Group and (Value <> ''))
+  //    or ((srcXml.Value <> '') and Group)
+  //   )
+  //then begin
+  //  raise Exception.Create ( 'Mismatch on grouping for tag: '
+  //                         + TagName
+  //                         );
+  //end; {if srcXml.Group <> aIpmItem.Group}
+
+  if Assigned (Xsd) then
+  begin
+    if Assigned (TypeDef)
+    and (   (TypeDef.IsExtention and Assigned (TypeDef.BaseDataType))
+         or (TypeDef.ExtendedByList.Count > 0)
+        ) then
+    begin
+      if Assigned (srcXml.Xsd) then
+      begin
+        if TypeDef <> srcXml.TypeDef then
+        begin
+          xtndDatatype := _getExtendedTypedef (srcXml.TypeDef.Name, Xsd.sType);
+          if Assigned (xtndDatatype)
+          and (xtndDatatype <> TypeDef) then
+          begin
+            TypeDef := xtndDatatype;
+            XsdCreate(0, Xsd);
+          end;
+        end;
+      end
+      else
+      begin // in case srcXml loaded from a string, maybe there is a xsi:type
+        for x := 0 to srcXml.Attributes.Count - 1 do
+        begin
+          if (NameWithoutPrefix (srcXml.Attributes.XmlAttributes[x].Name) = tagType)
+          and (ExpandPrefixedName(srcXml.NameSpace, srcXml.Attributes.XmlAttributes[x].Name) = scXMLSchemaInstanceURI)
+          then
+          begin
+            xtndDatatype := _getExtendedTypedef (NameWithoutPrefix (srcXml.Attributes.XmlAttributes[x].Value), Xsd.sType);
+            if Assigned (xtndDatatype)
+            and (xtndDatatype <> TypeDef) then
+            begin
+              TypeDef := xtndDatatype;
+              XsdCreate(0, Xsd);
+            end;
+          end;
+        end;
+      end;
+    end;
+  end;
+  if aCopyCheckers then
+    Checker := srcXml.Checker;
+  fChecked := srcXml.Checked;
+  Value := srcXml.Value;
+  LoadIndex := srcXml.LoadIndex;
+  if (not Assigned (Xsd))
+  and Assigned (srcXml.Xsd) then
+  begin
+    Xsd := srcXml.Xsd;
+    TypeDef := srcXml.TypeDef;
+    jsonType := srcXml.jsonType;
+  end;
+  for x := 0 to srcXml.Items.Count - 1 do
+  begin
+    srcChildXml := srcXml.Items.XmlItems [x];
+    dstChildXml := _findOrCreateDstChild(srcChildXml);
+    if Assigned (dstChildXml) then
+    begin
+      if Assigned (srcChildXml.TypeDef)
+      and Assigned (dstChildXml.TypeDef)
+      and (srcChildXml.jsonType <> dstChildXml.jsonType)
+      and (   (srcChildXml.jsonType = jsonArray)
+           or (dstChildXml.jsonType = jsonArray)
+          ) then
+      begin
+        if (srcChildXml.jsonType = jsonArray) then
+          _repeatingxmlFromJsonarray (self, srcChildXml);
+        if (dstChildXml.jsonType = jsonArray) then
+          _jsonarrayFromRepeatingxml (dstChildXml, srcChildXml);
+      end
+      else
+      begin
+        dstChildXml._LoadValues (srcChildXml, aAddUnknowns, aOnlyWhenChecked, aCopyCheckers, aIgnoreNamespaceDifferences);
+        dstChildXml.LoadIndex := srcChildXml.LoadIndex;
+      end;
+    end;
+  end; {for every xml.item}
+  for y := 0 to srcXml.Attributes.Count - 1 do
+  begin
+    if srcXml.Attributes.XmlAttributes[y].Name = CheckedAtttributeName then
+      fChecked := srcXml.Attributes.XmlAttributes[y].ValueAsBoolean
+    else
+    begin
+      if (   (not aOnlyWhenChecked)
+          or srcXml.Attributes.XmlAttributes [y].Checked
+         )
+      and (  (not Assigned (Xsd))
+           or (    (not srcXml.Attributes.XmlAttributes [y].isXmlNsAttribute)
+               and (not srcXml.Attributes.XmlAttributes [y].isXmlTypeDefAttribute)
+              )
+          )
+      then
+      begin
+        _Checked := True;
+        _Name := NameWithoutPrefix (srcXml.Attributes.XmlAttributes [y].Name);
+        if AnsiStartsStr (UncheckedAtttributeName, _Name) then
+        begin
+          _Checked := False;
+          _Name := StuffString(_Name, 1, Length(UncheckedAtttributeName), '');
+        end;
+        xXmlAttr := nil;
+        for x := 0 to Attributes.Count - 1 do
+        begin
+          if NameWithoutPrefix (Attributes.XmlAttributes [x].Name)
+           = _Name then
+            xXmlAttr := Attributes.XmlAttributes[x];
+        end;
+        if (not Assigned (xXmlAttr))
+        and aAddUnknowns then
+        begin
+          xXmlAttr := TXmlAttribute.CreateAsString(_Name, '');
+          AddAttribute (xXmlAttr);
+        end;
+        if Assigned (xXmlAttr) then
+        begin
+          xXmlAttr.Value := srcXml.Attributes.XmlAttributes [y].Value;
+          xXmlAttr.Checked := _Checked;
+        end;
+      end;
+    end;
+  end;
+  isProcessed := True;
 end;
 
 function TXml.IsEditingAllowed: Boolean;

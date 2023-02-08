@@ -23,7 +23,7 @@
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="9"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="13297"/>
+      <BuildNr Value="13303"/>
       <StringTable CompanyName="apiUi.org" FileDescription="apiUi - api tester and mocker" ProductVersion="10.3.0.11959"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -435,7 +435,6 @@
       </Item7>
       <Item8>
         <Name Value="EIdCouldNotBindSocket"/>
-        <Enabled Value="False"/>
       </Item8>
       <Item9>
         <Name Value="EStomp"/>
