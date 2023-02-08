@@ -218,6 +218,7 @@ type TBindableList = class;
   TCustomBindable = class (TObject)
   private
     fhasRelevance: Boolean;
+    fIsProcessed: Boolean;
     fisValidated: Boolean;
     fhasValidationMessage: Boolean;
     fValidationMesssage: String;
@@ -226,6 +227,7 @@ type TBindableList = class;
     function getValueAsInteger: Integer;
     function getYamlValue: String;
     procedure sethasValidationMessage(aValue: Boolean);
+    procedure setIsProcessed(AValue: Boolean);
     procedure setValidationMesssage(AValue: String);
     procedure setValueAsInteger(const aValue: Integer);
     function getChecked: Boolean;
@@ -250,7 +252,6 @@ public
   LoadIndex: Integer;
     fChecked: Boolean;
     fPrevChecked: Boolean;
-  isProcessed: Boolean;
   SourceFileName: String;
   Tag: PtrInt;
   jsonType: TjsonType;
@@ -301,6 +302,7 @@ public
   property isValidated: Boolean read fisValidated;
   property hasValidationMessage: Boolean read fhasValidationMessage write sethasValidationMessage;
   property Checked: Boolean read getChecked write setChecked;
+  property isProcessed: Boolean read fIsProcessed write setIsProcessed;
   property IndexCaption: String read GetIndexCaption;
   property FullIndexCaption: String read GetFullIndexCaption;
   property FullCaption: string read getFullCaption;
@@ -761,6 +763,16 @@ begin
   if aValue
   and Assigned (Parent) then
     Parent.hasValidationMessage := aValue;
+end;
+
+procedure TCustomBindable.setIsProcessed(AValue: Boolean);
+var
+  x: Integer;
+begin
+  fIsProcessed := AValue;
+  if AValue = False then
+    for x := 0 to Children.Count - 1 do
+      Children.Bindables[x].isProcessed := AValue;
 end;
 
 procedure TCustomBindable.setValidationMesssage(AValue: String);

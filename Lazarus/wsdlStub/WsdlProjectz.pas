@@ -933,7 +933,10 @@ begin
     xMessage := TWsdlMessage.Create (xOperation);
     xMessage.Name := aName;
     for x := 0 to xMessage.CorrelationBindables.Count - 1 do with xMessage.CorrelationBindables do
-      Bindables[x].CorrelationValue := Bindables[x].Value;
+      if Bindables[x].CheckedAllUp then
+        Bindables[x].CorrelationValue := Bindables[x].Value
+      else
+        Bindables[x].CorrelationValue := '.*';
     xProject.UpdateMessageRow(xOperation, xMessage);
     xOperation.uiInvalid := True;
   finally
@@ -8052,197 +8055,217 @@ var
   x, y, d, f: Integer;
   xLog: TLog;
   xBodiesAsBase64: Boolean;
-  xAlias, xPath, xQuery, xSortkey: String;
+  xPegaAlias, xPath, xQuery, xSortkey: String;
   xIsSoap: Boolean;
+  allConnectors: TJBStringList;
 begin
   aLogList.Sorted := True;
   aLogList.Duplicates := dupAccept;
-  with TXml.Create do
+  allConnectors := TJBStringList.Create;
+  allConnectors.Sorted:=True;
   try
-    if doWorkAroundSimul8rBug then
+    for x := 0 to allAliasses.Count - 1 do with allAliasses.Operations[x] do
     begin
-      _replCloseOpenWithoutComma;
-    end;
-    LoadJsonFromString(aString, nil);
-    if Name = '' then
-      raise Exception.Create ('Unabale to parse as JSON' + LineEnding + aString);
-    with Items.XmlItemByTag['interactions'] do
-    begin
-      if not Assigned (thisXml) then
-        raise Exception.Create('Does not contain saved Simul8r messages');
-      for x := 0 to Items.Count - 1 do
+      if Assigned (pegaSimul8rConnectorData) then
       begin
-        with Items.XmlItems [x] do
+        allConnectors.AddObject ( pegaSimul8rConnectorData.Items.XmlValueByTagDef['Connector', '']
+                                + ':'
+                                + UpperCase(httpVerb)
+                                , thisOperation
+                                );
+      end;
+    end;
+    with TXml.Create do
+    try
+      if doWorkAroundSimul8rBug then
+      begin
+        _replCloseOpenWithoutComma;
+      end;
+      LoadJsonFromString(aString, nil);
+      if Name = '' then
+        raise Exception.Create ('Unabale to parse as JSON' + LineEnding + aString);
+      with Items.XmlItemByTag['interactions'] do
+      begin
+        if not Assigned (thisXml) then
+          raise Exception.Create('Does not contain saved Simul8r messages');
+        for x := 0 to Items.Count - 1 do
         begin
-          if TagName <> '_' then
-            raise Exception.Create('serveEvents array entry expected');
-          xSortkey := '';
-          xLog := TLog.Create;
-          xLog.MessageId := Items.XmlValueByTagDef ['id', xLog.MessageId];
-          xAlias := Items.XmlValueByTagDef['ServiceName', ''];
-          xIsSoap:=False;
-          with Items.XmlItemByTag['request'] do if Assigned (thisXml) then
+          with Items.XmlItems [x] do
           begin
-            xLog.ServiceName := Items.XmlValueByTag['ServiceName'];
-            with Items.XmlItemByTag['InboundTimeStamp'] do if Assigned (thisXml) then
-            try
-              xLog.InboundTimeStamp := xsdParseDateTime (_convertTimeStamp (thisXml.Value));
-            except
-              xLog.InboundTimeStamp := TDateTime (0);
-            end;
-            with Items.XmlItemByTag['RequestContent-Type'] do if Assigned (thisXml) then
+            if TagName <> '_' then
+              raise Exception.Create('serveEvents array entry expected');
+            xSortkey := '';
+            xLog := TLog.Create;
+            xLog.MessageId := Items.XmlValueByTagDef ['id', xLog.MessageId];
+            xIsSoap:=False;
+            with Items.XmlItemByTag['request'] do if Assigned (thisXml) then
             begin
-              xLog.RequestContentType := thisXml.Value;
-              if xLog.RequestContentType = 'JSON' then
-                xLog.RequestContentType := 'application/json';
-              if Copy (xLog.RequestContentType, 1, 3) = 'XML' then
-                xLog.RequestContentType := 'application/xml';
-            end;
-            xPath := items.XmlValueByTag['path'];
-            xLog.httpParams := items.XmlValueByTag['queryString'];
-            if Copy (xLog.httpParams, 1, 1) = '?' then
-              xLog.httpParams := Copy (xLog.httpParams, 2, MaxInt);
-            xLog.httpCommand := items.XmlValueByTag['method'];
-            xIsSoap := (xLog.httpCommand = 'SOAPMethod');
-            if xIsSoap then
-              xLog.httpCommand := 'POST';
-            xLog.OperationName := xLog.ServiceName + xLog.httpCommand;
-            xLog.StubAction := saStub;
-            with Items.XmlItemByTag['headers'] do
-            if Assigned (thisXml) then
-            begin
-              for d := 0 to Items.Count - 1 do with items.XmlItems[d] do
-              begin
-                xLog.RequestHeaders := xLog.RequestHeaders + Name + ': ' + Value + LineEnding;
-              end;
-            end;
-            xLog.httpDocument := items.XmlValueByTagDef['path', ''];
-            xLog.httpParams := items.XmlValueByTagDef['queryString', ''];
-            xLog.RequestBody := Items.XmlValueByTag['body'];
-            xLog.InboundBody := xLog.RequestBody;
-            if doWorkAroundSimul8rBug then
-            begin
-              if xIsSoap then
-                xLog.RequestBody := _workAroundSimul8rSoapRequestLoggingBug (xLog.RequestBody);
-            end;
-          end;
-          with Items.XmlItemByTag['response'] do if Assigned (thisXml) then
-          begin
-            with Items.XmlItemByTag['OutBoundTimeStamp'] do if Assigned (thisXml) then
-            try
-              xSortkey := thisXml.Value;
-              xLog.OutBoundTimeStamp := xsdParseDateTime (_convertTimeStamp (thisXml.Value));
-            except
-              xLog.OutBoundTimeStamp := TDateTime (0);
-            end;
-            with Items.XmlItemByTag['ResponseContent-Type'] do if Assigned (thisXml) then
-            begin
-              xLog.ReplyContentType := thisXml.Value;
-              if xLog.ReplyContentType = 'JSON' then
-                xLog.ReplyContentType := 'application/json';
-              if Copy (xLog.ReplyContentType, 1, 3) = 'XML' then
-                xLog.ReplyContentType := 'application/xml';
-            end;
-            xLog.ReplyBody := Items.XmlValueByTag['body'];
-            xLog.httpResponseCode := StrToInt(Items.XmlValueByTag['statusCode']);
-            with Items.XmlItemByTag['headers'] do if Assigned (thisXml) then
-            begin
-              for d := 0 to Items.Count - 1 do with items.XmlItems[d] do
-              begin
-                xLog.ReplyHeaders := xLog.ReplyHeaders + Name + ': ' + Value + LineEnding;
-              end;
-            end;
-          end;
-          with Items.XmlItemByTag['timing'] do if Assigned (thisXml) then
-            xLog.DelayTimeMs := items.XmlIntegerByTag['addedDelay'];
-          if xIsSoap then with TXml.Create do
-          try
-            try
-              LoadFromString(xLog.RequestBody, nil);
-              if Name <> '' then
-              begin
-                SeparateNsPrefixes;
-                ResolveNameSpaces;
-                with FindUQXml('Envelope.Body') do if Assigned (thisXml) then
-                  if Items.Count = 1 then with Items.XmlItems[0] do
-                    if allOperations.Find(Name + ';' + NameSpace, f) then
-                       xLog.Operation := allOperations.Operations[f];
-              end;
-            except
-              xLog.Operation := nil;
-            end;
-          finally
-            free;
-          end
-          else
-            xLog.Operation := allAliasses.FindOnAliasName(xlog.OperationName);
-          if Assigned (xLog.Operation) then
-          begin
-            xLog.ServiceName:= xlog.Operation.WsdlService.Name;
-            xLog.OperationName:= xlog.Operation.Alias;
-            if (xLog.Operation.WsdlService.DescriptionType <> ipmDTFreeFormat)
-            and (   doValidateInboundRequests(xLog.Operation)
-                 or doValidateOutboundReplies(xLog.Operation)
-                ) then
-            begin
-              xlog.httpDocument := xLog.Operation.WsdlService.logPathFormat;
-              if xPath <> '' then
-              begin
-                xLog.PathFormat := _makePathFormat (xLog.Operation.WsdlService.logPathFormat, xPath);
-                xLog.httpDocument := _makeDocument(xLog.PathFormat, xPath);
-              end;
-              xLog.httpUri := xlog.httpDocument;
-              if xLog.httpParams <> '' then
-                xLog.httpUri := xLog.httpUri + '?' + xLog.httpParams;
-              xLog.Mssg := xLog.Operation.MessageBasedOnRequest;
-              with TWsdlOperation.Create(xLog.Operation) do
+              xLog.ServiceName := Items.XmlValueByTag['ServiceName'];
+              with Items.XmlItemByTag['InboundTimeStamp'] do if Assigned (thisXml) then
               try
-                try
-                  xLog.toBindables(thisOperation);
-                  xLog.RequestValidateResult := '';
-                  xLog.ReplyValidateResult := '';
-                  if doValidateInboundRequests(thisOperation) then
-                  begin
-                    reqBind.IsValueValid;
-                    xLog.RequestValidateResult := reqBind.AllValidationsMessage;
-                    xLog.RequestValidated := True;
-                  end;
-                  if doValidateOutboundReplies(thisOperation) then
-                  begin
-                    rpyBind.IsValueValid;
-                    xLog.ReplyValidateResult := rpyBind.AllValidationsMessage;
-                    xLog.ReplyValidated := True;
-                  end;
-                except
+                xLog.InboundTimeStamp := xsdParseDateTime (_convertTimeStamp (thisXml.Value));
+              except
+                xLog.InboundTimeStamp := TDateTime (0);
+              end;
+              with Items.XmlItemByTag['RequestContent-Type'] do if Assigned (thisXml) then
+              begin
+                xLog.RequestContentType := thisXml.Value;
+                if xLog.RequestContentType = 'JSON' then
+                  xLog.RequestContentType := 'application/json';
+                if Copy (xLog.RequestContentType, 1, 3) = 'XML' then
+                  xLog.RequestContentType := 'application/xml';
+              end;
+              xPath := items.XmlValueByTag['path'];
+              xLog.httpParams := items.XmlValueByTag['queryString'];
+              if Copy (xLog.httpParams, 1, 1) = '?' then
+                xLog.httpParams := Copy (xLog.httpParams, 2, MaxInt);
+              xLog.httpCommand := Uppercase (items.XmlValueByTag['method']);
+              xIsSoap := (xLog.httpCommand = 'SOAPMethod');
+              if xIsSoap then
+                xLog.httpCommand := 'POST';
+              xLog.OperationName := xLog.ServiceName + ':' + xLog.httpCommand;
+              xLog.StubAction := saStub;
+              with Items.XmlItemByTag['headers'] do
+              if Assigned (thisXml) then
+              begin
+                for d := 0 to Items.Count - 1 do with items.XmlItems[d] do
+                begin
+                  xLog.RequestHeaders := xLog.RequestHeaders + Name + ': ' + Value + LineEnding;
                 end;
-              finally
-                Free;
+              end;
+              xLog.httpDocument := items.XmlValueByTagDef['path', ''];
+              xLog.httpParams := items.XmlValueByTagDef['queryString', ''];
+              xLog.RequestBody := Items.XmlValueByTag['body'];
+              xLog.InboundBody := xLog.RequestBody;
+              if doWorkAroundSimul8rBug then
+              begin
+                if xIsSoap then
+                  xLog.RequestBody := _workAroundSimul8rSoapRequestLoggingBug (xLog.RequestBody);
               end;
             end;
-            if aDoLogEventProcessing then
+            with Items.XmlItemByTag['response'] do if Assigned (thisXml) then
             begin
-              if xLog.Operation.onFetchLogFromRemoteServer <> '' then
+              with Items.XmlItemByTag['OutBoundTimeStamp'] do if Assigned (thisXml) then
+              try
+                xSortkey := thisXml.Value;
+                xLog.OutBoundTimeStamp := xsdParseDateTime (_convertTimeStamp (thisXml.Value));
+              except
+                xLog.OutBoundTimeStamp := TDateTime (0);
+              end;
+              with Items.XmlItemByTag['ResponseContent-Type'] do if Assigned (thisXml) then
               begin
+                xLog.ReplyContentType := thisXml.Value;
+                if xLog.ReplyContentType = 'JSON' then
+                  xLog.ReplyContentType := 'application/json';
+                if Copy (xLog.ReplyContentType, 1, 3) = 'XML' then
+                  xLog.ReplyContentType := 'application/xml';
+              end;
+              xLog.ReplyBody := Items.XmlValueByTag['body'];
+              xLog.httpResponseCode := StrToInt(Items.XmlValueByTag['statusCode']);
+              with Items.XmlItemByTag['headers'] do if Assigned (thisXml) then
+              begin
+                for d := 0 to Items.Count - 1 do with items.XmlItems[d] do
+                begin
+                  xLog.ReplyHeaders := xLog.ReplyHeaders + Name + ': ' + Value + LineEnding;
+                end;
+              end;
+            end;
+            with Items.XmlItemByTag['timing'] do if Assigned (thisXml) then
+              xLog.DelayTimeMs := items.XmlIntegerByTag['addedDelay'];
+            if xIsSoap then with TXml.Create do
+            try
+              try
+                LoadFromString(xLog.RequestBody, nil);
+                if Name <> '' then
+                begin
+                  SeparateNsPrefixes;
+                  ResolveNameSpaces;
+                  with FindUQXml('Envelope.Body') do if Assigned (thisXml) then
+                    if Items.Count = 1 then with Items.XmlItems[0] do
+                      if allOperations.Find(Name + ';' + NameSpace, f) then
+                         xLog.Operation := allOperations.Operations[f];
+                end;
+              except
+                xLog.Operation := nil;
+              end;
+            finally
+              free;
+            end
+            else
+            begin
+              if allConnectors.Find(xlog.ServiceName + ':' + xLog.httpCommand, f) then
+                xLog.Operation := allConnectors.Objects[f] as TWsdlOperation;
+            end;
+            if Assigned (xLog.Operation) then
+            begin
+              xLog.ServiceName:= xlog.Operation.WsdlService.Name;
+              xLog.OperationName:= xlog.Operation.Alias;
+              if (xLog.Operation.WsdlService.DescriptionType <> ipmDTFreeFormat)
+              and (   doValidateInboundRequests(xLog.Operation)
+                   or doValidateOutboundReplies(xLog.Operation)
+                  ) then
+              begin
+                xlog.httpDocument := xLog.Operation.WsdlService.logPathFormat;
+                if xPath <> '' then
+                begin
+                  xLog.PathFormat := _makePathFormat (xLog.Operation.WsdlService.logPathFormat, xPath);
+                  xLog.httpDocument := _makeDocument(xLog.PathFormat, xPath);
+                end;
+                xLog.httpUri := xlog.httpDocument;
+                if xLog.httpParams <> '' then
+                  xLog.httpUri := xLog.httpUri + '?' + xLog.httpParams;
+                xLog.Mssg := xLog.Operation.MessageBasedOnRequest;
                 with TWsdlOperation.Create(xLog.Operation) do
                 try
                   try
                     xLog.toBindables(thisOperation);
-                    OperationScriptExecuteLater(thisOperation, onFetchLogFromRemoteServer, 0);
+                    xLog.RequestValidateResult := '';
+                    xLog.ReplyValidateResult := '';
+                    if doValidateInboundRequests(thisOperation) then
+                    begin
+                      reqBind.IsValueValid;
+                      xLog.RequestValidateResult := reqBind.AllValidationsMessage;
+                      xLog.RequestValidated := True;
+                    end;
+                    if doValidateOutboundReplies(thisOperation) then
+                    begin
+                      rpyBind.IsValueValid;
+                      xLog.ReplyValidateResult := rpyBind.AllValidationsMessage;
+                      xLog.ReplyValidated := True;
+                    end;
                   except
                   end;
                 finally
-                  // Freed in Thread;
+                  Free;
+                end;
+              end;
+              if aDoLogEventProcessing then
+              begin
+                if xLog.Operation.onFetchLogFromRemoteServer <> '' then
+                begin
+                  with TWsdlOperation.Create(xLog.Operation) do
+                  try
+                    try
+                      xLog.toBindables(thisOperation);
+                      OperationScriptExecuteLater(thisOperation, onFetchLogFromRemoteServer, 0);
+                    except
+                    end;
+                  finally
+                    // Freed in Thread;
+                  end;
                 end;
               end;
             end;
+            LogFilter.Execute (xLog);
+            aLogList.SaveLog (xSortkey, xLog);
           end;
-          LogFilter.Execute (xLog);
-          aLogList.SaveLog (xSortkey, xLog);
-        end;
-      end; // for each xml
+        end; // for each xml
+      end;
+    finally
+      Free;
     end;
   finally
-    Free;
+    allConnectors.Free;
   end;
 end;
 

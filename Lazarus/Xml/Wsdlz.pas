@@ -1125,10 +1125,16 @@ end;
 
 function GenerateGUID: String;
 var
-  uuid: TGUID;
+  GUID: TGUID;
 begin
-  CreateGUID (uuid);
-  Result := GUIDToString(uuid);
+  CreateGUID (GUID);
+  SetLength(Result, 36);
+  StrLFmt(PChar(Result), 38,'%.8x-%.4x-%.4x-%.2x%.2x-%.2x%.2x%.2x%.2x%.2x%.2x',
+    [
+     Longint(GUID.D1), GUID.D2, GUID.D3,
+     GUID.D4[0], GUID.D4[1], GUID.D4[2], GUID.D4[3],
+     GUID.D4[4], GUID.D4[5], GUID.D4[6], GUID.D4[7]
+    ]);
 end;
 
 function GenerateRandomId: String;
@@ -1603,7 +1609,7 @@ end;
 function isAssigned (aObject: TObject): Extended;
 begin
   if Assigned ((aObject as YYSType).yy.yyPointer)
-  and TXml ((aObject as YYSType).yy.yyPointer).Checked then
+  and TXml ((aObject as YYSType).yy.yyPointer).CheckedAllUp then
     result := 1
   else
     result := 0;
