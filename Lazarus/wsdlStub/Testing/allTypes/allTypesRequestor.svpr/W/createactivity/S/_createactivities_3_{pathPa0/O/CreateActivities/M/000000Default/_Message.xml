@@ -1,0 +1,25 @@
+  <Message>
+    <Name>Default</Name>
+    <SequenceNr>0</SequenceNr>
+    <stateMachineScenarioName>.*</stateMachineScenarioName>
+    <stateMachineRequiredState>.*</stateMachineRequiredState>
+    <stateMachineNextState>.*</stateMachineNextState>
+    <Patterns></Patterns>
+    <Reply>
+      <CreateActivities checked__="false"></CreateActivities>
+    </Reply>
+    <Request>
+      <CreateActivities checked__="true">
+        <pathParam checked__="true">p01</pathParam>
+        <headerParam checked__="true">h01</headerParam>
+        <queryParam checked__="true">q01</queryParam>
+        <body checked__="true">
+          <Contact checked__="true">
+            <bodyParam checked__="true">b01</bodyParam>
+          </Contact>
+        </body>
+      </CreateActivities>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

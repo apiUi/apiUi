@@ -171,7 +171,7 @@ var
     end
     else
     begin
-      xAdd := ControlBinds.AddObject ( aPrefix + aBind.FullIndexCaption
+      xAdd := ControlBinds.AddObject ( aPrefix + aBind.FullCaption
                                      , aBind
                                      );
     end;

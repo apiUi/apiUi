@@ -1859,7 +1859,6 @@ begin
     OnGetAbortPressed := self.GetAbortPressed;
     if reqBind is TXml then with reqBind as TXml do Checked := True;
     if rpyBind is TXml then with rpyBind as TXml do Checked := True;
-    if fltBind is TXml then with fltBind as TXml do Checked := True;
     Owner := Self;
     if invokeRequestInfo
     and not Assigned (requestInfoBind) then
@@ -3001,8 +3000,6 @@ begin
       begin
         (xOperation.rpyBind as TXml).ResetValues;
         (xOperation.rpyBind as TXml).LoadValues (aLog.Mssg.rpyBind as TXml, True, True);
-        (xOperation.fltBind as TXml).ResetValues;
-        (xOperation.fltBind as TXml).LoadValues (aLog.Mssg.fltBind as TXml, True, True);
       end;
     end;
     if (xOperation.StubAction = saStub)
@@ -3034,12 +3031,12 @@ begin
     aLog.OperationName:=xOperation.Alias;
     aLog.ReplyBody := xOperation.PrepareReply (_progName, True);
     aLog.ReplyInfoFromBindables(xOperation);
-    if xOperation.ReturnSoapFault then
-    begin
-      aLog.Exception := aLog.ReplyBody;
-      aLog.httpResponseCode := xOperation.ResponseNo;
-      aLog.ReplyContentType := xOperation.ContentType;
-    end;
+    aLog.httpResponseCode := xOperation.ResponseNo;
+    aLog.ReplyContentType := xOperation.ContentType;
+    if xOperation.OverruleReplyContentType <> '' then
+      aLog.ReplyContentType := xOperation.OverruleReplyContentType;
+    if xOperation.isRespondingSoapFault then
+      aLog.httpResponseCode := 500;
     if xOperation.StubAction = saRequest then
     begin
       aLog.ReplyBody := _progName + ' - Operation itself is a requestor ('+ xOperation.Alias +')';
@@ -3338,12 +3335,6 @@ begin
               begin
                 _loadCheckers (rXml, xMessage.rpyBind as TXml);
               end;
-            end;
-            rXml := Items.XmlItemByTag ['Faults'];
-            if Assigned (rXml)
-            and (rXml.Items.Count > 0) then with xMessage.FltBind as TXml do
-            begin
-              LoadValues(rXml, False);
             end;
             with Items.XmlItemByTag[PegaSimul8rSimulationDataXsd.ElementName] do if Assigned (thisXml) then
             begin
@@ -5020,7 +5011,6 @@ begin
               xOperation := TWsdlOperation.Create (xWsdl);
               (xOperation.reqBind as TXml).jsonType := jsonObject;
               (xOperation.rpyBind as TXml).jsonType := jsonObject;
-              (xOperation.fltBind as TXml).jsonType := jsonObject;
               xOperation.Name := oList.Strings[o];
               xOperation.Alias := xOperation.Name;
               xService.Operations.AddObject(xOperation.Name, xOperation);
@@ -5044,7 +5034,6 @@ begin
                 reqBind.Free;
               if Assigned(rpyBind) then
                 rpyBind.Free;
-              FreeAndNil (fltBind);
               Documentation.Text := oXml.Items.XmlCheckedValueByTag['Annotation'];
               httpVerb := oXml.Items.XmlValueByTagDef['Verb', httpVerb];
               xOperation.ContentType := oXml.Items.XmlCheckedValueByTagDef['produces', 'application/json'];
@@ -5225,7 +5214,6 @@ begin
         end;
         with xOperation do
         begin
-          FreeAndNil (fltBind);
           if Assigned (reqBind) then
             reqBind.Free;
           if Assigned (rpyBind) then
@@ -5236,7 +5224,6 @@ begin
             CobolEnvironment := ceIbmZOs;
           reqBind := _LoadCobolMsg(oXml.Items.XmlCheckedItemByTag['Req'], xFileNames, reqDescrFilename);
           rpyBind := _LoadCobolMsg(oXml.Items.XmlCheckedItemByTag['Rpy'], xFileNames, rpyDescrFilename);
-          fltBind := _LoadCobolMsg(oXml.Items.XmlCheckedItemByTag['Flt'], xFileNames, fltDescrFileName);
           operationRecognitionUpdate (xOperation, reqRecognition, oXml.Items.XmlCheckedItemByTag['reqRecognition']);
           operationRecognitionUpdate (xOperation, rpyRecognition, oXml.Items.XmlCheckedItemByTag['rpyRecognition']);
         end;
@@ -5409,10 +5396,6 @@ begin
         and (xOperation.rpyDescrFilename <> '') then
           with AddXml (TXml.CreateAsString('Rpy', '')) do
             AddXml ( TXml.CreateAsString ( 'DescriptionFile', xOperation.rpyDescrFilename));
-        if Assigned (xOperation.fltBind)
-        and (xOperation.fltDescrFilename <> '') then
-          with AddXml (TXml.CreateAsString('Flt', '')) do
-            AddXml ( TXml.CreateAsString ( 'DescriptionFile', xOperation.fltDescrFileName));
         if xOperation.reqRecognition.Count > 0 then
           AddXml (operationRecognitionXml('reqRecognition', xOperation.RecognitionType, xOperation.reqRecognition));
         if xOperation.rpyRecognition.Count > 0 then

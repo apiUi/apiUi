@@ -547,19 +547,6 @@ begin
             if Assigned (RpyBind)
             and (RpyBind is TIpmItem) then
               AddXml (TXmlCvrg.CreateFromIpm (RpyBind.Name, (RpyBind as TIpmItem)));
-            if Assigned (FltBind)
-            and (fltBind is TXml)
-            and Assigned ((FltBind as TXml).TypeDef) then
-              with AddXml (TXmlCvrg.CreateFromXsd ((FltBind as TXml).Name, (FltBind as TXml).Xsd)) do
-              begin
-                Name := 'Fault';
-                for x := 0 to Items.Count - 1 do
-                  if Items.XmlItems[x].Name = '' then
-                    Items.XmlItems[x].Name := 'detail';
-              end;
-            if Assigned (FltBind)
-            and (FltBind is TIpmItem) then
-              AddXml (TXmlCvrg.CreateFromIpm (FltBind.Name, (FltBind as TIpmItem)));
           end;
         end;
       end;

@@ -111,6 +111,7 @@ type
       ): Boolean ;
     function getAttributeValueByTag (Index: String ): String ;
     function getAttributeValueByTagDef (Index , aDefault : String ): String ;
+    function getCheckedItemByTag(LoadIndex: String): TXml;
     function getDocumentationText: String;
     function getAppinfoText: String;
     function getIsSoapEnvelope : Boolean ;
@@ -159,6 +160,7 @@ type
     property isSoapHeader: Boolean read getIsSoapHeader;
     property isSoapBody: Boolean read getIsSoapBody;
     property ItemByTag [LoadIndex: String]: TXml read getItemByTag;
+    property CheckedItemByTag [LoadIndex: String]: TXml read getCheckedItemByTag;
     property AttributeValueByTagDef [LoadIndex, aDefault: String]: String read getAttributeValueByTagDef;
     property AttributeValueByTag [LoadIndex: String]: String read getAttributeValueByTag;
     property AttributeBooleanByTagDef [LoadIndex: String; aDefault: Boolean]: Boolean read getAttributeBooleanByTagDef;
@@ -4597,6 +4599,14 @@ begin
   result := aDefault;
   if not Assigned (self) then Exit;
   result := Attributes.ValueByTagDef[Index, aDefault];
+end;
+
+function TXml.getCheckedItemByTag(LoadIndex: String): TXml;
+begin
+  result := getItemByTag(LoadIndex);
+  if Assigned (Result) then
+    if (not Result.Checked) then
+      Result := nil;
 end;
 
 function TXml.getAppinfoText: String;
