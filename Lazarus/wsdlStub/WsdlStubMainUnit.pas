@@ -4201,27 +4201,16 @@ begin
           'Pattern' + IntToStr(FocusedOperation.Messages.Count),
           xOrgMessage.Documentation);
       if FocusedOperation.reqBind is TIpmItem then
-      begin (xMessage.reqBind as TIpmItem)
-        .LoadValues(xOrgMessage.reqBind as TIpmItem);
-(xMessage.rpyBind as TIpmItem)
-        .LoadValues(xOrgMessage.rpyBind as TIpmItem);
-(xMessage.fltBind as TIpmItem)
-        .LoadValues(xOrgMessage.fltBind as TIpmItem);
+      begin
+        (xMessage.reqBind as TIpmItem).LoadValues(xOrgMessage.reqBind as TIpmItem);
+        (xMessage.rpyBind as TIpmItem).LoadValues(xOrgMessage.rpyBind as TIpmItem);
       end
       else
-      begin (xMessage.reqBind as TXml)
-        .LoadValues(xOrgMessage.reqBind as TXml, False, True);
-(xMessage.rpyBind as TXml)
-        .LoadValues(xOrgMessage.rpyBind as TXml, False, True);
-        se.UpdateMessageRow(FocusedOperation, xMessage);
-        if Assigned(FocusedOperation.FaultMessages) then
-        begin
-          xMessage.fltBind.Name := xOrgMessage.fltBind.Name;
-(xMessage.fltBind as TXml)
-          .Xsd := FocusedOperation.FaultXsd; (xMessage.fltBind as TXml)
-          .LoadValues(xOrgMessage.fltBind as TXml, True);
-        end;
+      begin
+        (xMessage.reqBind as TXml).LoadValues(xOrgMessage.reqBind as TXml, False, True);
+        (xMessage.rpyBind as TXml).LoadValues(xOrgMessage.rpyBind as TXml, False, True);
       end;
+      se.UpdateMessageRow(FocusedOperation, xMessage);
       Node := GridView.AddChild(nil);
       xData := GridView.GetNodeData(Node);
       xData.Message := xMessage;
@@ -4572,7 +4561,6 @@ begin
   begin
     (xNewMessage.reqBind as TIpmItem).LoadValues(xOrgMessage.reqBind as TIpmItem);
     (xNewMessage.rpyBind as TIpmItem).LoadValues(xOrgMessage.rpyBind as TIpmItem);
-    (xNewMessage.fltBind as TIpmItem).LoadValues(xOrgMessage.fltBind as TIpmItem);
     se.UpdateMessageRow(FocusedOperation, xNewMessage);
   end
   else
@@ -4580,12 +4568,6 @@ begin
     (xNewMessage.reqBind as TXml).LoadValues(xOrgMessage.reqBind as TXml, False, True);
     (xNewMessage.rpyBind as TXml).LoadValues(xOrgMessage.rpyBind as TXml, False, True);
     se.UpdateMessageRow(FocusedOperation, xNewMessage);
-    if Assigned(FocusedOperation.FaultMessages) then
-    begin
-      xNewMessage.fltBind.Name := xOrgMessage.fltBind.Name;
-      (xNewMessage.fltBind as TXml).Xsd := FocusedOperation.FaultXsd;
-      (xNewMessage.fltBind as TXml).LoadValues(xOrgMessage.fltBind as TXml, True);
-    end;
   end;
   if FocusedOperation.doUseStateMachine then
   begin
@@ -10290,12 +10272,7 @@ begin
       begin
         ResetValues;
         LoadValues((FocusedMessage.rpyBind as TXml), False, True);
-        (FocusedOperation.fltBind as TXml).ResetValues;
-        (FocusedOperation.fltBind as TXml).LoadValues((FocusedMessage.fltBind as TXml), False, True);
-        if FocusedMessage.fltBind.Checked then
-          xMessage := FocusedOperation.StreamFault(_progName, True)
-        else
-          xMessage := FocusedOperation.PrepareReply(_progName, True);
+        xMessage := FocusedOperation.PrepareReply(_progName + ' ' + _xmlProgVersion, True);
       end
       else
       begin
@@ -10769,16 +10746,6 @@ end;
 
 procedure TMainForm.CheckRpyOrFlt(aBind: TCustomBindable);
 begin
-  if (not(aBind is TIpmItem))
-  and (FocusedOperation.StubAction <> saRequest)
-  and (not FocusedOperation.isOpenApiService)
-  and (aBind.Root <> FocusedMessage.reqBind) then
-  begin
-    if aBind.Root = FocusedMessage.rpyBind then
-      FocusedMessage.fltBind.Checked := False
-    else if Assigned(FocusedMessage.rpyBodyBind) then
-      FocusedMessage.rpyBodyBind.Checked := False;
-  end;
 end;
 
 procedure TMainForm.ToggleNotifyActionExecute(Sender: TObject);
@@ -12357,19 +12324,6 @@ begin
                   end;
                 end;
               end;
-              if  (Assigned (xOper.FaultXsd))
-              and (Assigned (xOper.FaultXsd.sType))
-              and (xOper.FaultXsd.sType.ElementDefs.Count > 0) then
-              begin
-                with AddXml(TXml.CreateAsString('500', '')) do
-                begin
-                  AddXml (TXml.CreateAsString('decsription', 'Fault response'));
-                  with AddXml (TXml.CreateAsString('schema', '')) do
-                  begin
-                    AddXml (TXml.CreateAsString('$ref', '#/definitions/' + xOper.FaultXsd.sType.ElementDefs.Xsds[0].ElementName));
-                  end;
-                end;
-              end;
             end;
           end;
         end;
@@ -12384,10 +12338,6 @@ begin
           AddXml (xOper.reqXml.Items.XmlItems[xOper.InputHeaders.Count].Xsd.SchemaAsJson as TXml);
         if xOper.rpyXml.Items.Count > xOper.OutputHeaders.Count then
           AddXml (xOper.rpyXml.Items.XmlItems[xOper.OutputHeaders.Count].Xsd.SchemaAsJson as TXml);
-        if (Assigned (xOper.FaultXsd))
-        and (Assigned (xOper.FaultXsd.sType))
-        and (xOper.FaultXsd.sType.ElementDefs.Count > 0) then
-          AddXml (xOper.FaultXsd.sType.ElementDefs.Xsds[0].SchemaAsJson as TXml);
       end;
     end;
 //  Clipboard.AsText := StreamJSON(0, True)

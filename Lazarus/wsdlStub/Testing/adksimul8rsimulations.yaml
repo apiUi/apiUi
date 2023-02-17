@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.0
 info:
-  title: ADKSimul8r
+  title: ADKSimul8r Content Management
   version: 1.0.1
 externalDocs:
   description: The low code approach to simulating your integrations.
@@ -9,7 +9,7 @@ externalDocs:
 servers:
 - url: "/"
 paths:
-  "/prweb/api/Simul8Tools/v1/simulations":
+  /prweb/api/Simul8Content/V1/contentmanagement:
     post:
       summary: Create simulations
       description: |
@@ -26,7 +26,7 @@ paths:
         1. State data (Simul8r tab) will be passed and mapped.  
            Although the data in the State tab is not used for stubbing,  
            we will make it possible to provide it since it has a meaning for CBT.    
-      operationId: AddSimulations
+      operationId: postSimulations
       tags:
       - Stub Mappings
       parameters:
@@ -43,7 +43,7 @@ paths:
         required: false
         example: "Simul8Test2_Branch_SImulatorTestAPI"
         schema:
-          type: string
+            type: string
       - name: Connector
         description: |
           The name of the service (Pega Connector)  
@@ -96,21 +96,53 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/OK_200"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
 components:
   responses:
     OK_200:
       description: OK
-    OK_200_Simulations:
-      description: OK
+    BadRequest:
+      description: Something wrong in request messge
       content:
         application/json:
           schema:
             type: object
+            properties:
+              description:
+                type: string
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              item:
+                type: string
+              description:
+                type: string
+    InternalError:
+      description: Internal error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              exceptionMessage:
+                type: string
   schemas:
     simulations:
-      type: array
-      items:
-        $ref: "#/components/schemas/simulation"
+      type: object
+      properties:
+        RequestList:
+          type: array
+          items:
+            $ref: "#/components/schemas/simulation"
     simulation:
       type: object
       required:
@@ -121,7 +153,7 @@ components:
           type: string
           description: |
             $pagedata.{{method}}StubList.rowdata[index].pyID    
-        description:
+        defnDesc:
           type: string
           description: |
             $pagedata.{{method}}StubList.rowdata[index].pyLabel    
@@ -130,9 +162,9 @@ components:
           description: |
             This structure plays a role in the Simul8r export for ContractBasedTesting  
           required:
-          - description
+          - stateDesc
           properties:
-            description:
+            stateDesc:
               type: string
               description: |
                 $pagedata.{{method}}StubList.rowdata[index].PreconditionDescription    
@@ -147,13 +179,13 @@ components:
         request:
           type: object
           properties:
-            contentType:
+            requestType:
               type: string
               description: |
                 $pagedata.{{method}}StubList.rowdata[index].RequestType  
                 'JSON' when upercase value contains 'JSON'  
                 'XML' when upercase value contains 'XML'  
-            pathParameters:
+            pathParam:
               type: array
               description: |
                 Optional list of selection criteria on path parameters.  
@@ -168,7 +200,7 @@ components:
                 pyValue: P2  
               items:
                 $ref: '#/components/schemas/indexCompareItem'
-            headerParameters:
+            headerParam:
               type: array
               description: |
                 Optional list of selection criteria on header parameters.  
@@ -181,7 +213,7 @@ components:
                 pyValue: H2  
               items:
                 $ref: '#/components/schemas/identifierCompareItem'
-            queryParameters:
+            queryParam:
               type: array
               description: |
                 Optional list of selection criteria on query parameters.  
@@ -195,7 +227,7 @@ components:
                 pyValue: Q2  
               items:
                 $ref: '#/components/schemas/identifierCompareItem'
-            bodyParameters:
+            bodyParam:
               type: array
               description: |
                 Optional list of selection criteria on body parameters.  
@@ -211,9 +243,9 @@ components:
         response:
           type: object
           required:
-          - status
+          - responseStatus
           properties:
-            status:
+            responseStatus:
               type: integer
               description: |
                 [HTTP response status codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)  
@@ -266,6 +298,7 @@ components:
                     $pagedata.{{method}}StubList.rowdata[index].CallbackAccessGroup
                 postponement:
                   type: integer
+                  minimum: 0
                   description: |
                     $pagedata.{{method}}StubList.rowdata[index].CallbackIntervalSeconds  
                     In seconds.  
@@ -288,15 +321,9 @@ components:
     indexCompareItem:
       type: object
       required:
-      - ìndex
       - comparator
       - value
       properties:
-        index:
-          type: integer
-          minimum: 1
-          description: |
-            For more information please read the description at parent level.  
         comparator:
           $ref: '#/components/schemas/comparator'
         value:

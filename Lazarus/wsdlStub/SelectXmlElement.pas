@@ -305,18 +305,6 @@ begin
     end;
     if Assigned (WsdlOperation) then
     begin
-      if doShowRpy
-      and Assigned (WsdlOperation.fltBind) then
-      begin
-        Captions.Clear;
-        xChild := TreeView.Items.AddChildObject (nil, 'Faults', nil);
-        for x := 0 to WsdlOperation.fltBind.Children.Count - 1 do
-          ViewXmlItem ( TreeView
-                      , xChild
-                      , WsdlOperation.fltBind.Children.Bindables [x]
-                      , IncludeRecurring
-                      );
-      end;
       if doShowWsa then
       begin
         ShowXmls (WsdlOperation.reqWsaXml, 'reqWsa');

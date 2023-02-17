@@ -3,7 +3,10 @@
 .responseHeaders.Date
 cobolrequest.requestHeaders.Host
 cobolresponse.responseHeaders.Date
+CreateActivities.requestHeaders.*
 CreateActivities.requestHeaders.Content-Length
 CreateActivities.requestHeaders.Host
+Envelope.requestHeaders.*
+responseHeaders.*
 uploadDocument.requestHeaders.Content-Type
 uploadDocument.requestHeaders.Host

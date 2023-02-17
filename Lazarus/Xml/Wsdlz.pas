@@ -127,6 +127,7 @@ type
       procedure ValidateEvaluatedTags (aXml: TXml; aSl: TJBStringList);
       function thisWsdl: TWsdl;
       function ExtraXsdsAsXml: TXml;
+      function AddUndefinedXsd (aParentXsd: TXsd; aMinOccurs: String): TXsd;
       procedure ExtraXsdsFromXml (aXml: TXml; SaveRelativeFileNames: Boolean; aMainFileName: String);
       procedure AddedTypeDefElementsFromXml (aXml: TXml);
       procedure LoadExtraXsds (aOnbeforeRead: TProcedureS);
@@ -250,8 +251,6 @@ type
   public
     Name: String;
     WsdlOperation: TWsdlOperation;
-    FaultXsd: TXsd;
-    fltBind: TCustomBindable;
     CorrelationBindables: TBindableList;
     BeforeScriptLines: TJBStringList;
     AfterScriptLines: TJBStringList;
@@ -304,6 +303,7 @@ type
       function getIsFreeFormat : Boolean ;
       function getIsOneWay: Boolean;
       function getIsOpenApiService: Boolean;
+      function getIsRespondingSoapFault: Boolean;
       function getisSoapService: Boolean;
       function getOpenApiVersion: String;
       function getSml8rOk: Boolean;
@@ -333,7 +333,7 @@ type
       inboundRequestSchemaValidationType, outboundReplySchemaValidationType, outboundRequestSchemaValidationType, inboundReplySchemaValidationType: TSchemaValidationType;
       schemaValidationVioloationHttpResponseCode: Integer;
       reqMessageName, reqTagName, reqTagNameSpace, rpyMessageName, rpyTagName, rpyTagNameSpace: String;
-      Schemes, Consumes, Produces, ContentType, OverruleContentType, Accept: String;
+      Schemes, Consumes, Produces, ContentType, OverruleContentType, OverruleReplyContentType, Accept: String;
       ConsumeType, ProduceType: TConsumeProduceType;
       reqDescrFilename, rpyDescrFilename, fltDescrFileName: String;
       reqDescrExpansionFilename, rpyDescrExpansionFilename, fltDescrExpansionFileName: String;
@@ -418,6 +418,7 @@ type
       property OnGetAbortPressed: TBooleanFunction write setOnGetAbortPressed;
       property wsaTo: String read getWsaTo;
       property isSoapService: Boolean read getIsSoapService;
+      property isRespondingSoapFault: Boolean read getIsRespondingSoapFault;
       property OpenApiVersion: string read getOpenApiVersion;
       property isOpenApiService: Boolean read getIsOpenApiService;
       property isOneWay: Boolean read getIsOneWay;
@@ -678,9 +679,9 @@ procedure PromptReply(aOperation: TWsdlOperation);
 procedure PromptRequest(aOperation: TWsdlOperation);
 procedure RaiseExit(aOperation: TWsdlOperation);
 procedure ReturnString (aOperation: TWsdlOperation; aString: String);
-procedure RaiseWsdlFault (aOperation: TWsdlOperation; faultcode, faultstring, faultactor: String);
+procedure RaiseWsdlFault (aOperation: TWsdlOperation; aFaultcode, aFaultstring, aFaultactor: String);
 procedure RaiseHttpFault (aOperation: TWsdlOperation; aResponseCode, aResponseText, aResponseContentType: String);
-procedure RaiseSoapFault (aOperation: TWsdlOperation; faultcode, faultstring, faultactor, detail: String);
+procedure RaiseSoapFault (aOperation: TWsdlOperation; aFaultcode, aFaultstring, aFaultactor, aDetail: String);
 
 function wsdlConvertSdfFrom36 (aXml: TXml): Boolean;
 procedure AcquireLock;
@@ -1846,83 +1847,149 @@ begin
   aOperation.DoExit := True;
 end;
 
-procedure RaiseWsdlFault (aOperation: TWsdlOperation; faultcode, faultstring, faultactor: String);
+procedure RaiseWsdlFault (aOperation: TWsdlOperation; aFaultcode, aFaultstring, aFaultactor: String);
 begin
-  aOperation.faultcode := faultcode;
-  aOperation.faultstring := faultstring;
-  aOperation.faultactor := faultactor;
-  aOperation.LiteralResult := aOperation.StreamFault('', False);
-  aOperation.ReturnSoapFault := True;
-  aOperation.ResponseNo := 500;
-  aOperation.DoExit := True;
+  with aOperation do
+  begin
+    faultcode := aFaultcode;
+    faultstring := aFaultstring;
+    faultactor := aFaultactor;
+    LiteralResult := StreamFault('', False);
+    ReturnSoapFault := True;
+    ResponseNo := 500;
+    DoExit := True;
+    if rpyBind is TXml then with rpyBind as TXml do
+    begin
+      with items.XmlItemByTag['undefined'] do if Assigned (thisXml) then
+      begin
+        if Assigned (Xsd)
+        and (Xsd.soapPartType = sptUnknown) then
+        begin
+          Items.XmlItemByTag['responseCode'].Value := IntToStr (ResponseNo);
+          with Items.XmlItemByTag['body'] do if Assigned (thisXml) then
+          begin
+            Items.XmlItemByTag['contentType'].Value := 'application/xml';
+            Items.XmlItemByTag['content'].Value := LiteralResult;
+          end;
+          CheckDownline(True);
+          LiteralResult := '';
+          ReturnSoapFault := False;
+        end;
+      end;
+    end;
+  end;
 end;
 
 procedure RaiseHttpFault (aOperation: TWsdlOperation; aResponseCode, aResponseText, aResponseContentType: String);
 var
   x: Integer;
 begin
-  aOperation.LiteralResult := aResponseText;
-  aOperation.ContentType := aResponseContentType;
-  try
-    aOperation.ResponseNo := StrToInt(aResponseCode);
-  except
-    aOperation.ResponseNo := 500;
-    aOperation.LiteralResult := 'exception, could not convert  '
-                              + aResponseCode
-                              + ' to integer.'
-                              + LineEnding
-                              + aOperation.LiteralResult
-                              ;
+  with aOperation do
+  begin
+    LiteralResult := aResponseText;
+    OverruleReplyContentType := aResponseContentType;
+    try
+      ResponseNo := StrToInt(aResponseCode);
+    except
+      ResponseNo := 500;
+      LiteralResult := 'exception, could not convert  '
+                     + aResponseCode
+                     + ' to integer.'
+                     + LineEnding
+                     + aOperation.LiteralResult
+                     ;
+    end;
+    ReturnSoapFault := True;
+    DoExit := True;
+    if rpyBind is TXml then with rpyBind as TXml do
+    begin
+      with items.XmlItemByTag['undefined'] do if Assigned (thisXml) then
+      begin
+        if Assigned (Xsd)
+        and (Xsd.soapPartType = sptUnknown) then
+        begin
+          Items.XmlItemByTag['responseCode'].Value := IntToStr (ResponseNo);
+          with Items.XmlItemByTag['body'] do if Assigned (thisXml) then
+          begin
+            Items.XmlItemByTag['contentType'].Value := OverruleReplyContentType;
+            Items.XmlItemByTag['content'].Value := LiteralResult;
+          end;
+          CheckDownline(True);
+          LiteralResult := '';
+          ReturnSoapFault := False;
+        end;
+      end;
+    end;
   end;
-  aOperation.ReturnSoapFault := True;
-  aOperation.DoExit := True;
 end;
 
-procedure RaiseSoapFault (aOperation: TWsdlOperation; faultcode, faultstring, faultactor, detail: String);
+procedure RaiseSoapFault (aOperation: TWsdlOperation; aFaultcode, aFaultstring, aFaultactor, aDetail: String);
 var
   x: Integer;
 begin
-  aOperation.faultcode := faultcode;
-  aOperation.faultstring := faultstring;
-  aOperation.faultactor := faultactor;
-  with TXml.CreateAsString('soapenv:Envelope','') do
-  try
-    AddAttribute(TXmlAttribute.CreateAsString('xmlns:soapenv', 'http://schemas.xmlsoap.org/soap/envelope/'));
-    AddAttribute(TXmlAttribute.CreateAsString('xmlns:soapenc', 'http://schemas.xmlsoap.org/soap/encoding/'));
-    AddAttribute(TXmlAttribute.CreateAsString('xmlns:soap', 'http://schemas.xmlsoap.org/wsdl/soap/'));
-    AddAttribute(TXmlAttribute.CreateAsString('xmlns:wsdl', 'http://schemas.xmlsoap.org/wsdl/'));
-    AddAttribute(TXmlAttribute.CreateAsString('xmlns:xsd', scXMLSchemaURI));
-    AddAttribute(TXmlAttribute.CreateAsString('xmlns:xsi', scXMLSchemaInstanceURI));
-    with AddXml(TXml.CreateAsString('soapenv:Header', '')) do
-    begin
-      for x := 0 to aOperation.OutputHeaders.Count - 1 do
+  with aOperation do
+  begin
+    faultcode := aFaultcode;
+    faultstring := aFaultstring;
+    faultactor := aFaultactor;
+    with TXml.CreateAsString('soapenv:Envelope','') do
+    try
+      AddAttribute(TXmlAttribute.CreateAsString('xmlns:soapenv', 'http://schemas.xmlsoap.org/soap/envelope/'));
+      AddAttribute(TXmlAttribute.CreateAsString('xmlns:soapenc', 'http://schemas.xmlsoap.org/soap/encoding/'));
+      AddAttribute(TXmlAttribute.CreateAsString('xmlns:soap', 'http://schemas.xmlsoap.org/wsdl/soap/'));
+      AddAttribute(TXmlAttribute.CreateAsString('xmlns:wsdl', 'http://schemas.xmlsoap.org/wsdl/'));
+      AddAttribute(TXmlAttribute.CreateAsString('xmlns:xsd', scXMLSchemaURI));
+      AddAttribute(TXmlAttribute.CreateAsString('xmlns:xsi', scXMLSchemaInstanceURI));
+      with AddXml(TXml.CreateAsString('soapenv:Header', '')) do
       begin
-        AddXml ((aOperation.rpyBind as TXml).Items.XmlItems [x].XmlStreamer
-                                 ( True
-                                 , True
-                                 , 4
-                                 , True
-                                 , (aOperation.OutputHeaders.Headers[x].Use = scSoapUseEncoded)
-                                 )
-               );
+        for x := 0 to OutputHeaders.Count - 1 do
+        begin
+          AddXml ((rpyBind as TXml).Items.XmlItems [x].XmlStreamer
+                                   ( True
+                                   , True
+                                   , 4
+                                   , True
+                                   , (OutputHeaders.Headers[x].Use = scSoapUseEncoded)
+                                   )
+                 );
+        end;
       end;
-    end;
-    with AddXml(TXml.CreateAsString('soapenv:Body', '')) do
-    begin
-      with AddXml (TXml.CreateAsString('soapenv:Fault', '')) do
+      with AddXml(TXml.CreateAsString('soapenv:Body', '')) do
       begin
-        AddXml (TXml.CreateAsString('faultcode', aOperation.faultcode));
-        AddXml (TXml.CreateAsString('faultstring', aOperation.faultstring));
-        AddXml (TXml.CreateAsString('faultactor', aOperation.faultactor));
-        AddXml (TXml.CreateAsString('detail', detail));
+        with AddXml (TXml.CreateAsString('soapenv:Fault', '')) do
+        begin
+          AddXml (TXml.CreateAsString('faultcode', faultcode));
+          AddXml (TXml.CreateAsString('faultstring', faultstring));
+          AddXml (TXml.CreateAsString('faultactor', faultactor));
+          AddXml (TXml.CreateAsString('detail', aDetail));
+        end;
       end;
+      LiteralResult := AsText(False, 0, False, False);
+      ReturnSoapFault := True;
+      DoExit := True;
+      ResponseNo := 500;
+      if rpyBind is TXml then with rpyBind as TXml do
+      begin
+        with items.XmlItemByTag['undefined'] do if Assigned (thisXml) then
+        begin
+          if Assigned (Xsd)
+          and (Xsd.soapPartType = sptUnknown) then
+          begin
+            Items.XmlItemByTag['responseCode'].Value := IntToStr (ResponseNo);
+            with Items.XmlItemByTag['body'] do if Assigned (thisXml) then
+            begin
+              Items.XmlItemByTag['contentType'].Value := 'application/xml';
+              Items.XmlItemByTag['content'].Value := LiteralResult;
+            end;
+            CheckDownline(True);
+            LiteralResult := '';
+            ReturnSoapFault := False;
+          end;
+        end;
+      end;
+    finally
+      Free;
     end;
-    aOperation.LiteralResult := AsText(False, 0, False, False);
-    aOperation.ReturnSoapFault := True;
-    aOperation.DoExit := True;
-    aOperation.ResponseNo := 500;
-  finally
-    Free;
   end;
 end;
 
@@ -2009,6 +2076,78 @@ end;
 function TWsdl.thisWsdl: TWsdl;
 begin
   result := self;
+end;
+
+function TWsdl.AddUndefinedXsd (aParentXsd: TXsd; aMinOccurs: String): TXsd;
+var
+  yXsd, zXsd: TXsd;
+begin
+  result := TXsd.Create(XsdDescr);
+  XsdDescr.Garbage.AddObject('', result);
+  result.ElementName := 'undefined';
+  result.ResponseNo := -1;
+  result.sType := TXsdDataType.Create(XsdDescr);
+  XsdDescr.Garbage.AddObject('', result.sType);
+  result.sType.jsonType := jsonObject;
+  result.sType.xsdType:= dtComplexType;
+  result.sType.Name := 'other';
+  result.minOccurs := aMinOccurs;
+  aParentXsd.sType.ElementDefs.AddObject(result.ElementName, result);
+
+  yXsd := TXsd.Create(XsdDescr);
+  XsdDescr.Garbage.AddObject('', yXsd);
+  yXsd.ElementName := 'responseCode';
+  yXsd.sType := TXsdDataType.Create(XsdDescr);
+  XsdDescr.Garbage.AddObject('', yXsd.sType);
+  yXsd.sType.Name := yXsd.ElementName;
+  yXsd.sType.xsdType := dtSimpleType;
+  yXsd.sType.BaseDataTypeName := 'string';
+  yXsd.sType.jsonType := jsonString;
+  result.sType.ElementDefs.AddObject(yXsd.ElementName, yXsd);
+
+  yXsd := TXsd.Create(XsdDescr);
+  XsdDescr.Garbage.AddObject('', yXsd);
+  yXsd.ElementName := 'body';
+  yXsd.minOccurs := '0';
+  yXsd.sType := TXsdDataType.Create(XsdDescr);
+  XsdDescr.Garbage.AddObject('', yXsd.sType);
+  yXsd.sType.Name := yXsd.ElementName;
+  yXsd.sType.jsonType := jsonObject;
+  yXsd.sType.xsdType:= dtComplexType;
+  result.sType.ElementDefs.AddObject(yXsd.ElementName, yXsd);
+
+  with TXsd.Create (XsdDescr) do
+  begin
+    xsdDescr.Garbage.AddObject('', thisXsd);
+    ElementName:='contentType';
+    minOccurs := '1';
+    sType := TXsdDataType.Create(xsdDescr);
+    xsdDescr.Garbage.AddObject('', sType);
+    sType.Name := ElementName;
+    sType.xsdType := dtSimpleType;
+    sType.BaseDataTypeName := 'string';
+    sType.Enumerations.AddObject('application/json', TXsdEnumeration.Create('', ''));
+    sType.Enumerations.AddObject('application/xml', TXsdEnumeration.Create('', ''));
+    sType.Enumerations.AddObject('text/html', TXsdEnumeration.Create('', ''));
+    sType.Enumerations.AddObject('text/plain', TXsdEnumeration.Create('', ''));
+    sType.Enumerations.AddObject('text/xml', TXsdEnumeration.Create('', ''));
+    sType.jsonType := jsonString;
+    yXsd.sType.ElementDefs.AddObject(ElementName, thisXsd);
+  end;
+
+  with TXsd.Create (XsdDescr) do
+  begin
+    xsdDescr.Garbage.AddObject('', thisXsd);
+    ElementName:='content';
+    minOccurs := '1';
+    sType := TXsdDataType.Create(xsdDescr);
+    xsdDescr.Garbage.AddObject('', sType);
+    sType.Name := ElementName;
+    sType.xsdType := dtSimpleType;
+    sType.BaseDataTypeName := 'string';
+    sType.jsonType := jsonString;
+    yXsd.sType.ElementDefs.AddObject(ElementName, thisXsd);
+  end;
 end;
 
 procedure TWsdl .ValidateEvaluatedTags (aXml : TXml ; aSl : TJBStringList );
@@ -2301,7 +2440,7 @@ begin
         Mssg := fMssgs.Messages[f];
         for p := 0 to Mssg.Parts.Count - 1 do
           if Mssg.Parts.Parts[p].Name = PartName then
-            reqXsd.sType.AddXsd(Mssg.Parts.Parts[p].Xsd);
+            reqXsd.sType.AddXsd(Mssg.Parts.Parts[p].Xsd).soapPartType:=sptHeader;
       end;
       if _InputMessageName <> '' then
       begin
@@ -2309,7 +2448,7 @@ begin
           raise Exception.CreateFmt('InputBodyMessage (%s) not found at operation %s', [_InputMessageName, Name]);
         Mssg := fMssgs.Messages[f];
         for p := 0 to Mssg.Parts.Count - 1 do
-          reqXsd.sType.AddXsd(Mssg.Parts.Parts[p].Xsd);
+          reqXsd.sType.AddXsd(Mssg.Parts.Parts[p].Xsd).soapPartType:=sptBody;
         if (Mssg.Parts.Count > 0) then
         begin
           reqTagName := Mssg.Parts.Parts[0].Xsd.ElementName;
@@ -2330,7 +2469,7 @@ begin
         Mssg := fMssgs.Messages[f];
         for p := 0 to Mssg.Parts.Count - 1 do
           if Mssg.Parts.Parts[p].Name = PartName then
-            rpyXsd.sType.AddXsd(Mssg.Parts.Parts[p].Xsd);
+            rpyXsd.sType.AddXsd(Mssg.Parts.Parts[p].Xsd).soapPartType:=sptHeader;
       end;
       if _OutputMessageName <> '' then
       begin
@@ -2342,13 +2481,8 @@ begin
         begin
           rpyTagName := Mssg.Parts.Parts[0].Xsd.ElementName;
           rpyTagNameSpace := Mssg.Parts.Parts[0].Xsd.ElementNameSpace;
-          rpyXsd.sType.AddXsd(Mssg.Parts.Parts[0].Xsd);
+          rpyXsd.sType.AddXsd(Mssg.Parts.Parts[0].Xsd).soapPartType:=sptBody;
         end;
-        FreeAndNil(fRpyBind);
-        bindRefId := 0;
-        rpyBind := TXml.Create (0, rpyXsd);
-        rpyBind.Name := Mssg.Name;
-        rpyMessageName := Mssg.Name;
       end;
 
       if Assigned (FaultMessages) then
@@ -2362,12 +2496,21 @@ begin
           FaultMessages.Objects[m] := fMssgs.Messages[f];
           fMssgs.Messages[f].Xsd.ElementName:=FaultName;
           fMssgs.Messages[f].Name:=FaultName;
-          FaultXsd.sType.AddXsd(fMssgs.Messages[f].Xsd);
+          rpyXsd.sType.AddXsd(fMssgs.Messages[f].Xsd).soapPartType:=sptFault;
         end;
-        FreeAndNil(fltBind);
-        bindRefId := 0;
-        fltBind := TXml.Create (0, FaultXsd);
-        fltBind.Name := 'Faults';
+      end;
+      AddUndefinedXsd(rpyXsd, '1').soapPartType := sptUnknown;
+      FreeAndNil(fRpyBind);
+      bindRefId := 0;
+      rpyBind := TXml.Create (0, rpyXsd);
+      rpyBind.Name := Mssg.Name;
+      rpyMessageName := Mssg.Name;
+      for x := 0 to rpyBind.Children.Count - 1 do with rpyBind.Children.Bindables[x] as TXml do
+      begin
+        if Xsd.soapPartType in [sptUnknown, sptBody, sptFault] then
+          Xsd.isOneOfGroupLevel := 1
+        else
+          Xsd.isOneOfGroupLevel := 0;
       end;
     end;
   finally
@@ -2530,32 +2673,6 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
     end;
   end;
 
-  procedure _addUndefXsd (aParentXsd: TXsd);
-  var
-    xXsd, yXsd: TXsd;
-  begin
-    xXsd := TXsd.Create(XsdDescr);
-    XsdDescr.Garbage.AddObject('', xXsd);
-    xXsd.ElementName := 'undefined';
-    xXsd.ResponseNo := -1;
-    xXsd.sType := TXsdDataType.Create(XsdDescr);
-    xXsd.sType.jsonType := jsonObject;
-    xXsd.sType.xsdType:= dtComplexType;
-    XsdDescr.Garbage.AddObject('', xXsd.sType);
-    xXsd.sType.Name := 'other';
-    xXsd.minOccurs := '0';
-    aParentXsd.sType.ElementDefs.AddObject(xXsd.ElementName, xXsd);
-    yXsd := TXsd.Create(XsdDescr);
-    XsdDescr.Garbage.AddObject('', yXsd);
-    yXsd.ElementName := 'responseCode';
-    yXsd.sType := TXsdDataType.Create(XsdDescr);
-    yXsd.sType.Name := yXsd.ElementName;
-    yXsd.sType.xsdType := dtSimpleType;
-    yXsd.sType.BaseDataTypeName := 'string';
-    yXsd.sType.jsonType := jsonString;
-    xXsd.sType.ElementDefs.AddObject(yXsd.ElementName, yXsd);
-  end;
-
   procedure _evaluateContent ( aService: TWsdlService
                              ; aOperation: TWsdlOperation
                              ; aXsd: TXsd
@@ -2709,7 +2826,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
       xXsd := _initXsd(aOperation.rpyXsd, 'rspns' + vXml.Name);
       _evaluateResponse200 (xXsd, aDoc, vXml);
     end;
-    _addUndefXsd(aOperation.rpyXsd);
+    AddUndefinedXsd(aOperation.rpyXsd, '0');
   end;
 
   procedure _evaluateResponses300 ( aService: TWsdlService // OpenApi 3.0
@@ -2780,7 +2897,7 @@ procedure TWsdl.LoadFromJsonYamlFile(aFileName: String; aOnError: TOnErrorEvent;
       xXsd.isContainerElement := True;
       _evalresponsecode(vXml, xXsd);
     end;
-    _addUndefXsd(aOperation.rpyXsd);
+    AddUndefinedXsd(aOperation.rpyXsd, '0');
   end;
 
   procedure _evaluateOperation ( aService: TWsdlService
@@ -3673,17 +3790,6 @@ begin
     rpyXsd.sType.BaseDataTypeName := rpyXsd.sType.Name;
     rpyBind := TXml.Create;
     (rpyBind as TXml).Xsd := rpyXsd;
-    FaultXsd := TXsd.Create(aWsdl.XsdDescr);
-    aWsdl.XsdDescr.Garbage.AddObject ('', FaultXsd);
-    FaultXsd.sType := TXsdDataType.Create(aWsdl.XsdDescr);
-    aWsdl.XsdDescr.Garbage.AddObject ('', FaultXsd.sType);
-    FaultXsd.DoNotEncode := True;
-    FaultXsd.sType.IsComplex := True;
-    FaultXsd.sType.ContentModel := 'Choice';
-    FaultXsd.sType.Name := 'Operation';
-    FaultXsd.sType.BaseDataTypeName := FaultXsd.sType.Name;
-    fltBind := TXml.Create;
-    (fltBind as TXml).Xsd := FaultXsd;
     Messages := TWsdlMessages.Create;
     CorrelationBindables := TBindableList.Create;
     LogColumns := TBindableList.Create;
@@ -3792,7 +3898,6 @@ begin
     FreeAndNil (BindablesWithAddedElement);
     FreeAndNil (freqBind);
     FreeAndNil (frpyBind);
-    FreeAndNil (fltBind);
     FreeAndNil (requestInfoBind);
     FreeAndNil (replyInfoBind);
     FreeAndNil (reqWsaXml);
@@ -3966,6 +4071,7 @@ end;
 procedure TWsdlOperation.PrepareScripting;
 var
   x: Integer;
+  xSaveParent: TCustomBindable;
 begin
   try
     FreeAndNil(fExpress);
@@ -3977,6 +4083,26 @@ begin
     fExpress.Database := _WsdlDbsConnector;
     Bind ('Req', reqBind, fExpress);
     Bind ('Rpy', rpyBind, fExpress);
+    if Assigned (rpyBind) then
+    begin
+      for x := 0 to rpyBind.Children.Count - 1 do // compatability 10.9.1.13303 and earlier
+      begin
+        if rpyBind.Children.Bindables[x] is TXml then with rpyBind.Children.Bindables[x] as TXml do
+        begin
+          if Assigned (Xsd)
+          and (Xsd.soapPartType = sptFault) then
+          begin
+            xSaveParent := thisXml.Parent;
+            thisXml.Parent := nil;
+            try
+              self.Bind ('Faults', thisXml, fExpress);
+            finally
+              thisXml.Parent := xSaveParent;
+            end;
+          end;
+        end;
+      end;
+    end;
     Bind ('requestInfo', requestInfoBind, fExpress);
     Bind ('replyInfo', replyInfoBind, fExpress);
     if Assigned (invokeList) then
@@ -3992,8 +4118,7 @@ begin
         end;
       end;
     end;
-    if fltBind is TIpmItem then
-      fltBind.Bind ('Flt', fExpress, 1);
+{
     if fltBind is TXml then
     begin
       for x := 0 to (fltBind as TXml).Items.Count - 1 do
@@ -4006,6 +4131,7 @@ begin
         end;
       end;
     end;
+}
     if Assigned (reqWsaXml) then
       try reqWsaXml.Bind ('reqWsa', fExpress, 1); except end;
     if Assigned (rpyWsaXml) then
@@ -4437,6 +4563,7 @@ var
   xXml, yXml, zXml: TXml;
   xName: String;
 begin
+  OverruleReplyContentType := '';
   if ResponseNo = 0 then
     ResponseNo := 200; // nice default
   result := LiteralResult;
@@ -4449,6 +4576,31 @@ begin
     Exit;
   end;
 
+  if (rpyBind is TXml) then with rpyBind as TXml do
+  begin
+    with Items.XmlCheckedItemByTag['undefined'] do if Assigned (thisXml) then
+    begin
+      zXml := FindCheckedXml('undefined.responseCode');
+      if Assigned(zXml) then
+      begin
+        ResponseNo := StrToIntDef(zXml.Value, 500);
+        Result := xmlio.HttpResponseCodeToText(ResponseNo);
+        zXml := FindCheckedXml('undefined.body');
+        if Assigned (zXml) then
+        begin
+          OverruleReplyContentType := zXml.Items.XmlCheckedValueByTag['contentType'];
+          result := zXml.Items.XmlCheckedValueByTag['content'];
+        end;
+      end
+      else
+      begin
+        ResponseNo := 500;
+        Result := xmlio.HttpResponseCodeToText(ResponseNo);
+      end;
+      Exit;
+    end;
+  end;
+
   if (    isSoapService
       and (rpyXsd.sType.ElementDefs.Count = 0)
      )
@@ -4456,6 +4608,13 @@ begin
       and (rpyBind is TXml)
      ) then // one way
     exit;
+
+  if isSoapService
+  and isRespondingSoapFault then
+  begin
+    result := StreamFault (_progName + ' ' + _xmlProgVersion, aGenerateTypes);
+    Exit;
+  end;
 
   if isSoapService then
   begin
@@ -4582,12 +4741,7 @@ begin
         end
         else
         begin
-          zXml := yXml.FindXml('undefined.responseCode');
-          if Assigned(zXml) then
-            ResponseNo := StrToIntDef(zXml.Value, 500)
-          else
-            ResponseNo := 500;
-          Result := xmlio.HttpResponseCodeToText(ResponseNo);
+          raise Exception.Create('statement should not be reached');
         end;
       end;
     end;
@@ -4677,51 +4831,33 @@ begin
     result := StrAdd (result, '      <faultcode>' + faultcode + '</faultcode>');
     result := StrAdd (result, '      <faultstring>' + faultstring + '</faultstring>');
     result := StrAdd (result, '      <faultactor>' + faultactor + '</faultactor>');
-    for x := 0 to (fltBind as TXml).Items.Count - 1 do
+    with rpyBind as TXml do for x := 0 to Items.Count - 1 do with Items.XmlItems[x] do
     begin
-      if (fltBind as TXml).Items.XmlItems [x].Checked then
+      if Checked
+      and Assigned (Xsd)
+      and (Xsd.soapPartType = sptFault) then
       begin
         xsdGenerated := True;
         xsiGenerated := True;
-        swapName := (fltBind as TXml).Items.XmlItems [x].Name;
-        (fltBind as TXml).Items.XmlItems [x].Name := 'detail';
+        swapName := Name;
+        Name := 'detail';
         try
-          result := result + (fltBind as TXml).Items.XmlItems [x].StreamXML
-                                     ( True
-                                     , False
-                                     , 6
-                                     , True
-                                     , (SoapBodyOutputUse = scSoapUseEncoded)
-                                     )
-                           ;
+          result := result + ( StreamXML
+                               ( True
+                               , False
+                               , 6
+                               , True
+                               , (SoapBodyOutputUse = scSoapUseEncoded)
+                               )
+                             );
         finally
-          (fltBind as TXml).Items.XmlItems [x].Name := swapName;
+          Name := swapName;
         end;
       end;
     end;
     result := StrAdd (result, '    </soapenv:Fault>');
     result := StrAdd (result, '  </soapenv:Body>');
     result := StrAdd (result, '</soapenv:Envelope>');
-  end
-  else
-  begin
-    if (fltBind is TXml) then
-    begin
-      xsiGenerated := False;
-      xsdGenerated := False;
-      if WsdlService.DescriptionType <> ipmDTJson then
-        result := result + (fltBind as TXml).Items.XmlItems[0].StreamXML
-                                     ( True
-                                     , True
-                                     , 0
-                                     , True
-                                     , False
-                                     )
-      else
-        result := result + (fltBind as TXml).Items.XmlItems[0].StreamJSON(0, True);
-    end;
-    if (fltBind is TIpmItem) then
-      result := result + ((fltBind as TIpmItem).ValuesToBuffer (nil));
   end;
 end;
 
@@ -4930,16 +5066,6 @@ constructor TWsdlOperation.Create(aOperation: TWsdlOperation);
                     )
               )
           );
-      if AnsiStartsText('Flt.',aSrc.Strings[x]) then
-        result.AddObject
-          ( aSrc.Strings[x]
-          , self.fltBind.FindUQ
-              (Copy ( aSrc.Strings[x]
-                    , 5
-                    , Length (aSrc.Strings[x]) - 4
-                    )
-              )
-          );
     end;
   end;
 var
@@ -4996,17 +5122,7 @@ begin
   self.SoapBodyOutputPartName := xOperation.SoapBodyOutputPartName;
   self.SoapBodyOutputRequired := xOperation.SoapBodyOutputRequired;
   self.SoapBodyOutputUse := xOperation.SoapBodyOutputUse;
-  self.FaultXsd := xOperation.FaultXsd;
   self.pegaSimul8rConnectorData := xOperation.pegaSimul8rConnectorData;
-  if Assigned (self.FaultXsd) then
-  begin
-    self.fltBind := TXml.Create (-10000, self.FaultXsd);
-    self.fltBind.Name := 'Faults';
-  end;
-  if Assigned (self.FaultMessages) then
-    for f := 0 to self.FaultMessages.Count - 1 do
-      if f < (self.fltBind as TXml).Items.Count then
-        (self.fltBind as TXml).Items.XmlItems[f].TagName := self.FaultMessages.Messages[f].Name;
   self.SoapAddress := xOperation.SoapAddress;
   self.wsaEnabled := xOperation.wsaEnabled;
   self.wsaSpecificMustUnderstand := xOperation.wsaSpecificMustUnderstand;
@@ -5057,7 +5173,9 @@ begin
   self.resolveReplyAliasses := xOperation.resolveReplyAliasses;
   self.CorrelatedMessage := xOperation.CorrelatedMessage;
   self.Messages := xOperation.Messages;
-//  self.faultcode, faultstring, faultactor := xOperation.String;
+  self.faultcode := 'defaultCode';
+  self.faultstring := 'defaultString';
+  self.faultactor := 'defaultActor';
   self.RecognitionType := xOperation.RecognitionType;
   self.invokeRequestInfo := xOperation.invokeRequestInfo;
   self.invokeReplyInfo := xOperation.invokeReplyInfo;
@@ -5206,6 +5324,7 @@ procedure TWsdlOperation.XmlReplyToBindables (aReply: TXml; aAddUnknowns: Boolea
 var
   x, s, d: Integer;
   xXml: TXml;
+  xSaveName: String;
 begin
   (rpyBind as TXml).ResetValues;
   (rpyBind as TXml).Checked := True;
@@ -5230,8 +5349,28 @@ begin
       begin
         for s := 0 to xXml.Items.Count - 1 do
         begin
-          for d := OutputHeaders.Count to (rpyBind as TXml).Items.Count - 1 do
-            (rpyBind as TXml).Items.XmlItems[d].LoadValues (xXml.Items.XmlItems [s], aAddUnknowns, False, True, False);
+          for d := 0 to (rpyBind as TXml).Items.Count - 1 do
+          begin
+            if ((rpyBind as TXml).Items.XmlItems[d].Xsd.soapPartType = sptBody)
+            and ((rpyBind as TXml).Items.XmlItems[d].Name = xXml.Items.XmlItems [s].Name)
+            then
+              (rpyBind as TXml).Items.XmlItems[d].LoadValues (xXml.Items.XmlItems [s], aAddUnknowns, False, True, False);
+            if ((rpyBind as TXml).Items.XmlItems[d].Xsd.soapPartType = sptFault)
+            and (xXml.Items.XmlItems [s].Name = 'Fault') then
+            with xXml.Items.XmlItems [s].Items.XmlItemByTag ['detail'] do
+            begin
+              if Assigned (thisXml) then
+              begin
+                xSaveName := thisXml.name;
+                thisXml.Name := (rpyBind as TXml).Items.XmlItems[d].Name;
+                try
+                  (rpyBind as TXml).Items.XmlItems[d].LoadValues (thisXml, aAddUnknowns, False, True, False);
+                finally
+                  thisXml.Name := xSaveName;
+                end;
+              end;
+            end;
+          end;
         end;
       end;
     end;
@@ -6324,6 +6463,11 @@ var
   yXml: TXml;
 begin
   result := '';
+  if OverruleReplyContentType <> '' then
+  begin
+    result := OverruleReplyContentType;
+    Exit;
+  end;
   // depending on openApi version, answer can be found on first or on second level
   if isOpenApiService then with rpyBind as TXml do
   begin
@@ -6341,6 +6485,16 @@ begin
           Exit;
       end;
     end;
+    if result = '' then
+    begin
+      result := SeparatedStringN(nil, Produces, LineEnding, 1);
+      Exit;
+    end;
+  end;
+  if isSoapService then
+  begin
+    result := 'application/xml';
+    Exit;
   end;
 end;
 
@@ -6853,6 +7007,19 @@ begin
   result := Assigned (Wsdl) and Wsdl.isOpenApiService;
 end;
 
+function TWsdlOperation.getIsRespondingSoapFault: Boolean;
+var
+  x: Integer;
+begin
+  result := ReturnSoapFault;
+  if isSoapService then with (rpyBind as TXml) do
+    for x := 0 to Items.Count - 1 do with Items.XmlItems[x] do
+      if CheckedAllUp
+      and Assigned (Xsd)
+      and (Xsd.soapPartType = sptFault) then
+        result := True;
+end;
+
 function TWsdlOperation.getisSoapService: Boolean;
 begin
   result := Assigned (Wsdl)
@@ -7109,8 +7276,6 @@ begin
     (reqBind as TXml).Clean(1, xsdMaxDepthBillOfMaterials);
   if rpyBind is TXml then
     (rpyBind as TXml).Clean(1, xsdMaxDepthBillOfMaterials);
-  if fltBind is TXml then
-    (rpyBind as TXml).Clean(1, xsdMaxDepthBillOfMaterials);
 end;
 
 procedure TWsdlMessage.CheckBefore ;
@@ -7161,7 +7326,6 @@ constructor TWsdlMessage.Create;
 begin
   reqBind := TXml.Create;
   rpyBind := TXml.Create;
-  fltBind := TXml.Create;
   BeforeScriptLines := TJBStringList.Create;
   AfterScriptLines := TJBStringList.Create;
 end;
@@ -7180,7 +7344,6 @@ begin
   begin
     reqBind := TIpmItem.Create(aOperation.reqBind as TIpmItem);
     rpyBind := TIpmItem.Create(aOperation.rpyBind as TIpmItem);
-    fltBind := TIpmItem.Create(aOperation.fltBind as TIpmItem);
   end
   else
   begin
@@ -7190,9 +7353,6 @@ begin
     rpyBind := TXml.Create(0, WsdlOperation.rpyXsd);
     rpyBind.Name := WsdlOperation.rpyBind.Name;
     (rpyBind as TXml).LoadValues(aOperation.rpyBind as TXml, True);
-    fltBind := TXml.Create(0, WsdlOperation.FaultXsd);
-    fltBind.Name := WsdlOperation.fltBind.Name;
-    (fltBind as TXml).LoadValues(aOperation.fltBind as TXml, True);
   end;
   CorrelationBindables := cloneBindables(WsdlOperation.CorrelationBindables);
   if aOperation.isFreeFormat then
@@ -7233,8 +7393,6 @@ begin
       reqBind := TIpmItem.Create (aOperation.reqBind as TIpmItem);
     if Assigned (aOperation.rpyBind) then
       rpyBind := TIpmItem.Create (aOperation.rpyBind as TIpmItem);
-    if Assigned (aOperation.fltBind) then
-      fltBind := TIpmItem.Create (aOperation.fltBind as TIpmItem);
   end
   else
   begin
@@ -7255,10 +7413,6 @@ begin
       reqBind.Name := aOperation.reqBind.Name;
     end;
     bindRefId := 0;
-    if Assigned (aOperation.FaultMessages) then
-      fltBind := TXml.Create (0, aOperation.FaultXsd)
-    else
-      fltBind := TXml.Create;
   end;
   if not Assigned (reqBind) then
     reqBind := TXml.Create;
@@ -7324,8 +7478,6 @@ begin
         reqBind := TIpmItem.Create (aOperation.reqBind as TIpmItem);
       if Assigned (aOperation.rpyBind) then
         rpyBind := TIpmItem.Create (aOperation.rpyBind as TIpmItem);
-      if Assigned (aOperation.fltBind) then
-        fltBind := TIpmItem.Create (aOperation.fltBind as TIpmItem);
     end
     else
     begin
@@ -7348,13 +7500,6 @@ begin
           reqBind.Name := aOperation.reqBind.Name;
         end;
         bindRefId := 0;
-        fltBind := TXml.Create;
-        if Assigned (aOperation.FaultMessages) then
-        begin
-          (fltBind as TXml).CopyDownLine (aOperation.fltBind as TXml, False);
-          fltBind.Name := 'Faults';
-          fltBind.Checked := False;
-        end;
       end;
     end;
     if not Assigned (reqBind) then
@@ -7390,7 +7535,6 @@ destructor TWsdlMessage.Destroy;
 begin
   reqBind.Free;
   rpyBind.Free;
-  FreeAndNil (fltBind);
   ColumnXmls.Free;
   CorrelationBindables.Free;
   FreeAndNil(BeforeScriptLines);
@@ -7581,16 +7725,6 @@ begin
                   )
             )
         );
-    if AnsiStartsText('Flt.',aSrc.Strings[x]) then
-      result.AddObject
-        ( aSrc.Strings[x]
-        , self.fltBind.FindUQ
-            (Copy ( aSrc.Strings[x]
-                  , 5
-                  , Length (aSrc.Strings[x]) - 4
-                  )
-            )
-        );
   end;
 end;
 
@@ -7650,11 +7784,6 @@ begin
     if Copy (aCaption, 1, p) = 'Rpy.' then
     begin
       result := rpyBind.FindUQ(Copy (aCaption, p + 1, 10000));
-      exit;
-    end;
-    if Copy (aCaption, 1, p) = 'Flt.' then
-    begin
-      result := fltBind.FindUQ(Copy (aCaption, p + 1, 10000));
       exit;
     end;
   except

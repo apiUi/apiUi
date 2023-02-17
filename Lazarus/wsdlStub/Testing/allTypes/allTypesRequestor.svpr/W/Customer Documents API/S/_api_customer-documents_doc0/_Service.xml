@@ -1,0 +1,9 @@
+  <Service>
+    <Name>/api/customer-documents/document</Name>
+    <serviceOptions>
+      <general>
+        <suppressXmlComment>false</suppressXmlComment>
+        <suppressHttp500onSoapFaults>false</suppressHttp500onSoapFaults>
+      </general>
+    </serviceOptions>
+  </Service>

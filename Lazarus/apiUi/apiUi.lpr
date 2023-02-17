@@ -1,6 +1,6 @@
 {
  This file is part of the apiUi project
- Copyright (c) 2009-2021 by Jan Bouwman
+ Copyright (c) 2009-2023 by Jan Bouwman
 
  See the file COPYING, included in this distribution,
  for details about the copyright.

@@ -12,7 +12,7 @@ object SelectElementsForm: TSelectElementsForm
   OnDestroy = FormDestroy
   OnShow = FormShow
   ShowHint = True
-  LCLVersion = '2.0.10.0'
+  LCLVersion = '2.0.12.0'
   object Panel1: TPanel
     Left = 0
     Height = 64

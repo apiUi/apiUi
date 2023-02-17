@@ -67,6 +67,7 @@ when "true", the server will be allowed to send gzip responses (compression meth
 			<xs:enumeration value="GET"/>
 			<xs:enumeration value="HEAD"/>
 			<xs:enumeration value="OPTIONS"/>
+			<xs:enumeration value="PATCH"/>
 			<xs:enumeration value="POST"/>
 			<xs:enumeration value="PUT"/>
 			<xs:enumeration value="TRACE"/>
@@ -241,6 +242,11 @@ Often used with Active MQ</xs:documentation>
 					<xs:documentation>No Transfer Protocol
 Used to execute operation-scripts without really sending a message</xs:documentation>
 				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="0"/>
+					</xs:restriction>
+				</xs:simpleType>
 			</xs:element>
 		</xs:choice>
 	</xs:complexType>
@@ -265,6 +271,135 @@ Used to execute operation-scripts without really sending a message</xs:documenta
 						<xs:element name="KeyFile" type="tns:FileNameType" minOccurs="0"/>
 						<xs:element name="RootCertificateFile" type="tns:FileNameType" minOccurs="0"/>
 						<xs:element name="Password" type="tns:passwordType" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Defaults to apiUi;  
+Makes it possible to use apiUi reporting functionality for other stub/mock implementations. 
+</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:choice>
+						<xs:element name="apiUi"/>
+						<xs:element name="WireMock">
+							<xs:annotation>
+								<xs:documentation># WireMock as remote server
+
+## API
+
+apiUi uses below services to push mappings to a Wiremock remote server.
+
+1. POST /__admin/requests/remove
+2. GET /__admin/mappings
+
+## What is pushed
+
+Inbound services 
+
+## Not supported
+
+1. Scripts
+2. Environment variables
+</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="pegaSimul8r">
+							<xs:annotation>
+								<xs:documentation>
+# pega Simul8r as remote server
+
+The [Pega Simul8r](https://community.pega.com/marketplace/components/adk-simul8r) API curently only supports reading logs.  
+Since the Simul8r-API does not provide the URL that would be used for a servicecall (if not simulated), apiUi tries to find the operation on the reported servicename concatenated with the HTTP method.  
+Therefor, if you want to apply schema validation, introspect the API/Wsdl and choose an alias based on reported Simul8r invocation data.  
+
+Will enable to validate schema and use the [apiUi reporting features](https://www.apiui.org/reports)  
+</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="QueryParams">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="AccessGroup" type="xs:string" minOccurs="0"/>
+												<xs:element name="Application" type="xs:string"/>
+												<xs:element name="Operator" type="xs:string" minOccurs="0"/>
+												<xs:element name="FromDateTime" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>
+Default "19000101T000000.000 GMT"  
+After setting a value, this value will only be used once, on the first call after setting it.  
+apiUi will update this value on each execution of a query.
+														</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:pattern value="\d{8}T\d{6}\.\d{3} GMT"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="ToDateTime" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>
+Default system datetime.    
+After setting a value, this value will only be used once, on the first call after setting it.  
+apiUi will update this value on each execution of a query.
+														</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:pattern value="\d{8}T\d{6}\.\d{3} GMT"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="ApplicationVersion" minOccurs="0">
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:pattern value="\d\d\.\d\d\.\d\d"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="PageClass" type="xs:string" minOccurs="0"/>
+												<xs:element name="ServiceName" type="xs:string" minOccurs="0"/>
+												<xs:element name="RESTServiceMethod" minOccurs="0">
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:enumeration value="DELETE"/>
+															<xs:enumeration value="GET"/>
+															<xs:enumeration value="HEAD"/>
+															<xs:enumeration value="POST"/>
+															<xs:enumeration value="PUT"/>
+															<xs:enumeration value="TRACE"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="PushDesignParams">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="AccessGroup" type="xs:string"/>
+												<xs:element name="Ruleset" type="xs:string" minOccurs="0"/>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="allowedActions" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="pushDesign" type="xs:boolean" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Default "false"  
+When "true" it will be possible to push changes in project design directly to the remote server</xs:documentation>
+							</xs:annotation>
+						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>

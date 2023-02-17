@@ -1,0 +1,102 @@
+  <Message>
+    <Name>Default</Name>
+    <SequenceNr>0</SequenceNr>
+    <stateMachineScenarioName>.*</stateMachineScenarioName>
+    <stateMachineRequiredState>.*</stateMachineRequiredState>
+    <stateMachineNextState>.*</stateMachineNextState>
+    <Patterns></Patterns>
+    <Reply>
+      <CreateServiceRequest2 checked__="true">
+        <JanBoHeader checked__="true"></JanBoHeader>
+        <CreateServiceRequest_Rpy checked__="true"></CreateServiceRequest_Rpy>
+      </CreateServiceRequest2>
+    </Reply>
+    <Request>
+      <CreateServiceRequest2 checked__="true">
+        <JanBoHeader checked__="true">
+          <HeaderVersion checked__="true">10</HeaderVersion>
+          <MessageId checked__="false">MessageId</MessageId>
+          <ServiceRequestorDomain checked__="false">ServiceRequestorDomain</ServiceRequestorDomain>
+          <ServiceRequestorId checked__="false">ServiceRequestorId</ServiceRequestorId>
+          <ServiceProviderDomain checked__="false">ServiceProviderDomain</ServiceProviderDomain>
+          <ServiceId checked__="false">ServiceId</ServiceId>
+          <ServiceVersion checked__="false">Ser</ServiceVersion>
+          <FaultIndication checked__="false">False</FaultIndication>
+          <MessageTimestamp checked__="false">2010-12-11T13:30:00.200</MessageTimestamp>
+        </JanBoHeader>
+        <CreateServiceRequest_Req checked__="true">
+          <Contact checked__="true">
+            <ContactId checked__="true">CC</ContactId>
+          </Contact>
+          <LocalBank checked__="true">
+            <BankCode checked__="true">122.745</BankCode>
+          </LocalBank>
+          <Arrangement checked__="false">
+            <ArrangementNumber checked__="false">ArrangementNumber</ArrangementNumber>
+          </Arrangement>
+          <CommercialProductType checked__="false">
+            <AdministrationCode checked__="false">Admi</AdministrationCode>
+          </CommercialProductType>
+          <ServiceRequest checked__="true">
+            <Reference checked__="false">Reference</Reference>
+            <ContextId checked__="false">ContextId</ContextId>
+            <SourceSystemId checked__="true">SourceSystemId</SourceSystemId>
+            <OriginDescriptionCode checked__="true">OriginDescriptionCode</OriginDescriptionCode>
+            <TypeCode checked__="true">TypeCode</TypeCode>
+            <StatusCode checked__="true">StatusCode</StatusCode>
+            <CancellationReasonCode checked__="false">CancellationReasonCode</CancellationReasonCode>
+            <EmployeeReadOnlyFlag checked__="true">E</EmployeeReadOnlyFlag>
+            <Description checked__="true">Description</Description>
+            <Comment checked__="false">Comment</Comment>
+            <CategoryCode checked__="true">CategoryCode</CategoryCode>
+            <SubCategoryCode checked__="false">SubCategoryCode</SubCategoryCode>
+            <MeansOfCommunicationCode checked__="true">MeansOfCommunicationCode</MeansOfCommunicationCode>
+            <FulfillmentAreaCode checked__="true">FulfillmentAreaCode</FulfillmentAreaCode>
+            <StartDate checked__="true">2010-12-11T13:30:00.200</StartDate>
+            <PlannedEndDate checked__="true">2010-12-11T13:30:00.200</PlannedEndDate>
+            <EndDate checked__="false">2010-12-11T13:30:00.200</EndDate>
+            <Employee checked__="false">
+              <EmployeeId checked__="false">EmployeeId</EmployeeId>
+            </Employee>
+            <ListOfActivities checked__="false">
+              <Activity checked__="false">
+                <StatusCode checked__="false">StatusCode</StatusCode>
+                <TaskReference checked__="false">TaskReference</TaskReference>
+                <SourceSystemId checked__="false">SourceSystemId</SourceSystemId>
+                <SourceFunctionId checked__="false">SourceFunctionId</SourceFunctionId>
+                <OriginDescriptionCode checked__="false">OriginDescriptionCode</OriginDescriptionCode>
+                <TypeCode checked__="false">TypeCode</TypeCode>
+                <Description checked__="false">Description</Description>
+                <Comment checked__="false">Comment</Comment>
+                <SubjectGroupCode checked__="false">SubjectGro</SubjectGroupCode>
+                <SubjectCode checked__="false">SubjectCod</SubjectCode>
+                <StartDate checked__="false">2010-12-11T13:30:00.200</StartDate>
+                <EndDate checked__="false">2010-12-11T13:30:00.200</EndDate>
+                <PlannedEndDate checked__="false">2010-12-11T13:30:00.200</PlannedEndDate>
+                <PriorityCode checked__="false">Pri</PriorityCode>
+                <RoleCode checked__="false">RoleCode</RoleCode>
+                <ActivityEmployee checked__="false">
+                  <Employee checked__="false">
+                    <EmployeeId checked__="false">EmployeeId</EmployeeId>
+                  </Employee>
+                </ActivityEmployee>
+                <DocumentVersion checked__="false">
+                  <DocumentType checked__="false">DocumentType</DocumentType>
+                  <Title checked__="false">Title</Title>
+                  <DocumentFile checked__="false">
+                    <Content checked__="false">C30B11734a4fafce43faf48be03d34e12FBe168f</Content>
+                    <FileName checked__="false">FileName</FileName>
+                  </DocumentFile>
+                  <Employee checked__="false">
+                    <EmployeeId checked__="false">EmployeeId</EmployeeId>
+                  </Employee>
+                </DocumentVersion>
+              </Activity>
+            </ListOfActivities>
+          </ServiceRequest>
+        </CreateServiceRequest_Req>
+      </CreateServiceRequest2>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

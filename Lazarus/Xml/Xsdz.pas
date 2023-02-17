@@ -34,6 +34,7 @@ resourcestring
 type
   TXsdFormDefault = (xsdFDAccordingWsdl, xsdFDQualified, xsdFDUnqualified);
   TXsdType = (dtSimpleType, dtComplexType, dtAttributeType);
+  TSoapPartType = (sptUnknown, sptHeader, sptBody, sptFault);
   TElementOrTypeDefRef = (etElementRef, etTypeDefRef)  ;
   TBooleanFunctionObject = function (arg: TObject): Boolean of Object;
 
@@ -74,11 +75,15 @@ type
     property XsdDataTypes[Index: integer]: TXsdDataType read GetXsdDataType;
   end;
 
+  { TXsdEnumeration }
+
   TXsdEnumeration = class(TObject)
   public
     Value: String;
     Annotation: String;
+    function thisEnumeration: TXsdEnumeration;
     function Clone: TXsdEnumeration;
+    constructor Create(aValue, aAnnotation: String); Overload;
   end;
 
   { TXsdDataType }
@@ -221,6 +226,8 @@ type
     EditProcedure: TBooleanFunctionObject;
     CheckNewValue: TOnCheckNewValue;
     SourceFileName: String;
+    soapPartType: TSoapPartType;
+    function thisXsd: TXsd;
     function FindXsd(aString: String): TXsd;
     property NSPrefix: String read getNSPrefix;
     property XsdByCaption[Index: String]: TXsd read getXsdByCaption;
@@ -2236,6 +2243,11 @@ begin
   end;
 end;
 
+function TXsd.thisXsd: TXsd;
+begin
+  result := self;
+end;
+
 function TXsd.AddElementDef(aXsdDescr: TXsdDescr; aName: String; aType: TXsdDataType): TXsd;
 var
   oType, nType: TXsdDataType;
@@ -2732,12 +2744,38 @@ begin
       if n < StrToInt(ElementDefs.Xsds[x].minOccurs) then
       begin
         if (n > 0)
-        or (ContentModel <> tagChoice) then
+        or (    (ContentModel <> tagChoice)
+            and (ElementDefs.Xsds[x].isOneOfGroupLevel = 0)
+           ) then
         begin
           result := False;
           _addMsg (xXml, Format ( 'Number of elements (%d) less then minimum (%s) for element %s'
                                 , [n, ElementDefs.Xsds[x].minOccurs, ElementDefs.Xsds[x].ElementName]
                                 )
+                  );
+        end;
+      end;
+    end;
+  end;
+
+  // check oneofgroup
+  for x := 0 to xXml.Items.Count - 1 do
+  begin
+    if xXml.Items.XmlItems[x].Checked
+    and Assigned (xXml.Items.XmlItems[x].Xsd)
+    and (xXml.Items.XmlItems[x].Xsd.isOneOfGroupLevel > 0) then
+    begin
+      for y := 0 to x - 1 do
+      begin
+        if xXml.Items.XmlItems[y].Checked
+        and Assigned (xXml.Items.XmlItems[y].Xsd)
+        and (xXml.Items.XmlItems[y].Xsd.isOneOfGroupLevel = xXml.Items.XmlItems[x].Xsd.isOneOfGroupLevel)
+        and (xXml.Items.XmlItems[y].Xsd <> xXml.Items.XmlItems[x].Xsd) then
+        begin
+          result := False;
+          _addMsg (xXml, Format( 'element %s not alowed here under element %s'
+                               , [xXml.Items.XmlItems[x].Name, xXml.Name]
+                               )
                   );
         end;
       end;
@@ -4283,11 +4321,23 @@ end;
 
 { TXsdEnumeration }
 
+function TXsdEnumeration.thisEnumeration: TXsdEnumeration;
+begin
+  result := self;
+end;
+
 function TXsdEnumeration.Clone: TXsdEnumeration;
 begin
   result := TXsdEnumeration.Create;
   result.Value := self.Value;
   result.Annotation := self.Annotation;
+end;
+
+constructor TXsdEnumeration.Create(aValue, aAnnotation: String);
+begin
+  inherited Create;
+  Value := aValue;
+  Annotation := aAnnotation;
 end;
 
 initialization

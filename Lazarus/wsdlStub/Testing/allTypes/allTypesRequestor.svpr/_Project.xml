@@ -7,12 +7,12 @@
     </Listeners>
     <remoteServerConnection>
       <Enabled>true</Enabled>
-      <Address>http://localhost:7778</Address>
+      <Address>${Address}</Address>
       <type>
-        <WireMock></WireMock>
+        <apiUi></apiUi>
       </type>
       <allowedActions>
-        <pushDesign>true</pushDesign>
+        <pushDesign>false</pushDesign>
       </allowedActions>
     </remoteServerConnection>
     <projectOptions>
@@ -68,5 +68,5 @@
         </schemaValidation>
       </OperationDefaults>
     </projectOptions>
-    <CompareLogOrderBy>1</CompareLogOrderBy>
+    <CompareLogOrderBy>0</CompareLogOrderBy>
   </WsdlStubCase>
