@@ -1004,6 +1004,36 @@ begin
   contextProject('CreateCoverageReport', aContext).CreateCoverageReport (aDoRun);
 end;
 
+function SetRemoteServerConnectionType(aContext: TObject; aType: String): String;
+var
+  x: Integer;
+begin
+  with contextProject('SetRemoteServerConnectionType', aContext) do
+  begin
+    if (aType <> 'apiUi')
+    and (aType <> 'WireMock') then
+      raise Exception.Create('SetRemoteServerConnectionType: Only possible to set "apiUi" or "WireMock"');
+    case remoteServerConnectionType of
+      rscApiUi: result := 'apiUi';
+      rscWireMock: result := 'WireMock';
+      rscSimul8r: result := 'Simul8r';
+    end;
+    remoteServerConnectionXml.Items.XmlValueByTag['type'] := '';
+    with remoteServerConnectionXml.Items.XmlItemByTag['type'] do
+    begin
+      if not Assigned (thisXml) then
+        raise Exception.Create('SetRemoteServerConnectionType: item "type" not found');
+      Checked := True;
+      for x := 0 to items.Count -1 do
+        Items.XmlItems[x].Checked :=False;
+      Items.XmlValueByTag[aType] := '';
+      Items.XmlItemByTag[aType].Checked := True;
+      if aType = 'apiUi' then remoteServerConnectionType := rscApiUi;
+      if aType = 'WireMock' then remoteServerConnectionType := rscWireMock;
+    end;
+  end;
+end;
+
 procedure ExecuteScript(aContext: TObject; xScriptName: String);
 var
   xScript: TXml;
@@ -9868,6 +9898,7 @@ begin
                                   , 'application/json'
                                   , generatePegaSimul8rOperationSimulations (xOperation)
                                   , 'application/json'
+                                  , 'identity'
                                   );
         end;
       end;
@@ -10225,6 +10256,7 @@ initialization
   _WsdlCreateCoverageReport := CreateCoverageReport;
   _WsdlSendOperationRequest := SendOperationRequest;
   _WsdlSendOperationRequestLater := SendOperationRequestLater;
+  _wsdlSetRemoteServerConnectionType := SetRemoteServerConnectionType;
   try
     IntrospectIniXml;
   except

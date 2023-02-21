@@ -649,6 +649,7 @@ function setEnvVar (aOperation: TWsdlOperation; aName, aValue: String): String;
 procedure AddRemark (aObject: TObject; aString: String);
 function GetContext: String;
 function SetContext (aName: String): String;
+function SetRemoteServerConnectionType (aObject: TObject; aName: String): String;
 procedure SaveLogs (aObject: TObject; aString: String);
 procedure CreateSnapshot (aObject: TObject; aName: String);
 procedure CreateJUnitReport (aObject: TObject; aName: String);
@@ -704,6 +705,7 @@ var
   _WsdlRequestOperationLater: VFunctionOSX;
   _WsdlExecuteOperationScript: VFunctionOS;
   _WsdlRequestAsText, _WsdlReplyAsText: SFunctionOS;
+  _WsdlSetRemoteServerConnectionType: SFunctionOS;
   _WsdlExecuteScript: VFunctionOS;
   _WsdlExecuteScriptLater: VFunctionOSX;
   _WsdlSaveLogs: VFunctionOS;
@@ -887,6 +889,13 @@ begin
   if not Assigned (_wsdlSetContext) then
     raise Exception.CreateFmt('No SetContext event assigned, intention was to set as (%s)', [aName]);
   result := _wsdlSetContext (aName);
+end;
+
+function SetRemoteServerConnectionType(aObject: TObject; aName: String): String;
+begin
+  if not Assigned (_wsdlSetRemoteServerConnectionType) then
+    raise Exception.CreateFmt('No SetRemoteServerConnectionType event assigned, intention was to set as (%s)', [aName]);
+  result := _wsdlSetRemoteServerConnectionType (aObject, aName);
 end;
 
 function GetContext: String;
@@ -4208,6 +4217,7 @@ begin
     BindScriptFunction ('ReturnString', @ReturnString, VFOS, '(aString)');
     BindScriptFunction ('SaveLogs', @SaveLogs, VFOS, '(aFileName)');
     BindScriptFunction ('SetContext', @SetContext, SFS, '(aContextName)');
+    BindScriptFunction ('SetRemoteServerConnectionType', @SetRemoteServerConnectionType, SFOS, '(aTypeName)');
     BindScriptFunction ('SqlSelectResultRow', @SqlSelectResultRow, SLFOS, '(aSqlSelectQuery)');
     BindScriptFunction ('SqlQuotedStr', @sqlQuotedString, SFS, '(aString)');
     BindScriptFunction ('OperationCount', @xsdOperationCount, XFOV, '()');

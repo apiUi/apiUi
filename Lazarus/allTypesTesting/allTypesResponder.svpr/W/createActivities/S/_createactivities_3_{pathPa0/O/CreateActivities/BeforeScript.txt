@@ -1,0 +1,8 @@
+if OperationCount () Mod 2 = 0 then with Rpy.CreateActivities.undefined do
+{
+
+  .responseCode := '500';
+  .body.contentType := 'text/html';
+  .body.content := '<html>JanBo was here</html>';
+}
+
