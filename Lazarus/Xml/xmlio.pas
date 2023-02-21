@@ -91,6 +91,7 @@ function apiUiServerDialog ( aConfigXml: TObject
                            ; aPath, aQuery, aVerb, aAcceptContentType: String
                            ; aBody: String = ''
                            ; aContentType: String = ''
+                           ; aContentEncoding: String = 'gzip'
                            ): String;
 function HttpGetDialog (aUrl, aAcceptContentType: String): String;
 function HttpPostDialog (aRequest, aUrl: String): String;
@@ -703,6 +704,7 @@ function apiUiServerDialog ( aConfigXml: TObject
                            ; aPath, aQuery, aVerb, aAcceptContentType: String
                            ; aBody: String = ''
                            ; aContentType: String = ''
+                           ; aContentEncoding: String = 'gzip'
                            ): String;
   function _Decompress (aContentEncoding: String; aStream: TMemoryStream): String;
   var
@@ -767,14 +769,26 @@ begin
         else
           HttpClient.Request.ContentType := aAcceptContentType;
         HttpClient.Request.CharSet := '';
-        HttpClient.Request.ContentEncoding := 'gzip';
-        sStream := TMemoryStream.Create;
-        cStream := TMemoryStream.Create;
-        IdGlobal.WriteStringToStream(sStream, aBody, IndyTextEncoding_OSDefault{$IFDEF STRING_IS_ANSI},nil{$ENDIF});
-        sStream.Position := 0;
-        GZIPUtils.GZip(sStream, cStream);
+        HttpClient.Request.ContentEncoding := aContentEncoding;
+        if (aContentEncoding = 'gzip')
+        or (aContentEncoding = 'deflate') then
+        begin
+          sStream := TMemoryStream.Create;
+          cStream := TMemoryStream.Create;
+          IdGlobal.WriteStringToStream(sStream, aBody, IndyTextEncoding_OSDefault{$IFDEF STRING_IS_ANSI},nil{$ENDIF});
+          sStream.Position := 0;
+          if (aContentEncoding = 'gzip') then
+            GZIPUtils.GZip(sStream, cStream);
+          if (aContentEncoding = 'deflate') then
+            GZIPUtils.deflate(sStream, cStream);
+          FreeAndNil(sStream);
+        end;
+        if aContentEncoding = 'identity' then
+        begin
+          cStream := TMemoryStream.Create;
+          IdGlobal.WriteStringToStream(cStream, aBody, IndyTextEncoding_OSDefault{$IFDEF STRING_IS_ANSI},nil{$ENDIF});
+        end;
         cStream.Position := 0;
-        FreeAndNil(sStream);
       end;
       try
         try

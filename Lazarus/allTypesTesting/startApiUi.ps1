@@ -1,0 +1,1 @@
+powershell ..\apiUi\apiUi --project=.\allTypesRequestor.svpr --port=0

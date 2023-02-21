@@ -1,0 +1,4 @@
+ClearLogs ();
+LogsFromRemoteServer ();
+CreateSnapshot ('testRun');
+

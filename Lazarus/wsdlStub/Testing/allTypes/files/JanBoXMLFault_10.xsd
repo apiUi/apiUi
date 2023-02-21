@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://www.JanBo.nl/XMLFault/10"
-            xmlns:rgh="http://www.JanBo.nl/XMLFault/10"
-            elementFormDefault="qualified"
-            >
-  <xsd:element name="applicationfaultcode" type="xsd:string"/>
-  <xsd:element name="applicationfaulttext" type="xsd:string"/>
-</xsd:schema>

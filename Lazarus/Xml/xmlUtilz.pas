@@ -1064,16 +1064,24 @@ end;
 procedure TXmlUtil.PasteFromClipboard(aBind: TCustomBindable);
 var
   hXml: TXml;
+  s: String;
 begin
   if aBind is TXmlAttribute then
     raise Exception.Create('Not implemented for XML attributes');
+  s := Clipboard.AsText;
   if aBind is TXml then
   begin
     hXml := TXml.Create;
     try
-      hXml.LoadFromString(Clipboard.AsText, nil);
+      try
+        hXml.LoadFromString(s, nil);
+      except
+        hXml.Items.Clear;
+        hXml.Name := '';
+        hXml.Value := '';
+      end;
       if hXml.Name = '' then
-        hXml.LoadJsonFromString(Clipboard.AsText, nil);
+        hXml.LoadJsonFromString(s, nil);
       if hXml.Name <> '' then
       begin
         AcquireLock;
@@ -1096,7 +1104,7 @@ begin
     try
       AcquireLock;
       try
-        hXml.LoadFromString(Clipboard.AsText, nil);
+        hXml.LoadFromString(s, nil);
         hXml.Name := (aBind as TIpmItem).Name;
         (aBind as TIpmItem).ResetLoaded (True);
         (aBind as TIpmItem).LoadValues (hXml);
