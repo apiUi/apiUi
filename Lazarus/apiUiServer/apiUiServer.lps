@@ -8,7 +8,6 @@
       <Unit0>
         <Filename Value="apiUiServer.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <TopLine Value="16"/>
         <CursorPos X="6" Y="48"/>
         <UsageCount Value="218"/>
@@ -70,9 +69,10 @@
       </Unit7>
       <Unit8>
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="7397"/>
-        <CursorPos Y="7416"/>
+        <TopLine Value="1006"/>
+        <CursorPos X="46" Y="1020"/>
         <UsageCount Value="208"/>
         <Loaded Value="True"/>
       </Unit8>
@@ -81,7 +81,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="111"/>
         <CursorPos X="11" Y="125"/>
-        <UsageCount Value="455"/>
+        <UsageCount Value="454"/>
       </Unit9>
       <Unit10>
         <Filename Value="..\wsdlStub\WsdlStubMainUnit.pas"/>
@@ -91,7 +91,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="11006"/>
         <CursorPos X="27" Y="11022"/>
-        <UsageCount Value="53"/>
+        <UsageCount Value="52"/>
       </Unit10>
       <Unit11>
         <Filename Value="..\Xml\Xsdz.pas"/>
@@ -106,41 +106,41 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1173"/>
         <CursorPos X="36" Y="1186"/>
-        <UsageCount Value="205"/>
+        <UsageCount Value="204"/>
       </Unit12>
       <Unit13>
         <Filename Value="..\Xml\Wsdlz.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2"/>
         <CursorPos X="7" Y="17"/>
-        <UsageCount Value="42"/>
+        <UsageCount Value="41"/>
       </Unit13>
       <Unit14>
         <Filename Value="..\wsdlStub\httpmultipart.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="64"/>
         <CursorPos X="81" Y="85"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit14>
       <Unit15>
         <Filename Value="..\ProgressStatus\progressunit.pas"/>
         <EditorIndex Value="-1"/>
         <CursorPos Y="14"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit15>
       <Unit16>
         <Filename Value="..\StompInterface\StompInterface.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="10"/>
         <CursorPos X="14" Y="36"/>
-        <UsageCount Value="26"/>
+        <UsageCount Value="25"/>
       </Unit16>
       <Unit17>
         <Filename Value="..\StompInterface\Stomp\StompClient.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="181"/>
         <CursorPos Y="236"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit17>
       <Unit18>
         <Filename Value="C:\lazarus\fpc\3.2.0\source\packages\fcl-base\src\custapp.pp"/>
@@ -148,34 +148,34 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="55"/>
         <CursorPos X="15" Y="67"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="10"/>
       </Unit18>
       <Unit19>
         <Filename Value="..\wsdlStub\optionsunit.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="51"/>
         <CursorPos Y="85"/>
-        <UsageCount Value="32"/>
+        <UsageCount Value="31"/>
       </Unit19>
       <Unit20>
         <Filename Value="..\wsdlStub\xmlreportz.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="46"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="7"/>
       </Unit20>
       <Unit21>
         <Filename Value="..\Xpress\Bind.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="110"/>
         <CursorPos X="2" Y="126"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="12"/>
       </Unit21>
       <Unit22>
         <Filename Value="..\Xpress\Express.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="521"/>
         <CursorPos X="3" Y="524"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="5"/>
       </Unit22>
       <Unit23>
         <Filename Value="..\Xml\yaml\YAMLSCANNER.PAS"/>
@@ -183,20 +183,20 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="38"/>
         <CursorPos Y="52"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="10"/>
       </Unit23>
       <Unit24>
         <Filename Value="..\Components\Indy10\Lib\Protocols\IdNNTP.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="334"/>
         <CursorPos X="3" Y="347"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="10"/>
       </Unit24>
       <Unit25>
         <Filename Value="..\Xpress\ParserClasses.pas"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="24" Y="105"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="10"/>
       </Unit25>
       <Unit26>
         <Filename Value="..\wsdlStub\EditOperationScriptUnit.pas"/>
@@ -206,49 +206,49 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="32"/>
         <CursorPos X="3" Y="46"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="12"/>
       </Unit26>
       <Unit27>
         <Filename Value="..\Xml\xmlxsdparser.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="800"/>
         <CursorPos X="26" Y="811"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit27>
       <Unit28>
         <Filename Value="..\Components\Indy10\Lib\Protocols\IdDateTimeStamp.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="27"/>
         <CursorPos X="14" Y="43"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit28>
       <Unit29>
         <Filename Value="..\Components\Indy10\Lib\Core\IdCompilerDefines.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1223"/>
         <CursorPos X="27" Y="1239"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit29>
       <Unit30>
         <Filename Value="..\Components\Indy10\Lib\Protocols\IdCompilerDefines.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1223"/>
         <CursorPos X="27" Y="1239"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit30>
       <Unit31>
         <Filename Value="..\Components\Indy10\Lib\System\IdGlobal.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="7845"/>
         <CursorPos X="10" Y="7860"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit31>
       <Unit32>
         <Filename Value="..\Xml\ShowLogDifferencesUnit.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1141"/>
         <CursorPos X="38" Y="1157"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit32>
       <Unit33>
         <Filename Value="..\Xml\ShowA2BXmlUnit.pas"/>
@@ -258,7 +258,7 @@
         <EditorIndex Value="3"/>
         <TopLine Value="16"/>
         <CursorPos X="4" Y="32"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit33>
@@ -268,7 +268,7 @@
       <Define1 Value="UseCThreads"/>
       <Define2 Value="NoGUI"/>
     </OtherDefines>
-    <JumpHistory Count="19" HistoryIndex="18">
+    <JumpHistory Count="22" HistoryIndex="20">
       <Position1>
         <Filename Value="apiUiServer.lpr"/>
         <Caret Line="609" TopLine="446"/>
@@ -343,6 +343,18 @@
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
         <Caret Line="135" Column="31" TopLine="112"/>
       </Position19>
+      <Position20>
+        <Filename Value="apiUiServer.lpr"/>
+        <Caret Line="48" Column="6" TopLine="16"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="1011" Column="24" TopLine="1007"/>
+      </Position21>
+      <Position22>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="180" Column="5" TopLine="165"/>
+      </Position22>
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>

@@ -28,8 +28,8 @@
         <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <TopLine Value="1329"/>
-        <CursorPos X="10" Y="1361"/>
+        <TopLine Value="13322"/>
+        <CursorPos X="3" Y="13327"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -118,10 +118,11 @@
       <Unit13>
         <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="9912"/>
-        <CursorPos X="15" Y="9929"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="8117"/>
+        <CursorPos Y="8136"/>
         <UsageCount Value="200"/>
+        <Loaded Value="True"/>
       </Unit13>
       <Unit14>
         <Filename Value="..\wsdlStub\editcontextsunit.pas"/>
@@ -130,10 +131,12 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="EditContextsUnit"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="12"/>
-        <CursorPos X="3" Y="23"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="201"/>
+        <CursorPos X="22" Y="233"/>
         <UsageCount Value="255"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit14>
       <Unit15>
         <Filename Value="..\wsdlStub\wsdlListUnit.pas"/>
@@ -477,9 +480,11 @@
       <Unit49>
         <Filename Value="..\wsdlStub\optionsunit.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos X="10" Y="47"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="53"/>
+        <CursorPos X="3" Y="82"/>
         <UsageCount Value="209"/>
+        <Loaded Value="True"/>
       </Unit49>
       <Unit50>
         <Filename Value="..\wsdlStub\xmlreportz.pas"/>
@@ -506,30 +511,34 @@
       <Unit53>
         <Filename Value="..\pegasimul8r\pegasimul8rmapping.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="283"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="137"/>
         <CursorPos Y="312"/>
         <UsageCount Value="200"/>
+        <Loaded Value="True"/>
       </Unit53>
       <Unit54>
         <Filename Value="..\Xml\Wsdlz.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="4598"/>
-        <CursorPos Y="4614"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="931"/>
+        <CursorPos Y="947"/>
         <UsageCount Value="106"/>
+        <Loaded Value="True"/>
       </Unit54>
       <Unit55>
         <Filename Value="..\Xml\Xsdz.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="2763"/>
-        <CursorPos Y="2776"/>
+        <EditorIndex Value="8"/>
+        <TopLine Value="442"/>
+        <CursorPos X="3" Y="444"/>
         <UsageCount Value="100"/>
+        <Loaded Value="True"/>
       </Unit55>
       <Unit56>
         <Filename Value="..\Xml\Xmlz.pas"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="268"/>
-        <CursorPos X="3" Y="104"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="2692"/>
+        <CursorPos X="3" Y="2696"/>
         <UsageCount Value="221"/>
         <Loaded Value="True"/>
       </Unit56>
@@ -556,10 +565,9 @@
       </Unit59>
       <Unit60>
         <Filename Value="..\Xml\xmlUtilz.pas"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="1066"/>
-        <CursorPos X="23" Y="1081"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="2136"/>
+        <CursorPos Y="2168"/>
         <UsageCount Value="116"/>
         <Loaded Value="True"/>
       </Unit60>
@@ -671,54 +679,129 @@
       <Define0 Value="UseCThreads"/>
       <Define1 Value="TrialVersion"/>
     </OtherDefines>
-    <JumpHistory Count="8" HistoryIndex="7">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="..\wsdlStub\WsdlStubMainUnit.pas"/>
-        <Caret Line="5489" Column="19" TopLine="5473"/>
+        <Caret Line="3784" Column="3" TopLine="3752"/>
       </Position1>
       <Position2>
         <Filename Value="..\wsdlStub\WsdlStubMainUnit.pas"/>
-        <Caret Line="2665" Column="3" TopLine="2662"/>
+        <Caret Line="6443" Column="27" TopLine="6418"/>
       </Position2>
       <Position3>
-        <Filename Value="..\Xml\xmlUtilz.pas"/>
-        <Caret Line="293" TopLine="278"/>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="369" Column="15" TopLine="354"/>
       </Position3>
       <Position4>
-        <Filename Value="..\Xml\xmlUtilz.pas"/>
-        <Caret Line="1071" Column="24" TopLine="1046"/>
+        <Filename Value="..\wsdlStub\WsdlStubMainUnit.pas"/>
+        <Caret Line="6443" Column="27" TopLine="6418"/>
       </Position4>
       <Position5>
-        <Filename Value="..\Xml\xmlUtilz.pas"/>
-        <Caret Line="1076" Column="28" TopLine="1049"/>
+        <Filename Value="..\wsdlStub\WsdlStubMainUnit.pas"/>
       </Position5>
       <Position6>
-        <Filename Value="..\Xml\xmlUtilz.pas"/>
-        <Caret Line="1078" Column="34" TopLine="1051"/>
+        <Filename Value="..\wsdlStub\WsdlStubMainUnit.pas"/>
+        <Caret Line="6443" Column="27" TopLine="6418"/>
       </Position6>
       <Position7>
-        <Filename Value="..\Xml\xmlUtilz.pas"/>
-        <Caret Line="1079" Column="15" TopLine="1066"/>
+        <Filename Value="..\wsdlStub\WsdlStubMainUnit.pas"/>
+        <Caret Line="182" TopLine="166"/>
       </Position7>
       <Position8>
-        <Filename Value="..\Xml\xmlUtilz.pas"/>
-        <Caret Line="1066" Column="3" TopLine="1066"/>
+        <Filename Value="..\wsdlStub\WsdlStubMainUnit.pas"/>
+        <Caret Line="6436" Column="16" TopLine="6427"/>
       </Position8>
+      <Position9>
+        <Filename Value="..\wsdlStub\WsdlStubMainUnit.pas"/>
+        <Caret Line="7616" Column="3" TopLine="7610"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\wsdlStub\WsdlStubMainUnit.pas"/>
+        <Caret Line="6449" TopLine="6426"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\wsdlStub\WsdlStubMainUnit.pas"/>
+        <Caret Line="13327" Column="3" TopLine="13322"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\wsdlStub\editcontextsunit.pas"/>
+        <Caret Line="233" Column="41" TopLine="217"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\wsdlStub\editcontextsunit.pas"/>
+        <Caret Line="103" Column="14" TopLine="88"/>
+      </Position13>
+      <Position14>
+        <Filename Value="..\wsdlStub\editcontextsunit.pas"/>
+        <Caret Line="213" Column="16" TopLine="192"/>
+      </Position14>
+      <Position15>
+        <Filename Value="..\wsdlStub\editcontextsunit.pas"/>
+        <Caret Line="214" Column="43" TopLine="192"/>
+      </Position15>
+      <Position16>
+        <Filename Value="..\wsdlStub\editcontextsunit.pas"/>
+        <Caret Line="223" Column="12" TopLine="196"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\wsdlStub\editcontextsunit.pas"/>
+        <Caret Line="227" Column="46" TopLine="200"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\wsdlStub\editcontextsunit.pas"/>
+        <Caret Line="233" Column="41" TopLine="206"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\wsdlStub\editcontextsunit.pas"/>
+        <Caret Line="255" Column="26" TopLine="228"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\wsdlStub\editcontextsunit.pas"/>
+        <Caret Line="256" Column="43" TopLine="229"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\wsdlStub\editcontextsunit.pas"/>
+        <Caret Line="103" Column="14" TopLine="88"/>
+      </Position21>
+      <Position22>
+        <Filename Value="..\wsdlStub\editcontextsunit.pas"/>
+        <Caret Line="241" Column="18" TopLine="229"/>
+      </Position22>
+      <Position23>
+        <Filename Value="..\wsdlStub\editcontextsunit.pas"/>
+        <Caret Line="205" Column="17" TopLine="197"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="2052" Column="25" TopLine="2044"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="557" Column="16" TopLine="525"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+      </Position26>
+      <Position27>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="77" Column="69" TopLine="50"/>
+      </Position27>
+      <Position28>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="186" Column="23" TopLine="160"/>
+      </Position28>
+      <Position29>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="187" Column="45" TopLine="161"/>
+      </Position29>
+      <Position30>
+        <Filename Value="..\wsdlStub\WsdlProjectz.pas"/>
+        <Caret Line="289" Column="25" TopLine="264"/>
+      </Position30>
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
       <Modes Count="0" ActiveMode="default"/>
     </RunParams>
   </ProjectSession>
-  <Debugging>
-    <BreakPoints Count="1">
-      <Item1>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="..\Xml\Xmlz.pas"/>
-        <Line Value="2548"/>
-      </Item1>
-    </BreakPoints>
-  </Debugging>
 </CONFIG>

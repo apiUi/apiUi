@@ -20,7 +20,7 @@
       <Enabled>true</Enabled>
       <Address>${Address}</Address>
       <type>
-        <apiUi></apiUi>
+        <WireMock></WireMock>
       </type>
       <allowedActions>
         <pushDesign>true</pushDesign>

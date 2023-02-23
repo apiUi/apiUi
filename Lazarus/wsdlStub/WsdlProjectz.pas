@@ -8133,7 +8133,7 @@ begin
               if Copy (xLog.httpParams, 1, 1) = '?' then
                 xLog.httpParams := Copy (xLog.httpParams, 2, MaxInt);
               xLog.httpCommand := Uppercase (items.XmlValueByTag['method']);
-              xIsSoap := (xLog.httpCommand = 'SOAPMethod');
+              xIsSoap := (xLog.httpCommand = 'SOAPMETHOD');
               if xIsSoap then
                 xLog.httpCommand := 'POST';
               xLog.OperationName := xLog.ServiceName + ':' + xLog.httpCommand;

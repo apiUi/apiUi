@@ -209,12 +209,14 @@ var
 begin
   with TFormIniFile.Create(self, False) do // here instead of at formdestroy because of references to contetxts
   try
-    for c := 1 to Contexts.ColCount - 1 do
+    for c := 0 to Contexts.ColCount - 1 do
       ColWidths.Values[Contexts.CellValue[c, 0]] := IntToStr(GridView.Header.Columns[c].Width);
     StringByName['ColWidths'] := ColWidths.Text;
     Save;
   finally
     Free;
+    ColWidths.Clear;
+    ColWidths.Free;
   end;
 end;
 

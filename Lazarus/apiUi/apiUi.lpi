@@ -23,7 +23,7 @@
       <MajorVersionNr Value="10"/>
       <MinorVersionNr Value="9"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="13317"/>
+      <BuildNr Value="13321"/>
       <StringTable CompanyName="apiUi.org" FileDescription="apiUi - api tester and mocker" ProductVersion="10.3.0.11959"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -34,9 +34,16 @@
       <DestinationDirectory Value="C:\Data\publish"/>
     </PublishOptions>
     <RunParams>
+      <local>
+        <CommandLineParams Value="--project=..\allTypesTesting\allTypesRequestor.svpr --port=0 --script=createSnapshot"/>
+      </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
-        <Mode0 Name="default"/>
+        <Mode0 Name="default">
+          <local>
+            <CommandLineParams Value="--project=..\allTypesTesting\allTypesRequestor.svpr --port=0 --script=createSnapshot"/>
+          </local>
+        </Mode0>
       </Modes>
     </RunParams>
     <RequiredPackages Count="11">
