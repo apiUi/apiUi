@@ -6439,10 +6439,12 @@ begin
     OpenStubCase;
     se.Activate(True);
     CheckBoxClick(nil);
+{ timing issue....
     if hasOption(scriptOpt) then
     begin
       ExecuteScript(se, getOption(scriptOpt));
     end;
+}
   end;
   MainToolBarDesignedButtonCount := MainToolBar.ButtonCount;
   CreateScriptsSubMenuItems;

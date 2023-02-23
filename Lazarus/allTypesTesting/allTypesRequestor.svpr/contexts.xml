@@ -3,24 +3,30 @@
       <col> </col>
       <col>Address</col>
       <col>stomphost</col>
-      <col>wiremock</col>
-    </row>
-    <row>
-      <col>localhost</col>
-      <col>http://localhost:7775</col>
-      <col>localhost</col>
-      <col>http://localhost:7775</col>
     </row>
     <row>
       <col>dockernet</col>
       <col>http://apiuiresponder:7777</col>
       <col>activemq</col>
-      <col>http://wiremock:7775</col>
     </row>
     <row>
-      <col>apiuiresponder</col>
+      <col>apiuiserver</col>
+      <col>http://apiuiresponder:7777</col>
+      <col>activemq</col>
+    </row>
+    <row>
+      <col>wiremock</col>
+      <col>http://wiremock:7775</col>
+      <col>activemq</col>
+    </row>
+    <row>
+      <col>localhostapiui</col>
       <col>http://localhost:7777</col>
-      <col></col>
+      <col>localhost</col>
+    </row>
+    <row>
+      <col>localwiremock</col>
+      <col>http://localhost:7775</col>
       <col></col>
     </row>
   </contexts>

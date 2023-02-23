@@ -1,4 +1,22 @@
-ClearLogs ();
-LogsFromRemoteServer ();
-CreateSnapshot ('testRun');
+if False then ClearLogs ();
+
+if True then
+{
+  string ws.context := SetContext ('localhostapiui');
+  string ws.rsct := SetRemoteServerConnectionType ('apiUi');
+  LogsFromRemoteServer ();
+  CreateSnapshot ('fromapiui');
+  SetContext (ws.context);
+  SetRemoteServerConnectionType (ws.rsct);
+}
+
+if True then
+{
+  string ws.context := SetContext ('localwiremock');
+  string ws.rsct := SetRemoteServerConnectionType ('WireMock');
+  LogsFromRemoteServer ();
+  CreateSnapshot ('fromwiremock');
+  SetContext (ws.context);
+  SetRemoteServerConnectionType (ws.rsct);
+}
 

@@ -1,2 +1,15 @@
-PushProjectToRemoteServer ();
+{
+  string ws.context := SetContext ('apiuiserver');
+  string ws.rsct := SetRemoteServerConnectionType ('apiUi');
+  PushProjectToRemoteServer ();
+  SetContext (ws.context);
+  SetRemoteServerConnectionType (ws.rsct);
+}
+{
+  string ws.context := SetContext ('wiremock');
+  string ws.rsct := SetRemoteServerConnectionType ('WireMock');
+  PushProjectToRemoteServer ();
+  SetContext (ws.context);
+  SetRemoteServerConnectionType (ws.rsct);
+}
 
