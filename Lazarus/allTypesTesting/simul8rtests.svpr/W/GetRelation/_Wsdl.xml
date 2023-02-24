@@ -1,0 +1,4 @@
+  <Wsdl>
+    <Name>GetRelation</Name>
+    <WsdlLocation>files\GetRelation_8_contract.wsdl</WsdlLocation>
+  </Wsdl>

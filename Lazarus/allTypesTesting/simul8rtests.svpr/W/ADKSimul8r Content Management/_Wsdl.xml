@@ -1,0 +1,4 @@
+  <Wsdl>
+    <Name>ADKSimul8r Content Management</Name>
+    <WsdlLocation>files\adksimul8rsimulations.yaml</WsdlLocation>
+  </Wsdl>

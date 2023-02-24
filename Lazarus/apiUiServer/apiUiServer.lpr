@@ -531,6 +531,7 @@ begin
   se.Notify := Notify;
   se.LogServerMessage := LogServerException;
   se.FoundErrorInBuffer := FoundErrorInBuffer;
+  se.doWorkAroundSimul8rBug := True;
   xmlz.OnNotify := se.Notify;
   xmlio.OnNotify := se.Notify;
   IntrospectIniXml;

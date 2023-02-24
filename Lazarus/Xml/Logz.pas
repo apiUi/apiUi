@@ -1464,7 +1464,12 @@ begin
   end;
 
   result := TXml.Create;
-  result.LoadFromString(ReplyBody, nil);
+  try
+    result.LoadFromString(ReplyBody, nil);
+  except
+    result.Items.Clear;
+    result.Name := '';
+  end;
   if result.Name = '' then
   begin
     try

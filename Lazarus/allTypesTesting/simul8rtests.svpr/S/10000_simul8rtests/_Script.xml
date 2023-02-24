@@ -1,0 +1,9 @@
+  <Script>
+    <Name>simul8rtests</Name>
+    <Invoke>
+      <operations>
+        <name>bhpq1</name>
+        <name>GetRelation8</name>
+      </operations>
+    </Invoke>
+  </Script>

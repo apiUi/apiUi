@@ -1,0 +1,28 @@
+  <Message>
+    <Name>q1</Name>
+    <SequenceNr>40</SequenceNr>
+    <Patterns>
+      <Pattern>.*</Pattern>
+      <Pattern>.*</Pattern>
+      <Pattern>.*</Pattern>
+      <Pattern>q1</Pattern>
+    </Patterns>
+    <Reply>
+      <bhpq1 checked__="true">
+        <rspns200 checked__="true">
+          <body checked__="true">
+            <bodyparam checked__="true">:=Req.bhpq1.body.bodyparam</bodyparam>
+            <headerparam checked__="true">:=Req.bhpq1.headerparam</headerparam>
+            <pathparam checked__="true">:=Req.bhpq1.pathparam</pathparam>
+            <queryparam checked__="true">:=Req.bhpq1.queryparam</queryparam>
+            <noparam checked__="true">noparam</noparam>
+          </body>
+        </rspns200>
+      </bhpq1>
+    </Reply>
+    <Request>
+      <bhpq1 checked__="false"></bhpq1>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

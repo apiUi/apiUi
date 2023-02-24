@@ -1,0 +1,6 @@
+ClearLogs ();
+LogsFromRemoteServer ();
+CreateSnapshot ('fromsimul8r');
+PushOperationToRemoteServer ('bhpq1');
+PushOperationToRemoteServer ('GetRelation8');
+
