@@ -1,0 +1,156 @@
+  <Message>
+    <Name>Reply1</Name>
+    <SequenceNr>10</SequenceNr>
+    <Patterns>
+      <Pattern>1</Pattern>
+      <Pattern>All</Pattern>
+    </Patterns>
+    <Reply>
+      <GetRelation8 checked__="true">
+        <JanBoHeader checked__="true">
+          <HeaderVersion checked__="true"></HeaderVersion>
+          <MessageId checked__="true">CRMIOD-ef656e36-230c-44e6-bc78</MessageId>
+          <ServiceRequestorDomain checked__="true"></ServiceRequestorDomain>
+          <ServiceRequestorId checked__="true">apicsuser-873</ServiceRequestorId>
+          <ServiceProviderDomain checked__="true"></ServiceProviderDomain>
+          <ServiceId checked__="true">GetRelation</ServiceId>
+          <ServiceVersion checked__="true">8</ServiceVersion>
+          <FaultIndication checked__="true">False</FaultIndication>
+          <MessageTimestamp checked__="true">2021-09-30T12:56:35.635</MessageTimestamp>
+        </JanBoHeader>
+        <GetRelation_Rpy checked__="true">
+          <Relation checked__="true">
+            <RelationId checked__="true">000000090561284</RelationId>
+            <InvolvedPartyCode checked__="true">Organisation</InvolvedPartyCode>
+            <InvolvedPartyDescription checked__="true">Organisation</InvolvedPartyDescription>
+            <StatusTypeCode checked__="true">C</StatusTypeCode>
+            <StatusTypeDescription checked__="true">Klant</StatusTypeDescription>
+            <CorrespondenceLanguageCode checked__="true">NL</CorrespondenceLanguageCode>
+            <CorrespondenceLanguageDescription checked__="true">Nederlands</CorrespondenceLanguageDescription>
+            <CustomerInterestsRecordedFlag checked__="true">Y</CustomerInterestsRecordedFlag>
+            <ResidenceCountryCode checked__="true">NL</ResidenceCountryCode>
+            <ResidenceCountryDescription checked__="true">Nederland</ResidenceCountryDescription>
+            <NationalityCountryCode checked__="true">NL</NationalityCountryCode>
+            <NationalityCountryDescription checked__="true">Nederland</NationalityCountryDescription>
+            <LegalIncapacitatedInd checked__="true">N</LegalIncapacitatedInd>
+            <CreationDate checked__="true">2021-03-06T00:00:00</CreationDate>
+            <WwftStatusCode checked__="true">Compliant</WwftStatusCode>
+            <LocalBank checked__="true">
+              <BankCode checked__="true">9090</BankCode>
+              <LogicalLocation checked__="true">
+                <LogicalLocationCode checked__="true">01</LogicalLocationCode>
+              </LogicalLocation>
+            </LocalBank>
+            <Organisation checked__="true">
+              <HierarchicalPositionTypeCode checked__="true">X</HierarchicalPositionTypeCode>
+              <HierarchicalPositionTypeDescription checked__="true">Onbekend</HierarchicalPositionTypeDescription>
+              <EUsavingsDocumentProofFlag checked__="true">X</EUsavingsDocumentProofFlag>
+              <BusinessLongevitySegmentCode checked__="true">05</BusinessLongevitySegmentCode>
+              <BusinessLongevitySegmentDescription checked__="true">Onbekend</BusinessLongevitySegmentDescription>
+              <NumberOfEmployeesSegmentCode checked__="true">99</NumberOfEmployeesSegmentCode>
+              <NumberOfEmployeesSegmentDescription checked__="true">Onbekend aantal personen</NumberOfEmployeesSegmentDescription>
+              <LegalStructureTypeCode checked__="true">CV</LegalStructureTypeCode>
+              <LegalStructureTypeDescription checked__="true">Cooperatieve Vereniging WA</LegalStructureTypeDescription>
+              <RltnpTypeCode checked__="true">P</RltnpTypeCode>
+              <CustomerRiskClassificationCode checked__="true">X</CustomerRiskClassificationCode>
+              <CustomerRiskClassificationDescription checked__="true">Onbekend</CustomerRiskClassificationDescription>
+              <WebsiteURL checked__="true">http://www.JanBo.nl</WebsiteURL>
+              <OrganisationName checked__="true">
+                <LegalName checked__="true">JanBoTest ORGa Kappa BV</LegalName>
+                <CommercialName checked__="true">JanBoTest ORGa Kappa BV</CommercialName>
+                <ShortCommercialName checked__="true">JanBoTest ORGa Kappa BV</ShortCommercialName>
+              </OrganisationName>
+              <ChamberOfCommerce checked__="true">
+                <KvKSubscription checked__="true">
+                  <KvKNumber checked__="true">08065007</KvKNumber>
+                </KvKSubscription>
+                <MembershipDate checked__="true">1985-08-12</MembershipDate>
+              </ChamberOfCommerce>
+              <WorldWideOrganisation checked__="true">
+                <UciWorldWideId checked__="true">716878</UciWorldWideId>
+              </WorldWideOrganisation>
+              <ListOfIndustryClassification checked__="true">
+                <IndustryClassification checked__="true">
+                  <PrimaryFlag checked__="true">Y</PrimaryFlag>
+                  <Industry checked__="true">
+                    <IndustryClassificationCode checked__="true">351120</IndustryClassificationCode>
+                  </Industry>
+                </IndustryClassification>
+                <IndustryClassification checked__="true">
+                  <PrimaryFlag checked__="true">Y</PrimaryFlag>
+                  <Industry checked__="true">
+                    <IndustryClassificationCode checked__="true">351130</IndustryClassificationCode>
+                  </Industry>
+                </IndustryClassification>
+              </ListOfIndustryClassification>
+            </Organisation>
+            <Communication checked__="true">
+              <SolicitableByTelephoneFlag checked__="true">N</SolicitableByTelephoneFlag>
+              <SolicitableByEmailFlag checked__="true">N</SolicitableByEmailFlag>
+              <SolicitableByMailFlag checked__="true">N</SolicitableByMailFlag>
+              <SolicitableBySMSFlag checked__="true">N</SolicitableBySMSFlag>
+            </Communication>
+            <IdentificationStatus checked__="true">
+              <VerificationStatusCode checked__="true">01</VerificationStatusCode>
+              <VerificationStatusDescription checked__="true">Nog te verifiëren</VerificationStatusDescription>
+            </IdentificationStatus>
+            <ListOfIntegrity checked__="true">
+              <Integrity checked__="true">
+                <CDDratingCode checked__="true">A</CDDratingCode>
+                <CDDratingDescription checked__="true">Laag</CDDratingDescription>
+                <CDDratingStatusCode checked__="true">R</CDDratingStatusCode>
+                <CDDratingStatusDescription checked__="true">Geregistreerd</CDDratingStatusDescription>
+                <PrimaryFlag checked__="true">Y</PrimaryFlag>
+                <SourceSystemCreationDate checked__="true">2021-03-06</SourceSystemCreationDate>
+              </Integrity>
+            </ListOfIntegrity>
+            <Segmentation checked__="true">
+              <CustomerMarketSegmentCode checked__="true">51</CustomerMarketSegmentCode>
+              <CustomerMarketSegmentDescription checked__="true">Midden- en kleinbedrijf 2</CustomerMarketSegmentDescription>
+              <CentralCustomerMarketSegmentCode checked__="true">71</CentralCustomerMarketSegmentCode>
+              <CentralCustomerMarketSegmentDescription checked__="true">Onbekend Organisatie</CentralCustomerMarketSegmentDescription>
+            </Segmentation>
+            <ListOfRelationEmailAddress checked__="true">
+              <RelationEmailAddress checked__="true">
+                <ListItemId checked__="true">1-24WOCL0T</ListItemId>
+                <EmailAddress checked__="true">test@JanBo.nl</EmailAddress>
+                <EmailAddressTypeCode checked__="true">H</EmailAddressTypeCode>
+                <EmailAddressTypeDescription checked__="true">HTML</EmailAddressTypeDescription>
+                <EmailPurposeCode checked__="true">Commercial and Customer Research</EmailPurposeCode>
+                <EmailPurposeDescription checked__="true">Commercieel en Klant-onderzoek</EmailPurposeDescription>
+                <EmailSourceCode checked__="true">Internet</EmailSourceCode>
+                <EmailSourceDescription checked__="true">Internet</EmailSourceDescription>
+                <PrimaryFlag checked__="true">N</PrimaryFlag>
+                <ServiceNotificationFlag checked__="true">N</ServiceNotificationFlag>
+                <CreationDate checked__="true">2021-03-06T17:21:42</CreationDate>
+                <DeleteAllowed checked__="true">Y</DeleteAllowed>
+              </RelationEmailAddress>
+            </ListOfRelationEmailAddress>
+          </Relation>
+        </GetRelation_Rpy>
+      </GetRelation8>
+    </Reply>
+    <Request>
+      <GetRelation8 checked__="true">
+        <JanBoHeader checked__="true">
+          <HeaderVersion checked__="true"></HeaderVersion>
+          <MessageId checked__="true"></MessageId>
+          <ServiceRequestorDomain checked__="true"></ServiceRequestorDomain>
+          <ServiceRequestorId checked__="true"></ServiceRequestorId>
+          <ServiceProviderDomain checked__="true"></ServiceProviderDomain>
+          <ServiceId checked__="true"></ServiceId>
+          <ServiceVersion checked__="true"></ServiceVersion>
+          <FaultIndication checked__="true"></FaultIndication>
+          <MessageTimestamp checked__="true">1970-01-01T00:00:00.000Z</MessageTimestamp>
+        </JanBoHeader>
+        <GetRelation_Req checked__="true">
+          <Relation checked__="true">
+            <RelationId checked__="true">000000090561284</RelationId>
+            <RelationDetailsType checked__="true">All</RelationDetailsType>
+          </Relation>
+        </GetRelation_Req>
+      </GetRelation8>
+    </Request>
+    <DocumentationEdited>true</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

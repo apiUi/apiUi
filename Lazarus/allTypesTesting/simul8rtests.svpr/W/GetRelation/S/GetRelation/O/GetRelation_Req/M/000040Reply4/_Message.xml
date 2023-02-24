@@ -1,0 +1,182 @@
+  <Message>
+    <Name>Reply4</Name>
+    <SequenceNr>40</SequenceNr>
+    <Patterns>
+      <Pattern>4</Pattern>
+      <Pattern>All</Pattern>
+    </Patterns>
+    <Reply>
+      <GetRelation8 checked__="true">
+        <JanBoHeader checked__="true">
+          <HeaderVersion checked__="true"></HeaderVersion>
+          <MessageId checked__="true">CRMIOD-ef656e36-230c-44e6-bc78</MessageId>
+          <ServiceRequestorDomain checked__="true"></ServiceRequestorDomain>
+          <ServiceRequestorId checked__="true">apicsuser-873</ServiceRequestorId>
+          <ServiceProviderDomain checked__="true"></ServiceProviderDomain>
+          <ServiceId checked__="true">GetRelation</ServiceId>
+          <ServiceVersion checked__="true">8</ServiceVersion>
+          <FaultIndication checked__="true">False</FaultIndication>
+          <MessageTimestamp checked__="true">2021-09-30T12:56:35.635</MessageTimestamp>
+        </JanBoHeader>
+        <GetRelation_Rpy checked__="true">
+          <Relation checked__="true">
+            <RelationId checked__="true">000000090116551</RelationId>
+            <InvolvedPartyCode checked__="true">Person</InvolvedPartyCode>
+            <InvolvedPartyDescription checked__="true">Natural person</InvolvedPartyDescription>
+            <StatusTypeCode checked__="true">P</StatusTypeCode>
+            <StatusTypeDescription checked__="true">Klant</StatusTypeDescription>
+            <CorrespondenceLanguageCode checked__="true">NL</CorrespondenceLanguageCode>
+            <CorrespondenceLanguageDescription checked__="true">Nederlands</CorrespondenceLanguageDescription>
+            <CustomerInterestsRecordedFlag checked__="true">Y</CustomerInterestsRecordedFlag>
+            <ResidenceCountryCode checked__="true">NL</ResidenceCountryCode>
+            <ResidenceCountryDescription checked__="true">Nederland</ResidenceCountryDescription>
+            <NationalityCountryCode checked__="true">NL</NationalityCountryCode>
+            <NationalityCountryDescription checked__="true">Nederland</NationalityCountryDescription>
+            <LegalIncapacitatedInd checked__="true">N</LegalIncapacitatedInd>
+            <CreationDate checked__="true">2020-02-10T00:00:00</CreationDate>
+            <WwftStatusCode checked__="true">Compliant</WwftStatusCode>
+            <LocalBank checked__="true">
+              <BankCode checked__="true">5443</BankCode>
+              <LogicalLocation checked__="true">
+                <LogicalLocationCode checked__="true">01</LogicalLocationCode>
+              </LogicalLocation>
+            </LocalBank>
+            <NaturalPerson checked__="true">
+              <BSNnumber checked__="true">999999990</BSNnumber>
+              <MaritalStatusCode checked__="true">4</MaritalStatusCode>
+              <MaritalStatusDescription checked__="true">Weduwe/Weduwnaar</MaritalStatusDescription>
+              <PrenuptialAgreementCode checked__="true">9</PrenuptialAgreementCode>
+              <PrenuptialAgreementDescription checked__="true">N.v.t.</PrenuptialAgreementDescription>
+              <CohabitationCode checked__="true">9</CohabitationCode>
+              <CohabitationDescription checked__="true">N.v.t.</CohabitationDescription>
+              <PlaceOfResidenceDeclarationFlag checked__="true">X</PlaceOfResidenceDeclarationFlag>
+              <SocialStatusCode checked__="true">09</SocialStatusCode>
+              <SocialStatusDescription checked__="true">Onbekend</SocialStatusDescription>
+              <CustomerRelationshipValuationTypeCode checked__="true">03</CustomerRelationshipValuationTypeCode>
+              <CustomerRelationshipValuationTypeDescription checked__="true">Geen werknemer</CustomerRelationshipValuationTypeDescription>
+              <HousingTenureTypeCode checked__="true">X</HousingTenureTypeCode>
+              <HousingTenureTypeDescription checked__="true">Onbekend</HousingTenureTypeDescription>
+              <NaturalPersonName checked__="true">
+                <Surname checked__="true">BunBun</Surname>
+                <ShortSurname checked__="true">Tika Bun</ShortSurname>
+                <GivenName checked__="true">Tikachu</GivenName>
+                <NameInitial checked__="true">T.</NameInitial>
+                <MaidenName checked__="true">Test Bulbasaur</MaidenName>
+                <GivenNameAll checked__="true">JanBo Nederland</GivenNameAll>
+              </NaturalPersonName>
+              <Birth checked__="true">
+                <BirthCountryCode checked__="true">NL</BirthCountryCode>
+                <BirthCountryDescription checked__="true">Nederland</BirthCountryDescription>
+                <BirthDate checked__="true">1990-03-13</BirthDate>
+                <BirthPlace checked__="true">Utrecht</BirthPlace>
+                <GenderCode checked__="true">2</GenderCode>
+                <GenderDescription checked__="true">Mannelijk</GenderDescription>
+              </Birth>
+              <Decease checked__="true">
+                <DeceasedFlag checked__="true">N</DeceasedFlag>
+              </Decease>
+            </NaturalPerson>
+            <Communication checked__="true">
+              <SolicitableByTelephoneFlag checked__="true">N</SolicitableByTelephoneFlag>
+              <SolicitableByEmailFlag checked__="true">N</SolicitableByEmailFlag>
+              <SolicitableByMailFlag checked__="true">N</SolicitableByMailFlag>
+              <SolicitableBySMSFlag checked__="true">N</SolicitableBySMSFlag>
+            </Communication>
+            <IdentificationDocument checked__="true">
+              <IdentificationDocumentTypeCode checked__="true">10</IdentificationDocumentTypeCode>
+              <IdentificationDocumentTypeDescription checked__="true">Vreemdelingendocument I</IdentificationDocumentTypeDescription>
+              <IdentificationDocumentNumber checked__="true">123456</IdentificationDocumentNumber>
+              <IdentificationDocumentIssueDate checked__="true">2010-01-28</IdentificationDocumentIssueDate>
+              <IdentificationDocumentPlaceOfIssue checked__="true">Utrecht</IdentificationDocumentPlaceOfIssue>
+              <IdentificationDocumentIssuingCountryCode checked__="true">NL</IdentificationDocumentIssuingCountryCode>
+              <IdentificationDocumentIssuingCountryDescription checked__="true">Nederland</IdentificationDocumentIssuingCountryDescription>
+            </IdentificationDocument>
+            <IdentificationStatus checked__="true">
+              <VerificationDate checked__="true">2020-02-10</VerificationDate>
+              <VerificationStatusCode checked__="true">04</VerificationStatusCode>
+              <VerificationStatusDescription checked__="true">Geverifieerd</VerificationStatusDescription>
+            </IdentificationStatus>
+            <ListOfIntegrity checked__="true">
+              <Integrity checked__="true">
+                <CDDratingCode checked__="true">A</CDDratingCode>
+                <CDDratingDescription checked__="true">Laag</CDDratingDescription>
+                <CDDratingStatusCode checked__="true">R</CDDratingStatusCode>
+                <CDDratingStatusDescription checked__="true">Geregistreerd</CDDratingStatusDescription>
+                <PrimaryFlag checked__="true">N</PrimaryFlag>
+                <SourceSystemCreationDate checked__="true">2020-02-10</SourceSystemCreationDate>
+              </Integrity>
+              <Integrity checked__="true">
+                <CDDratingCode checked__="true">A</CDDratingCode>
+                <CDDratingDescription checked__="true">Laag</CDDratingDescription>
+                <CDDratingReasonDescription checked__="true">Ten behoeve van sanity testen</CDDratingReasonDescription>
+                <CDDratingStatusCode checked__="true">A</CDDratingStatusCode>
+                <CDDratingStatusDescription checked__="true">Geaccepteerd</CDDratingStatusDescription>
+                <PrimaryFlag checked__="true">Y</PrimaryFlag>
+                <SourceSystemCreationDate checked__="true">2020-02-10</SourceSystemCreationDate>
+              </Integrity>
+            </ListOfIntegrity>
+            <Segmentation checked__="true">
+              <CustomerMarketSegmentCode checked__="true">84</CustomerMarketSegmentCode>
+              <CustomerMarketSegmentDescription checked__="true">Particulieren</CustomerMarketSegmentDescription>
+              <CentralCustomerMarketSegmentCode checked__="true">84</CentralCustomerMarketSegmentCode>
+              <CentralCustomerMarketSegmentDescription checked__="true">Particulieren</CentralCustomerMarketSegmentDescription>
+            </Segmentation>
+            <ListOfRelationAddress checked__="true">
+              <RelationAddress checked__="true">
+                <AddressTypeCode checked__="true">1</AddressTypeCode>
+                <AddressTypeDescription checked__="true">Woon-/Vestigingsadres</AddressTypeDescription>
+                <CorrespondenceFlag checked__="true">Y</CorrespondenceFlag>
+                <Address checked__="true">
+                  <Postalcode checked__="true">3526KV</Postalcode>
+                  <StreetName checked__="true">Winthontlaan</StreetName>
+                  <HouseNumber checked__="true">1</HouseNumber>
+                  <CityName checked__="true">UTRECHT</CityName>
+                  <CountryCode checked__="true">NL</CountryCode>
+                  <CountryDescription checked__="true">Nederland</CountryDescription>
+                </Address>
+              </RelationAddress>
+            </ListOfRelationAddress>
+            <ListOfRelationEmailAddress checked__="true">
+              <RelationEmailAddress checked__="true">
+                <ListItemId checked__="true">1-22C820F9</ListItemId>
+                <EmailAddress checked__="true">proces.mngt.services@JanBo.nl</EmailAddress>
+                <EmailAddressTypeCode checked__="true">H</EmailAddressTypeCode>
+                <EmailAddressTypeDescription checked__="true">HTML</EmailAddressTypeDescription>
+                <EmailPurposeCode checked__="true">None</EmailPurposeCode>
+                <EmailPurposeDescription checked__="true">Geen</EmailPurposeDescription>
+                <EmailSourceCode checked__="true">Face-to-Face</EmailSourceCode>
+                <EmailSourceDescription checked__="true">Face-to-Face</EmailSourceDescription>
+                <PrimaryFlag checked__="true">Y</PrimaryFlag>
+                <ServiceNotificationFlag checked__="true">N</ServiceNotificationFlag>
+                <CreationDate checked__="true">2020-02-10T14:42:20</CreationDate>
+                <DeleteAllowed checked__="true">Y</DeleteAllowed>
+              </RelationEmailAddress>
+            </ListOfRelationEmailAddress>
+          </Relation>
+        </GetRelation_Rpy>
+      </GetRelation8>
+    </Reply>
+    <Request>
+      <GetRelation8 checked__="true">
+        <JanBoHeader checked__="true">
+          <HeaderVersion checked__="true"></HeaderVersion>
+          <MessageId checked__="true"></MessageId>
+          <ServiceRequestorDomain checked__="true"></ServiceRequestorDomain>
+          <ServiceRequestorId checked__="true"></ServiceRequestorId>
+          <ServiceProviderDomain checked__="true"></ServiceProviderDomain>
+          <ServiceId checked__="true"></ServiceId>
+          <ServiceVersion checked__="true"></ServiceVersion>
+          <FaultIndication checked__="true"></FaultIndication>
+          <MessageTimestamp checked__="true">1970-01-01T00:00:00.000Z</MessageTimestamp>
+        </JanBoHeader>
+        <GetRelation_Req checked__="true">
+          <Relation checked__="true">
+            <RelationId checked__="true">000000090116551</RelationId>
+            <RelationDetailsType checked__="true">Basic</RelationDetailsType>
+          </Relation>
+        </GetRelation_Req>
+      </GetRelation8>
+    </Request>
+    <DocumentationEdited>true</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

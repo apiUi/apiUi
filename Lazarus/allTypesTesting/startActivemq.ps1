@@ -1,3 +1,4 @@
+echo "start activeMq..."
 docker run -dit --rm --name=activemq `
 	       --network dockernet `
            -p 61613:61613 `

@@ -1,4 +1,5 @@
-docker run -dit --rm --name=apiuiresponder `
+echo "starting apiuiresponder..."
+powershell docker run -dit --rm --name=apiuiresponder `
   --network dockernet `
   -p 7777:7777 `
   apiui/apiuiserver `

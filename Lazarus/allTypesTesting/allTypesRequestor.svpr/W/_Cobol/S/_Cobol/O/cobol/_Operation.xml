@@ -38,18 +38,24 @@
     <DelayTimeMsMin>0</DelayTimeMsMin>
     <DelayTimeMsMax>0</DelayTimeMsMax>
     <endpointConfig>
-      <Http>
-        <Address>${Address}</Address>
-        <Verb>POST</Verb>
-        <ContentEncoding>identity</ContentEncoding>
-        <AcceptEncoding>
-          <deflate>false</deflate>
-          <gzip>false</gzip>
-        </AcceptEncoding>
+      <Stomp>
+        <Host>${stomphost}</Host>
+        <Port>61613</Port>
+        <Credentials>
+          <Name>admin</Name>
+          <Password>FQwzGxs=</Password>
+        </Credentials>
+        <ClientId></ClientId>
+        <Timeout>1</Timeout>
+        <stompHeader>
+          <destination>requestq</destination>
+          <reply-to>responseq</reply-to>
+        </stompHeader>
         <customHeaders></customHeaders>
-      </Http>
+      </Stomp>
     </endpointConfig>
     <CorrelationElements></CorrelationElements>
     <ColumnElements></ColumnElements>
     <LogColumns></LogColumns>
+    <focusedOperation>true</focusedOperation>
   </Operation>

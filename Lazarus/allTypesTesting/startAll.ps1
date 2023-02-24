@@ -1,3 +1,4 @@
+echo "start all..."
 powershell .\startDockernet
 powershell .\startActivemq.ps1
 powershell .\startWiremock.ps1

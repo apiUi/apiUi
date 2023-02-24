@@ -1,0 +1,290 @@
+  <Message>
+    <Name>Default</Name>
+    <SequenceNr>0</SequenceNr>
+    <stateMachineScenarioName>.*</stateMachineScenarioName>
+    <stateMachineRequiredState>.*</stateMachineRequiredState>
+    <stateMachineNextState>.*</stateMachineNextState>
+    <Patterns>
+      <Pattern>.*</Pattern>
+      <Pattern>.*</Pattern>
+    </Patterns>
+    <Reply>
+      <GetRelation8 checked__="true">
+        <JanBoHeader checked__="true">
+          <HeaderVersion checked__="true">HeaderVersion</HeaderVersion>
+          <MessageId checked__="true">MessageId</MessageId>
+          <ServiceRequestorDomain checked__="true">ServiceRequestorDomain</ServiceRequestorDomain>
+          <ServiceRequestorId checked__="true">ServiceRequestorId</ServiceRequestorId>
+          <ServiceProviderDomain checked__="true">ServiceProviderDomain</ServiceProviderDomain>
+          <ServiceId checked__="true">ServiceId</ServiceId>
+          <ServiceVersion checked__="true">Ser</ServiceVersion>
+          <FaultIndication checked__="true">False</FaultIndication>
+          <MessageTimestamp checked__="true">2010-12-11T13:30:00.200</MessageTimestamp>
+        </JanBoHeader>
+        <GetRelation_Rpy checked__="true">
+          <Relation checked__="true">
+            <RelationId checked__="true">RelationId</RelationId>
+            <InvolvedPartyCode checked__="true">InvolvedPartyCode</InvolvedPartyCode>
+            <InvolvedPartyDescription checked__="true">InvolvedPartyDescription</InvolvedPartyDescription>
+            <StatusTypeCode checked__="true">S</StatusTypeCode>
+            <StatusTypeDescription checked__="true">StatusTypeDescription</StatusTypeDescription>
+            <CorrespondenceLanguageCode checked__="true">Co</CorrespondenceLanguageCode>
+            <CorrespondenceLanguageDescription checked__="true">CorrespondenceLanguageDescription</CorrespondenceLanguageDescription>
+            <SystemCreationDate checked__="true">2010-12-11</SystemCreationDate>
+            <CustomerInterestsRecordedFlag checked__="true">C</CustomerInterestsRecordedFlag>
+            <ResidenceCountryCode checked__="true">Re</ResidenceCountryCode>
+            <ResidenceCountryDescription checked__="true">ResidenceCountryDescription</ResidenceCountryDescription>
+            <NationalityCountryCode checked__="true">Na</NationalityCountryCode>
+            <NationalityCountryDescription checked__="true">NationalityCountryDescription</NationalityCountryDescription>
+            <LegalIncapacitatedInd checked__="true">L</LegalIncapacitatedInd>
+            <CreationDate checked__="true">2010-12-11T13:30:00.200</CreationDate>
+            <WwftStatusCode checked__="true">WwftStatusCode</WwftStatusCode>
+            <LocalBank checked__="true">
+              <BankCode checked__="true">122.745</BankCode>
+              <LogicalLocation checked__="true">
+                <LogicalLocationCode checked__="true">Lo</LogicalLocationCode>
+              </LogicalLocation>
+            </LocalBank>
+            <NaturalPerson checked__="true">
+              <BSNnumber checked__="true">122.745</BSNnumber>
+              <NoBSNnumberReasonCode checked__="true">N</NoBSNnumberReasonCode>
+              <NoBSNnumberReasonDescription checked__="true">NoBSNnumberReasonDescription</NoBSNnumberReasonDescription>
+              <MaritalStatusCode checked__="true">M</MaritalStatusCode>
+              <MaritalStatusDescription checked__="true">MaritalStatusDescription</MaritalStatusDescription>
+              <PrenuptialAgreementCode checked__="true">P</PrenuptialAgreementCode>
+              <PrenuptialAgreementDescription checked__="true">PrenuptialAgreementDescription</PrenuptialAgreementDescription>
+              <CohabitationCode checked__="true">C</CohabitationCode>
+              <CohabitationDescription checked__="true">CohabitationDescription</CohabitationDescription>
+              <PlaceOfResidenceDeclarationFlag checked__="true">P</PlaceOfResidenceDeclarationFlag>
+              <SocialStatusCode checked__="true">SocialStatusCode</SocialStatusCode>
+              <SocialStatusDescription checked__="true">SocialStatusDescription</SocialStatusDescription>
+              <CustomerRelationshipValuationTypeCode checked__="true">Cu</CustomerRelationshipValuationTypeCode>
+              <CustomerRelationshipValuationTypeDescription checked__="true">CustomerRelationshipValuationTypeDescription</CustomerRelationshipValuationTypeDescription>
+              <HousingTenureTypeCode checked__="true">H</HousingTenureTypeCode>
+              <HousingTenureTypeDescription checked__="true">HousingTenureTypeDescription</HousingTenureTypeDescription>
+              <NaturalPersonName checked__="true">
+                <Surname checked__="true">Surname</Surname>
+                <ShortSurname checked__="true">ShortSurname</ShortSurname>
+                <SurnamePrefix checked__="true">SurnamePre</SurnamePrefix>
+                <SurnameSuffix checked__="true">SurnameSuf</SurnameSuffix>
+                <GivenName checked__="true">GivenName</GivenName>
+                <NameInitial checked__="true">NameInitial</NameInitial>
+                <MaidenName checked__="true">MaidenName</MaidenName>
+                <MaidenNamePrefix checked__="true">MaidenName</MaidenNamePrefix>
+                <GivenNameAll checked__="true">GivenNameAll</GivenNameAll>
+              </NaturalPersonName>
+              <Title checked__="true">
+                <NameQualificationPrefix checked__="true">NameQualificati</NameQualificationPrefix>
+                <NobilitySalutation checked__="true">NobilitySa</NobilitySalutation>
+                <NameQualificationSuffix checked__="true">NameQualif</NameQualificationSuffix>
+              </Title>
+              <Birth checked__="true">
+                <BirthCountryCode checked__="true">Bi</BirthCountryCode>
+                <BirthCountryDescription checked__="true">BirthCountryDescription</BirthCountryDescription>
+                <BirthDate checked__="true">2010-12-11</BirthDate>
+                <BirthPlace checked__="true">BirthPlace</BirthPlace>
+                <GenderCode checked__="true">G</GenderCode>
+                <GenderDescription checked__="true">GenderDescription</GenderDescription>
+              </Birth>
+              <Decease checked__="true">
+                <DeceasedFlag checked__="true">D</DeceasedFlag>
+                <DeathDate checked__="true">2010-12-11</DeathDate>
+              </Decease>
+              <ListOfLegalRestraint checked__="true">
+                <LegalRestraint checked__="true">
+                  <LegalRestraintStatusCode checked__="true">Leg</LegalRestraintStatusCode>
+                  <LegalRestraintStatusDescription checked__="true">LegalRestraintStatusDescription</LegalRestraintStatusDescription>
+                  <LegalRestraintStartDate checked__="true">2010-12-11</LegalRestraintStartDate>
+                  <LegalRestraintEndDate checked__="true">2010-12-11</LegalRestraintEndDate>
+                  <PrimaryFlag checked__="true">P</PrimaryFlag>
+                </LegalRestraint>
+              </ListOfLegalRestraint>
+              <MifidNP checked__="true">
+                <MifidId checked__="true">MifidId</MifidId>
+                <MifidIdDerivationTypeCode checked__="true">MifidIdDerivationTypeCode</MifidIdDerivationTypeCode>
+              </MifidNP>
+            </NaturalPerson>
+            <Organisation checked__="true">
+              <AgriculturalOperatingArea checked__="true">122.745</AgriculturalOperatingArea>
+              <HierarchicalPositionTypeCode checked__="true">H</HierarchicalPositionTypeCode>
+              <HierarchicalPositionTypeDescription checked__="true">HierarchicalPositionTypeDescription</HierarchicalPositionTypeDescription>
+              <EUsavingsDocumentProofFlag checked__="true">E</EUsavingsDocumentProofFlag>
+              <PlaceOfIncorporation checked__="true">PlaceOfIncorporation</PlaceOfIncorporation>
+              <BusinessLongevitySegmentCode checked__="true">Busi</BusinessLongevitySegmentCode>
+              <BusinessLongevitySegmentDescription checked__="true">BusinessLongevitySegmentDescription</BusinessLongevitySegmentDescription>
+              <BusinessLongevitySegmentDate checked__="true">2010-12-11</BusinessLongevitySegmentDate>
+              <NumberOfEmployeesSegmentCode checked__="true">Nu</NumberOfEmployeesSegmentCode>
+              <NumberOfEmployeesSegmentDescription checked__="true">NumberOfEmployeesSegmentDescription</NumberOfEmployeesSegmentDescription>
+              <EstablishDate checked__="true">2010-12-11</EstablishDate>
+              <LegalStructureTypeCode checked__="true">Lega</LegalStructureTypeCode>
+              <LegalStructureTypeDescription checked__="true">LegalStructureTypeDescription</LegalStructureTypeDescription>
+              <RltnpTypeCode checked__="true">R</RltnpTypeCode>
+              <CustomerConditionSetTypeCode checked__="true">Custo</CustomerConditionSetTypeCode>
+              <CustomerConditionSetTypeDescription checked__="true">CustomerConditionSetTypeDescription</CustomerConditionSetTypeDescription>
+              <CustomerRiskClassificationCode checked__="true">C</CustomerRiskClassificationCode>
+              <CustomerRiskClassificationDescription checked__="true">CustomerRiskClassificationDescription</CustomerRiskClassificationDescription>
+              <WebsiteURL checked__="true">WebsiteURL</WebsiteURL>
+              <OrganisationName checked__="true">
+                <LegalName checked__="true">LegalName</LegalName>
+                <CommercialName checked__="true">CommercialName</CommercialName>
+                <ShortCommercialName checked__="true">ShortCommercialName</ShortCommercialName>
+              </OrganisationName>
+              <ChamberOfCommerce checked__="true">
+                <KvKSubscription checked__="true">
+                  <KvKNumber checked__="true">KvKNumbe</KvKNumber>
+                </KvKSubscription>
+                <MembershipDate checked__="true">2010-12-11</MembershipDate>
+              </ChamberOfCommerce>
+              <WorldWideOrganisation checked__="true">
+                <UciWorldWideId checked__="true">UciWorldWideId</UciWorldWideId>
+              </WorldWideOrganisation>
+              <ListOfDistributionMethod checked__="true">
+                <DistributionMethod checked__="true">
+                  <DistributionMethodCode checked__="true">Dis</DistributionMethodCode>
+                  <DistributionMethodDescription checked__="true">DistributionMethodDescription</DistributionMethodDescription>
+                </DistributionMethod>
+              </ListOfDistributionMethod>
+              <ListOfIndustryClassification checked__="true">
+                <IndustryClassification checked__="true">
+                  <PrimaryFlag checked__="true">P</PrimaryFlag>
+                  <Industry checked__="true">
+                    <IndustryClassificationCode checked__="true">Indust</IndustryClassificationCode>
+                  </Industry>
+                </IndustryClassification>
+              </ListOfIndustryClassification>
+              <MifidOrg checked__="true">
+                <Lei checked__="true">Lei</Lei>
+                <LeiSourceCode checked__="true">LeiSourceCode</LeiSourceCode>
+              </MifidOrg>
+            </Organisation>
+            <Communication checked__="true">
+              <SolicitableByTelephoneFlag checked__="true">S</SolicitableByTelephoneFlag>
+              <SolicitableByEmailFlag checked__="true">S</SolicitableByEmailFlag>
+              <SolicitableByMailFlag checked__="true">S</SolicitableByMailFlag>
+              <SolicitableBySMSFlag checked__="true">S</SolicitableBySMSFlag>
+            </Communication>
+            <IdentificationDocument checked__="true">
+              <IdentificationDocumentTypeCode checked__="true">Id</IdentificationDocumentTypeCode>
+              <IdentificationDocumentTypeDescription checked__="true">IdentificationDocumentTypeDescription</IdentificationDocumentTypeDescription>
+              <IdentificationDocumentNumber checked__="true">IdentificationDocume</IdentificationDocumentNumber>
+              <IdentificationDocumentIssueDate checked__="true">2010-12-11</IdentificationDocumentIssueDate>
+              <IdentificationDocumentPlaceOfIssue checked__="true">IdentificationDocumentPlaceOfI</IdentificationDocumentPlaceOfIssue>
+              <IdentificationDocumentIssuingCountryCode checked__="true">Id</IdentificationDocumentIssuingCountryCode>
+              <IdentificationDocumentIssuingCountryDescription checked__="true">IdentificationDocumentIssuingCountryDescription</IdentificationDocumentIssuingCountryDescription>
+            </IdentificationDocument>
+            <IdentificationStatus checked__="true">
+              <VerificationDate checked__="true">2010-12-11</VerificationDate>
+              <VerificationStatusCode checked__="true">Ve</VerificationStatusCode>
+              <VerificationStatusDescription checked__="true">VerificationStatusDescription</VerificationStatusDescription>
+            </IdentificationStatus>
+            <TaxReporting checked__="true">
+              <InternationalTaxIdNumber checked__="true">InternationalTaxIdNu</InternationalTaxIdNumber>
+            </TaxReporting>
+            <ListOfIntegrity checked__="true">
+              <Integrity checked__="true">
+                <CDDratingCode checked__="true">C</CDDratingCode>
+                <CDDratingDescription checked__="true">CDDratingDescription</CDDratingDescription>
+                <CDDratingReasonDescription checked__="true">CDDratingReasonDescription</CDDratingReasonDescription>
+                <CDDratingStatusCode checked__="true">C</CDDratingStatusCode>
+                <CDDratingStatusDescription checked__="true">CDDratingStatusDescription</CDDratingStatusDescription>
+                <PrimaryFlag checked__="true">P</PrimaryFlag>
+                <SourceSystemCreationDate checked__="true">2010-12-11</SourceSystemCreationDate>
+              </Integrity>
+            </ListOfIntegrity>
+            <ListOfInsolvency checked__="true">
+              <Insolvency checked__="true">
+                <InsolvencyStatusCode checked__="true">Ins</InsolvencyStatusCode>
+                <InsolvencyStatusDescription checked__="true">InsolvencyStatusDescription</InsolvencyStatusDescription>
+                <InsolvencyStartDate checked__="true">2010-12-11</InsolvencyStartDate>
+                <InsolvencyEndDate checked__="true">2010-12-11</InsolvencyEndDate>
+                <PrimaryFlag checked__="true">P</PrimaryFlag>
+              </Insolvency>
+            </ListOfInsolvency>
+            <Membership checked__="true">
+              <StartDate checked__="true">2010-12-11</StartDate>
+              <EndDate checked__="true">2010-12-11</EndDate>
+              <MembershipStatusTypeCode checked__="true">Me</MembershipStatusTypeCode>
+              <MembershipStatusTypeDescription checked__="true">MembershipStatusTypeDescription</MembershipStatusTypeDescription>
+              <StatusStartDate checked__="true">2010-12-11</StatusStartDate>
+              <NoMembershipReasonCode checked__="true">No</NoMembershipReasonCode>
+              <NoMembershipReasonDescription checked__="true">NoMembershipReasonDescription</NoMembershipReasonDescription>
+              <MagazineFlag checked__="true">M</MagazineFlag>
+              <NoMagazineDate checked__="true">2010-12-11</NoMagazineDate>
+              <NoMagazineReasonCode checked__="true">N</NoMagazineReasonCode>
+              <NoMagazineReasonDescription checked__="true">NoMagazineReasonDescription</NoMagazineReasonDescription>
+            </Membership>
+            <Segmentation checked__="true">
+              <CustomerMarketSegmentCode checked__="true">Cu</CustomerMarketSegmentCode>
+              <CustomerMarketSegmentDescription checked__="true">CustomerMarketSegmentDescription</CustomerMarketSegmentDescription>
+              <CentralCustomerMarketSegmentCode checked__="true">Ce</CentralCustomerMarketSegmentCode>
+              <CentralCustomerMarketSegmentDescription checked__="true">CentralCustomerMarketSegmentDescription</CentralCustomerMarketSegmentDescription>
+            </Segmentation>
+            <ListOfRelationAddress checked__="true">
+              <RelationAddress checked__="true">
+                <AddressTypeCode checked__="true">A</AddressTypeCode>
+                <AddressTypeDescription checked__="true">AddressTypeDescription</AddressTypeDescription>
+                <CorrespondenceFlag checked__="true">C</CorrespondenceFlag>
+                <Address checked__="true">
+                  <Postalcode checked__="true">Postalcode</Postalcode>
+                  <StreetName checked__="true">StreetName</StreetName>
+                  <HouseNumber checked__="true">122.745</HouseNumber>
+                  <HouseNumberExtension checked__="true">HouseNumberE</HouseNumberExtension>
+                  <StreetSuffix checked__="true">StreetSuffix</StreetSuffix>
+                  <CityName checked__="true">CityName</CityName>
+                  <CountryCode checked__="true">Co</CountryCode>
+                  <CountryDescription checked__="true">CountryDescription</CountryDescription>
+                </Address>
+              </RelationAddress>
+            </ListOfRelationAddress>
+            <ListOfRelationTelephone checked__="true">
+              <RelationTelephone checked__="true">
+                <ListItemId checked__="true">ListItemId</ListItemId>
+                <Number checked__="true">Number</Number>
+                <NumberFormatted checked__="true">NumberFormatted</NumberFormatted>
+                <TelephoneTypeCode checked__="true">TelephoneTypeCode</TelephoneTypeCode>
+                <TelephoneTypeDescription checked__="true">TelephoneTypeDescription</TelephoneTypeDescription>
+                <PrimaryFlag checked__="true">P</PrimaryFlag>
+                <SecurityNotificationFlag checked__="true">S</SecurityNotificationFlag>
+                <ServiceNotificationFlag checked__="true">S</ServiceNotificationFlag>
+                <AliasPaymentFlag checked__="true">A</AliasPaymentFlag>
+                <LastUpdateDate checked__="true">2010-12-11T13:30:00.200</LastUpdateDate>
+                <DeleteAllowed checked__="true">D</DeleteAllowed>
+              </RelationTelephone>
+            </ListOfRelationTelephone>
+            <ListOfRelationEmailAddress checked__="true">
+              <RelationEmailAddress checked__="true">
+                <ListItemId checked__="true">ListItemId</ListItemId>
+                <EmailAddress checked__="true">EmailAddress</EmailAddress>
+                <EmailAddressTypeCode checked__="true">E</EmailAddressTypeCode>
+                <EmailAddressTypeDescription checked__="true">EmailAddressTypeDescription</EmailAddressTypeDescription>
+                <EmailPurposeCode checked__="true">EmailPurposeCode</EmailPurposeCode>
+                <EmailPurposeDescription checked__="true">EmailPurposeDescription</EmailPurposeDescription>
+                <EmailSourceCode checked__="true">EmailSourceCode</EmailSourceCode>
+                <EmailSourceDescription checked__="true">EmailSourceDescription</EmailSourceDescription>
+                <PrimaryFlag checked__="true">P</PrimaryFlag>
+                <ServiceNotificationFlag checked__="true">S</ServiceNotificationFlag>
+                <CreationDate checked__="true">2010-12-11T13:30:00.200</CreationDate>
+                <DeleteAllowed checked__="true">D</DeleteAllowed>
+              </RelationEmailAddress>
+            </ListOfRelationEmailAddress>
+          </Relation>
+        </GetRelation_Rpy>
+        <SOAPFault checked__="false">
+          <applicationfaultcode checked__="true">applicationfaultcode</applicationfaultcode>
+          <applicationfaulttext checked__="true">applicationfaulttext</applicationfaulttext>
+        </SOAPFault>
+        <undefined checked__="false">
+          <responseCode checked__="true">responseCode</responseCode>
+          <body checked__="true">
+            <contentType checked__="true">application/json</contentType>
+            <content checked__="true">content</content>
+          </body>
+        </undefined>
+      </GetRelation8>
+    </Reply>
+    <Request>
+      <GetRelation8 checked__="false"></GetRelation8>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

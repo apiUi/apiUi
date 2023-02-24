@@ -1,11 +1,7 @@
-echo "starting all..."
+echo "testing..."
 powershell .\startAll.ps1
-
-powershell .\pushDesignToApiUiServer.ps1
-
+powershell .\pushDesigns.ps1
 powershell .\runRequestor.ps1
-
-echo "stop all...."
 powershell .\stopAll.ps1
-
+powershell .\simul8rtests.ps1
 powershell .\startApiUi.ps1

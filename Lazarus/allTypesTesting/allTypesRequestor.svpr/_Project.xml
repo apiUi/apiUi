@@ -1,10 +1,6 @@
   <WsdlStubCase>
     <FileName>D:\Data\gitrepo\apiUi_feature\Lazarus\allTypesTesting\allTypesRequestor.svpr</FileName>
-    <Listeners>
-      <Http>
-        <Port>7776</Port>
-      </Http>
-    </Listeners>
+    <Listeners></Listeners>
     <remoteServerConnection>
       <Enabled>true</Enabled>
       <Address>${Address}</Address>

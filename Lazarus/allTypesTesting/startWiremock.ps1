@@ -1,3 +1,4 @@
+echo "start WireMock..."
 docker run -dit --rm --name wiremock `
 	       --network dockernet `
            -v ${PWD}/wiremock:/home/wiremock `

@@ -1,0 +1,9 @@
+  <contexts version="3">
+    <row>
+      <col> </col>
+      <col>JanBoApiKey</col>
+      <col>Address</col>
+      <col>pegaAddress</col>
+      <col>apiPlatform</col>
+    </row>
+  </contexts>
