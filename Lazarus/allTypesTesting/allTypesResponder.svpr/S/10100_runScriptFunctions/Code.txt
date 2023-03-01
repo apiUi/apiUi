@@ -1,0 +1,6 @@
+ExecuteOperationScript ('testScriptFunctions');
+AssignAnyType (Req.testScriptFunctions.body, Rpy.testScriptFunctions.rspns200.body);
+requestInfo.testScriptFunctions.None := '';
+RequestOperation ('testScriptFunctions');
+CreateSnapshot ('testScriptFunctions');
+

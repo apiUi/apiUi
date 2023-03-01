@@ -1,7 +1,7 @@
   <Operation>
-    <Name>/api/customer-documents/document:post</Name>
+    <Name>/testfunctions:post</Name>
     <Action>0</Action>
-    <Alias>uploadDocument</Alias>
+    <Alias>testScriptFunctions</Alias>
     <HiddenFromUI>false</HiddenFromUI>
     <wsaEnabled>false</wsaEnabled>
     <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
@@ -27,7 +27,7 @@
       </OnRequestViolatingAddressPath>
       <scripts>
         <invoke>
-          <requestInfo>false</requestInfo>
+          <requestInfo>true</requestInfo>
           <replyInfo>false</replyInfo>
           <operations></operations>
         </invoke>

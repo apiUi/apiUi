@@ -5,11 +5,29 @@
   SetContext (ws.context);
   SetRemoteServerConnectionType (ws.rsct);
 }
+
+{
+  string ws.s := 'testScriptFunctions';
+  RemoveDesignMessages (ws.s);
+  ExecuteOperationScript (ws.s);
+  NewDesignMessage (ws.s, 'script executed on ' + HostName ());
+}
+
 {
   string ws.context := SetContext ('wiremock');
   string ws.rsct := SetRemoteServerConnectionType ('WireMock');
-  PushProjectToRemoteServer ();
+  PushOperationToRemoteServer ('CreateActivities');
+  PushOperationToRemoteServer ('CreateServiceRequest2');
+  PushOperationToRemoteServer ('testScriptFunctions');
+  PushOperationToRemoteServer ('uploadDocument');
   SetContext (ws.context);
   SetRemoteServerConnectionType (ws.rsct);
 }
 
+{
+  ExecuteOperationScript ('testScriptFunctions');
+  AssignAnyType (Req.testScriptFunctions.body, Rpy.testScriptFunctions.rspns200.body);
+  requestInfo.testScriptFunctions.None := '';
+  RequestOperation ('testScriptFunctions');
+  CreateSnapshot ('testScriptFunctionsFromDocker');
+}

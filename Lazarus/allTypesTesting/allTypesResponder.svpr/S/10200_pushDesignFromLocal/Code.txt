@@ -1,0 +1,28 @@
+{
+  string ws.s := 'testScriptFunctions';
+  RemoveDesignMessages (ws.s);
+  ExecuteOperationScript (ws.s);
+  NewDesignMessage (ws.s, 'script executed on ' + HostName ());
+}
+
+if False then
+{
+  string ws.context := SetContext ('localhostapiui');
+  string ws.rsct := SetRemoteServerConnectionType ('apiUi');
+  PushProjectToRemoteServer ();
+  SetContext (ws.context);
+  SetRemoteServerConnectionType (ws.rsct);
+}
+
+if True then
+{
+  string ws.context := SetContext ('localwiremock');
+  string ws.rsct := SetRemoteServerConnectionType ('WireMock');
+  PushOperationToRemoteServer ('CreateActivities');
+  PushOperationToRemoteServer ('CreateServiceRequest2');
+  PushOperationToRemoteServer ('testScriptFunctions');
+  PushOperationToRemoteServer ('uploadDocument');
+  SetContext (ws.context);
+  SetRemoteServerConnectionType (ws.rsct);
+}
+

@@ -1,11 +1,10 @@
   <Script>
-    <Name>runandsave</Name>
+    <Name>pushDesignFromLocal</Name>
     <Invoke>
       <operations>
-        <name>cobol</name>
         <name>CreateActivities</name>
         <name>CreateServiceRequest2</name>
-        <name>freeformatOperation</name>
+        <name>testScriptFunctions</name>
         <name>uploadDocument</name>
       </operations>
     </Invoke>

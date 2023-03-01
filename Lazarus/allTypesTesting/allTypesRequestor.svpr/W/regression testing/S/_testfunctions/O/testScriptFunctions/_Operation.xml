@@ -1,7 +1,7 @@
   <Operation>
-    <Name>/api/customer-documents/document:post</Name>
-    <Action>0</Action>
-    <Alias>uploadDocument</Alias>
+    <Name>/testfunctions:post</Name>
+    <Action>3</Action>
+    <Alias>testScriptFunctions</Alias>
     <HiddenFromUI>false</HiddenFromUI>
     <wsaEnabled>false</wsaEnabled>
     <wsaSpecificMustUnderstand>false</wsaSpecificMustUnderstand>
@@ -39,6 +39,7 @@
     <DelayTimeMsMax>0</DelayTimeMsMax>
     <endpointConfig>
       <Http>
+        <Address>${Address}</Address>
         <Verb>POST</Verb>
         <ContentEncoding>identity</ContentEncoding>
         <AcceptEncoding>
@@ -51,4 +52,5 @@
     <CorrelationElements></CorrelationElements>
     <ColumnElements></ColumnElements>
     <LogColumns></LogColumns>
+    <focusedOperation>true</focusedOperation>
   </Operation>

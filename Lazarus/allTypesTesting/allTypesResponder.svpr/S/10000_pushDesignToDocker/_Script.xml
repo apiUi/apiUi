@@ -1,3 +1,11 @@
   <Script>
     <Name>pushDesignToDocker</Name>
+    <Invoke>
+      <operations>
+        <name>CreateActivities</name>
+        <name>CreateServiceRequest2</name>
+        <name>testScriptFunctions</name>
+        <name>uploadDocument</name>
+      </operations>
+    </Invoke>
   </Script>

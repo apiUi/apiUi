@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- 24/02/2023 15:31:04: Generated with apiUiServer 10.9.1.13323 by janbo -->
+<!-- 01/03/2023 12:10:07: Generated with apiUiServer 10.9.1.13325 by janbo -->
 <WsdlStubCaseMessages>
   <wsdlStub>D:\Data\gitrepo\apiUi_feature\Lazarus\allTypesTesting\allTypesRequestor.svpr</wsdlStub>
   <refreshInfo>
-    <Index>9</Index>
-    <MessageId>uuid:e83a-55d4-a542-50db</MessageId>
+    <Index>10</Index>
+    <MessageId>uuid:29b5-521f-b83d-950e</MessageId>
   </refreshInfo>
   <RequestReply>
-    <InboundTimeStamp>2023-02-24T14:31:04.900Z</InboundTimeStamp>
-    <OutboundTimeStamp>2023-02-24T14:31:04.220Z</OutboundTimeStamp>
+    <InboundTimeStamp>2023-03-01T11:10:06.402Z</InboundTimeStamp>
+    <OutboundTimeStamp>2023-03-01T11:10:06.421Z</OutboundTimeStamp>
     <DelayTimeMs>0</DelayTimeMs>
     <OperationCount>1</OperationCount>
     <TransportType>3</TransportType>
@@ -28,8 +28,8 @@
     <httpParams></httpParams>
     <RequestContentType></RequestContentType>
     <ReplyContentType>text/xml;charset=utf-8</ReplyContentType>
-    <HttpRequestHeaders>&lt;headers&gt;&lt;expires&gt;0&lt;/expires&gt;&#x0A;&lt;correlation-id&gt;202302241531040004605779&lt;/correlation-id&gt;&#x0A;&lt;destination&gt;/queue/requestq&lt;/destination&gt;&#x0A;&lt;priority&gt;4&lt;/priority&gt;&#x0A;&lt;message-id&gt;ID:4448f580f442-36663-1677249055722-3:3:-1:1:1&lt;/message-id&gt;&#x0A;&lt;reply-to&gt;/queue/responseq&lt;/reply-to&gt;&#x0A;&lt;timestamp&gt;1677249063995&lt;/timestamp&gt;&#x0A;&lt;/headers&gt;</HttpRequestHeaders>
-    <HttpReplyHeaders>&lt;headers&gt;&lt;correlation-id&gt;202302241531040004605779&lt;/correlation-id&gt;&#x0A;&lt;persistent&gt;false&lt;/persistent&gt;&#x0A;&lt;/headers&gt;</HttpReplyHeaders>
+    <HttpRequestHeaders>&lt;headers&gt;&lt;expires&gt;0&lt;/expires&gt;&#x0A;&lt;correlation-id&gt;202303011210063832424808&lt;/correlation-id&gt;&#x0A;&lt;destination&gt;/queue/requestq&lt;/destination&gt;&#x0A;&lt;priority&gt;4&lt;/priority&gt;&#x0A;&lt;message-id&gt;ID:fc6b4920bbcd-33353-1677668996110-3:3:-1:1:1&lt;/message-id&gt;&#x0A;&lt;reply-to&gt;/queue/responseq&lt;/reply-to&gt;&#x0A;&lt;timestamp&gt;1677669006385&lt;/timestamp&gt;&#x0A;&lt;/headers&gt;</HttpRequestHeaders>
+    <HttpReplyHeaders>&lt;headers&gt;&lt;correlation-id&gt;202303011210063832424808&lt;/correlation-id&gt;&#x0A;&lt;persistent&gt;false&lt;/persistent&gt;&#x0A;&lt;/headers&gt;</HttpReplyHeaders>
     <BodiesAsBase64>true</BodiesAsBase64>
     <HttpRequestBody>Y2JsMTIzNGdybzEyMzRncm8xMjM0Z3Jv</HttpRequestBody>
     <HttpRequestBodyMiM></HttpRequestBodyMiM>
@@ -39,15 +39,15 @@
     <RequestValidateResult></RequestValidateResult>
     <ReplyValidated>false</ReplyValidated>
     <ReplyValidateResult></ReplyValidateResult>
-    <Nr>11</Nr>
-    <MessageId>uuid:a788-fbfe-dedd-be91</MessageId>
+    <Nr>12</Nr>
+    <MessageId>uuid:7c49-d531-be62-a685</MessageId>
     <ServiceName>_Cobol</ServiceName>
     <OperationName>cobol</OperationName>
     <PathFormat></PathFormat>
   </RequestReply>
   <RequestReply>
-    <InboundTimeStamp>2023-02-24T14:31:04.420Z</InboundTimeStamp>
-    <OutboundTimeStamp>2023-02-24T14:31:04.560Z</OutboundTimeStamp>
+    <InboundTimeStamp>2023-03-01T11:10:06.445Z</InboundTimeStamp>
+    <OutboundTimeStamp>2023-03-01T11:10:06.461Z</OutboundTimeStamp>
     <DelayTimeMs>0</DelayTimeMs>
     <OperationCount>2</OperationCount>
     <TransportType>3</TransportType>
@@ -67,8 +67,8 @@
     <httpParams></httpParams>
     <RequestContentType></RequestContentType>
     <ReplyContentType>text/xml;charset=utf-8</ReplyContentType>
-    <HttpRequestHeaders>&lt;headers&gt;&lt;expires&gt;0&lt;/expires&gt;&#x0A;&lt;correlation-id&gt;202302241531040468444383&lt;/correlation-id&gt;&#x0A;&lt;destination&gt;/queue/requestq&lt;/destination&gt;&#x0A;&lt;priority&gt;4&lt;/priority&gt;&#x0A;&lt;message-id&gt;ID:4448f580f442-36663-1677249055722-3:4:-1:1:1&lt;/message-id&gt;&#x0A;&lt;reply-to&gt;/queue/responseq&lt;/reply-to&gt;&#x0A;&lt;timestamp&gt;1677249064039&lt;/timestamp&gt;&#x0A;&lt;/headers&gt;</HttpRequestHeaders>
-    <HttpReplyHeaders>&lt;headers&gt;&lt;correlation-id&gt;202302241531040468444383&lt;/correlation-id&gt;&#x0A;&lt;persistent&gt;false&lt;/persistent&gt;&#x0A;&lt;/headers&gt;</HttpReplyHeaders>
+    <HttpRequestHeaders>&lt;headers&gt;&lt;expires&gt;0&lt;/expires&gt;&#x0A;&lt;correlation-id&gt;202303011210064397685692&lt;/correlation-id&gt;&#x0A;&lt;destination&gt;/queue/requestq&lt;/destination&gt;&#x0A;&lt;priority&gt;4&lt;/priority&gt;&#x0A;&lt;message-id&gt;ID:fc6b4920bbcd-33353-1677668996110-3:4:-1:1:1&lt;/message-id&gt;&#x0A;&lt;reply-to&gt;/queue/responseq&lt;/reply-to&gt;&#x0A;&lt;timestamp&gt;1677669006440&lt;/timestamp&gt;&#x0A;&lt;/headers&gt;</HttpRequestHeaders>
+    <HttpReplyHeaders>&lt;headers&gt;&lt;correlation-id&gt;202303011210064397685692&lt;/correlation-id&gt;&#x0A;&lt;persistent&gt;false&lt;/persistent&gt;&#x0A;&lt;/headers&gt;</HttpReplyHeaders>
     <BodiesAsBase64>true</BodiesAsBase64>
     <HttpRequestBody>Y2JsMTIzNGdybzEyMzRncm8xMjM0Z3Jv</HttpRequestBody>
     <HttpRequestBodyMiM></HttpRequestBodyMiM>
@@ -78,15 +78,15 @@
     <RequestValidateResult></RequestValidateResult>
     <ReplyValidated>false</ReplyValidated>
     <ReplyValidateResult></ReplyValidateResult>
-    <Nr>12</Nr>
-    <MessageId>uuid:4b4e-dbdb-f69c-7363</MessageId>
+    <Nr>13</Nr>
+    <MessageId>uuid:ef33-149f-6979-f724</MessageId>
     <ServiceName>_Cobol</ServiceName>
     <OperationName>cobol</OperationName>
     <PathFormat></PathFormat>
   </RequestReply>
   <RequestReply>
-    <InboundTimeStamp>2023-02-24T14:31:04.640Z</InboundTimeStamp>
-    <OutboundTimeStamp>2023-02-24T14:31:04.840Z</OutboundTimeStamp>
+    <InboundTimeStamp>2023-03-01T11:10:06.468Z</InboundTimeStamp>
+    <OutboundTimeStamp>2023-03-01T11:10:06.487Z</OutboundTimeStamp>
     <DelayTimeMs>0</DelayTimeMs>
     <OperationCount>1</OperationCount>
     <TransportType>0</TransportType>
@@ -116,15 +116,15 @@
     <RequestValidateResult>Number of elements (0) less then minimum (1) for element Department&#x0A;Number of elements (0) less then minimum (1) for element Activity</RequestValidateResult>
     <ReplyValidated>true</ReplyValidated>
     <ReplyValidateResult>Number of elements (0) less then minimum (1) for element ListOfActivities</ReplyValidateResult>
-    <Nr>13</Nr>
-    <MessageId>uuid:4745-aa70-0886-afd5</MessageId>
+    <Nr>14</Nr>
+    <MessageId>uuid:5201-981e-e0ea-891c</MessageId>
     <ServiceName>/createactivities/3/{pathParam}</ServiceName>
     <OperationName>CreateActivities</OperationName>
     <PathFormat>/crmi/api/klant/createactivities/3/%s</PathFormat>
   </RequestReply>
   <RequestReply>
-    <InboundTimeStamp>2023-02-24T14:31:04.890Z</InboundTimeStamp>
-    <OutboundTimeStamp>2023-02-24T14:31:04.106Z</OutboundTimeStamp>
+    <InboundTimeStamp>2023-03-01T11:10:06.493Z</InboundTimeStamp>
+    <OutboundTimeStamp>2023-03-01T11:10:06.507Z</OutboundTimeStamp>
     <DelayTimeMs>0</DelayTimeMs>
     <OperationCount>2</OperationCount>
     <TransportType>0</TransportType>
@@ -154,15 +154,15 @@
     <RequestValidateResult>Number of elements (0) less then minimum (1) for element Department&#x0A;Number of elements (0) less then minimum (1) for element Activity</RequestValidateResult>
     <ReplyValidated>true</ReplyValidated>
     <ReplyValidateResult></ReplyValidateResult>
-    <Nr>14</Nr>
-    <MessageId>uuid:bd55-f9d8-b680-9f01</MessageId>
+    <Nr>15</Nr>
+    <MessageId>uuid:ce5a-c760-27a9-f2cf</MessageId>
     <ServiceName>/createactivities/3/{pathParam}</ServiceName>
     <OperationName>CreateActivities</OperationName>
     <PathFormat>/crmi/api/klant/createactivities/3/%s</PathFormat>
   </RequestReply>
   <RequestReply>
-    <InboundTimeStamp>2023-02-24T14:31:04.111Z</InboundTimeStamp>
-    <OutboundTimeStamp>2023-02-24T14:31:04.141Z</OutboundTimeStamp>
+    <InboundTimeStamp>2023-03-01T11:10:06.513Z</InboundTimeStamp>
+    <OutboundTimeStamp>2023-03-01T11:10:06.539Z</OutboundTimeStamp>
     <DelayTimeMs>0</DelayTimeMs>
     <OperationCount>1</OperationCount>
     <TransportType>0</TransportType>
@@ -184,23 +184,23 @@
     <ReplyContentType>text/xml;charset=utf-8</ReplyContentType>
     <HttpRequestHeaders>Connection: keep-alive&#x0A;Content-Encoding: identity&#x0A;Content-Type: text/xml; charset=utf-8&#x0A;Content-Length: 1828&#x0A;SOAPAction: &quot;process&quot;&#x0A;Host: localhost:7777&#x0A;Accept: text/xml;charset=utf-8&#x0A;Accept-Encoding: identity&#x0A;User-Agent: Mozilla/3.0 (compatible; Indy Library)&#x0A;</HttpRequestHeaders>
     <HttpReplyHeaders></HttpReplyHeaders>
-    <HttpRequestBody>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;&#x0D;&#x0A;&lt;!-- 24/02/2023 15:31:04: Generated with apiUiServer 10.9.1.13323 by janbo --&gt;&#x0D;&#x0A;&lt;soapenv:Envelope&#x0D;&#x0A; xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;&#x0D;&#x0A; xmlns:soapenc=&quot;http://schemas.xmlsoap.org/soap/encoding/&quot;&#x0D;&#x0A; xmlns:soap=&quot;http://schemas.xmlsoap.org/wsdl/soap/&quot;&#x0D;&#x0A; xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot;&#x0D;&#x0A; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&#x0D;&#x0A; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&#x0D;&#x0A; &gt;&#x0D;&#x0A;  &lt;soapenv:Header&gt;&#x0D;&#x0A;    &lt;ns1:JanBoHeader xmlns:ns1=&quot;http://www.JanBo.nl/XMLHeader/10&quot;&gt;&#x0D;&#x0A;      &lt;ns1:HeaderVersion&gt;10&lt;/ns1:HeaderVersion&gt;&#x0D;&#x0A;    &lt;/ns1:JanBoHeader&gt;&#x0D;&#x0A;  &lt;/soapenv:Header&gt;&#x0D;&#x0A;  &lt;soapenv:Body&gt;&#x0D;&#x0A;    &lt;ns1:CreateServiceRequest_Req xmlns:ns1=&quot;http://www.JanBo.nl/CRM/CRMI/CreateServiceRequest/2/Req&quot;&gt;&#x0D;&#x0A;      &lt;ns1:Contact&gt;&#x0D;&#x0A;        &lt;ns1:ContactId&gt;CC&lt;/ns1:ContactId&gt;&#x0D;&#x0A;      &lt;/ns1:Contact&gt;&#x0D;&#x0A;      &lt;ns1:LocalBank&gt;&#x0D;&#x0A;        &lt;ns1:BankCode&gt;122.745&lt;/ns1:BankCode&gt;&#x0D;&#x0A;      &lt;/ns1:LocalBank&gt;&#x0D;&#x0A;      &lt;ns1:ServiceRequest&gt;&#x0D;&#x0A;        &lt;ns1:SourceSystemId&gt;SourceSystemId&lt;/ns1:SourceSystemId&gt;&#x0D;&#x0A;        &lt;ns1:OriginDescriptionCode&gt;OriginDescriptionCode&lt;/ns1:OriginDescriptionCode&gt;&#x0D;&#x0A;        &lt;ns1:TypeCode&gt;TypeCode&lt;/ns1:TypeCode&gt;&#x0D;&#x0A;        &lt;ns1:StatusCode&gt;StatusCode&lt;/ns1:StatusCode&gt;&#x0D;&#x0A;        &lt;ns1:EmployeeReadOnlyFlag&gt;E&lt;/ns1:EmployeeReadOnlyFlag&gt;&#x0D;&#x0A;        &lt;ns1:Description&gt;Description&lt;/ns1:Description&gt;&#x0D;&#x0A;        &lt;ns1:CategoryCode&gt;CategoryCode&lt;/ns1:CategoryCode&gt;&#x0D;&#x0A;        &lt;ns1:MeansOfCommunicationCode&gt;MeansOfCommunicationCode&lt;/ns1:MeansOfCommunicationCode&gt;&#x0D;&#x0A;        &lt;ns1:FulfillmentAreaCode&gt;FulfillmentAreaCode&lt;/ns1:FulfillmentAreaCode&gt;&#x0D;&#x0A;        &lt;ns1:StartDate&gt;2010-12-11T13:30:00.200&lt;/ns1:StartDate&gt;&#x0D;&#x0A;        &lt;ns1:PlannedEndDate&gt;2010-12-11T13:30:00.200&lt;/ns1:PlannedEndDate&gt;&#x0D;&#x0A;      &lt;/ns1:ServiceRequest&gt;&#x0D;&#x0A;    &lt;/ns1:CreateServiceRequest_Req&gt;&#x0D;&#x0A;  &lt;/soapenv:Body&gt;&#x0D;&#x0A;&lt;/soapenv:Envelope&gt;&#x0D;&#x0A;</HttpRequestBody>
+    <HttpRequestBody>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;&#x0D;&#x0A;&lt;!-- 01/03/2023 12:10:06: Generated with apiUiServer 10.9.1.13325 by janbo --&gt;&#x0D;&#x0A;&lt;soapenv:Envelope&#x0D;&#x0A; xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;&#x0D;&#x0A; xmlns:soapenc=&quot;http://schemas.xmlsoap.org/soap/encoding/&quot;&#x0D;&#x0A; xmlns:soap=&quot;http://schemas.xmlsoap.org/wsdl/soap/&quot;&#x0D;&#x0A; xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot;&#x0D;&#x0A; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&#x0D;&#x0A; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&#x0D;&#x0A; &gt;&#x0D;&#x0A;  &lt;soapenv:Header&gt;&#x0D;&#x0A;    &lt;ns1:JanBoHeader xmlns:ns1=&quot;http://www.JanBo.nl/XMLHeader/10&quot;&gt;&#x0D;&#x0A;      &lt;ns1:HeaderVersion&gt;10&lt;/ns1:HeaderVersion&gt;&#x0D;&#x0A;    &lt;/ns1:JanBoHeader&gt;&#x0D;&#x0A;  &lt;/soapenv:Header&gt;&#x0D;&#x0A;  &lt;soapenv:Body&gt;&#x0D;&#x0A;    &lt;ns1:CreateServiceRequest_Req xmlns:ns1=&quot;http://www.JanBo.nl/CRM/CRMI/CreateServiceRequest/2/Req&quot;&gt;&#x0D;&#x0A;      &lt;ns1:Contact&gt;&#x0D;&#x0A;        &lt;ns1:ContactId&gt;CC&lt;/ns1:ContactId&gt;&#x0D;&#x0A;      &lt;/ns1:Contact&gt;&#x0D;&#x0A;      &lt;ns1:LocalBank&gt;&#x0D;&#x0A;        &lt;ns1:BankCode&gt;122.745&lt;/ns1:BankCode&gt;&#x0D;&#x0A;      &lt;/ns1:LocalBank&gt;&#x0D;&#x0A;      &lt;ns1:ServiceRequest&gt;&#x0D;&#x0A;        &lt;ns1:SourceSystemId&gt;SourceSystemId&lt;/ns1:SourceSystemId&gt;&#x0D;&#x0A;        &lt;ns1:OriginDescriptionCode&gt;OriginDescriptionCode&lt;/ns1:OriginDescriptionCode&gt;&#x0D;&#x0A;        &lt;ns1:TypeCode&gt;TypeCode&lt;/ns1:TypeCode&gt;&#x0D;&#x0A;        &lt;ns1:StatusCode&gt;StatusCode&lt;/ns1:StatusCode&gt;&#x0D;&#x0A;        &lt;ns1:EmployeeReadOnlyFlag&gt;E&lt;/ns1:EmployeeReadOnlyFlag&gt;&#x0D;&#x0A;        &lt;ns1:Description&gt;Description&lt;/ns1:Description&gt;&#x0D;&#x0A;        &lt;ns1:CategoryCode&gt;CategoryCode&lt;/ns1:CategoryCode&gt;&#x0D;&#x0A;        &lt;ns1:MeansOfCommunicationCode&gt;MeansOfCommunicationCode&lt;/ns1:MeansOfCommunicationCode&gt;&#x0D;&#x0A;        &lt;ns1:FulfillmentAreaCode&gt;FulfillmentAreaCode&lt;/ns1:FulfillmentAreaCode&gt;&#x0D;&#x0A;        &lt;ns1:StartDate&gt;2010-12-11T13:30:00.200&lt;/ns1:StartDate&gt;&#x0D;&#x0A;        &lt;ns1:PlannedEndDate&gt;2010-12-11T13:30:00.200&lt;/ns1:PlannedEndDate&gt;&#x0D;&#x0A;      &lt;/ns1:ServiceRequest&gt;&#x0D;&#x0A;    &lt;/ns1:CreateServiceRequest_Req&gt;&#x0D;&#x0A;  &lt;/soapenv:Body&gt;&#x0D;&#x0A;&lt;/soapenv:Envelope&gt;&#x0D;&#x0A;</HttpRequestBody>
     <HttpRequestBodyMiM></HttpRequestBodyMiM>
-    <HttpReplyBody>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;&#x0A;&lt;!-- 24-2-23 14:31:04: Generated with apiUiServer 10.9.1.13323 by  --&gt;&#x0A;&lt;soapenv:Envelope&#x0A; xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;&#x0A; xmlns:soapenc=&quot;http://schemas.xmlsoap.org/soap/encoding/&quot;&#x0A; xmlns:soap=&quot;http://schemas.xmlsoap.org/wsdl/soap/&quot;&#x0A; xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot;&#x0A; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&#x0A; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&#x0A; &gt;&#x0A;  &lt;soapenv:Header&gt;&#x0A;    &lt;ns1:JanBoHeader xmlns:ns1=&quot;http://www.JanBo.nl/XMLHeader/10&quot;&gt;&#x0A;      &lt;ns1:HeaderVersion&gt;10&lt;/ns1:HeaderVersion&gt;&#x0A;      &lt;ns1:MessageId&gt;MessageId&lt;/ns1:MessageId&gt;&#x0A;      &lt;ns1:ServiceRequestorDomain&gt;ServiceRequestorDomain&lt;/ns1:ServiceRequestorDomain&gt;&#x0A;      &lt;ns1:ServiceRequestorId&gt;ServiceRequestorId&lt;/ns1:ServiceRequestorId&gt;&#x0A;      &lt;ns1:ServiceProviderDomain&gt;ServiceProviderDomain&lt;/ns1:ServiceProviderDomain&gt;&#x0A;      &lt;ns1:ServiceId&gt;ServiceId&lt;/ns1:ServiceId&gt;&#x0A;      &lt;ns1:ServiceVersion&gt;Ser&lt;/ns1:ServiceVersion&gt;&#x0A;      &lt;ns1:FaultIndication&gt;False&lt;/ns1:FaultIndication&gt;&#x0A;      &lt;ns1:MessageTimestamp&gt;2022-01-28T14:51:32.656&lt;/ns1:MessageTimestamp&gt;&#x0A;    &lt;/ns1:JanBoHeader&gt;&#x0A;  &lt;/soapenv:Header&gt;&#x0A;  &lt;soapenv:Body&gt;&#x0A;    &lt;ns1:CreateServiceRequest_Rpy xmlns:ns1=&quot;http://www.JanBo.nl/CRM/CRMI/CreateServiceRequest/2/Rpy&quot;&gt;&#x0A;      &lt;ns1:ServiceRequest&gt;&#x0A;        &lt;ns1:Reference&gt;1&lt;/ns1:Reference&gt;&#x0A;        &lt;ns1:ListOfActivities&gt;&#x0A;          &lt;ns1:Activity&gt;&#x0A;            &lt;ns1:TaskReference&gt;TaskReference&lt;/ns1:TaskReference&gt;&#x0A;            &lt;ns1:Document&gt;&#x0A;              &lt;ns1:StorageStatus&gt;StorageStatus&lt;/ns1:StorageStatus&gt;&#x0A;            &lt;/ns1:Document&gt;&#x0A;          &lt;/ns1:Activity&gt;&#x0A;        &lt;/ns1:ListOfActivities&gt;&#x0A;      &lt;/ns1:ServiceRequest&gt;&#x0A;    &lt;/ns1:CreateServiceRequest_Rpy&gt;&#x0A;  &lt;/soapenv:Body&gt;&#x0A;&lt;/soapenv:Envelope&gt;&#x0A;</HttpReplyBody>
+    <HttpReplyBody>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;&#x0A;&lt;!-- 1-3-23 11:10:06: Generated with apiUiServer 10.9.1.13325 by  --&gt;&#x0A;&lt;soapenv:Envelope&#x0A; xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;&#x0A; xmlns:soapenc=&quot;http://schemas.xmlsoap.org/soap/encoding/&quot;&#x0A; xmlns:soap=&quot;http://schemas.xmlsoap.org/wsdl/soap/&quot;&#x0A; xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot;&#x0A; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&#x0A; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&#x0A; &gt;&#x0A;  &lt;soapenv:Header&gt;&#x0A;    &lt;ns1:JanBoHeader xmlns:ns1=&quot;http://www.JanBo.nl/XMLHeader/10&quot;&gt;&#x0A;      &lt;ns1:HeaderVersion&gt;10&lt;/ns1:HeaderVersion&gt;&#x0A;      &lt;ns1:MessageId&gt;MessageId&lt;/ns1:MessageId&gt;&#x0A;      &lt;ns1:ServiceRequestorDomain&gt;ServiceRequestorDomain&lt;/ns1:ServiceRequestorDomain&gt;&#x0A;      &lt;ns1:ServiceRequestorId&gt;ServiceRequestorId&lt;/ns1:ServiceRequestorId&gt;&#x0A;      &lt;ns1:ServiceProviderDomain&gt;ServiceProviderDomain&lt;/ns1:ServiceProviderDomain&gt;&#x0A;      &lt;ns1:ServiceId&gt;ServiceId&lt;/ns1:ServiceId&gt;&#x0A;      &lt;ns1:ServiceVersion&gt;Ser&lt;/ns1:ServiceVersion&gt;&#x0A;      &lt;ns1:FaultIndication&gt;False&lt;/ns1:FaultIndication&gt;&#x0A;      &lt;ns1:MessageTimestamp&gt;2022-01-28T14:51:32.656&lt;/ns1:MessageTimestamp&gt;&#x0A;    &lt;/ns1:JanBoHeader&gt;&#x0A;  &lt;/soapenv:Header&gt;&#x0A;  &lt;soapenv:Body&gt;&#x0A;    &lt;ns1:CreateServiceRequest_Rpy xmlns:ns1=&quot;http://www.JanBo.nl/CRM/CRMI/CreateServiceRequest/2/Rpy&quot;&gt;&#x0A;      &lt;ns1:ServiceRequest&gt;&#x0A;        &lt;ns1:Reference&gt;1&lt;/ns1:Reference&gt;&#x0A;        &lt;ns1:ListOfActivities&gt;&#x0A;          &lt;ns1:Activity&gt;&#x0A;            &lt;ns1:TaskReference&gt;TaskReference&lt;/ns1:TaskReference&gt;&#x0A;            &lt;ns1:Document&gt;&#x0A;              &lt;ns1:StorageStatus&gt;StorageStatus&lt;/ns1:StorageStatus&gt;&#x0A;            &lt;/ns1:Document&gt;&#x0A;          &lt;/ns1:Activity&gt;&#x0A;        &lt;/ns1:ListOfActivities&gt;&#x0A;      &lt;/ns1:ServiceRequest&gt;&#x0A;    &lt;/ns1:CreateServiceRequest_Rpy&gt;&#x0A;  &lt;/soapenv:Body&gt;&#x0A;&lt;/soapenv:Envelope&gt;&#x0A;</HttpReplyBody>
     <HttpReplyBodyMiM></HttpReplyBodyMiM>
     <RequestValidated>true</RequestValidated>
     <RequestValidateResult>Number of elements (0) less then minimum (1) for element MessageId&#x0A;Number of elements (0) less then minimum (1) for element ServiceRequestorDomain&#x0A;Number of elements (0) less then minimum (1) for element ServiceRequestorId&#x0A;Number of elements (0) less then minimum (1) for element ServiceProviderDomain&#x0A;Number of elements (0) less then minimum (1) for element ServiceId&#x0A;Number of elements (0) less then minimum (1) for element ServiceVersion&#x0A;Number of elements (0) less then minimum (1) for element FaultIndication&#x0A;Number of elements (0) less then minimum (1) for element MessageTimestamp&#x0A;Value: &quot;122.745&quot; Validate XML Error, reason Value violates TotalDigits constraint (4).&#x0A;The Element &quot;BankCode&quot; failed to parse</RequestValidateResult>
     <ReplyValidated>true</ReplyValidated>
     <ReplyValidateResult></ReplyValidateResult>
-    <Nr>15</Nr>
-    <MessageId>uuid:a064-cad0-b093-a3bd</MessageId>
+    <Nr>16</Nr>
+    <MessageId>uuid:d667-2030-7366-bfa9</MessageId>
     <ServiceName>CreateServiceRequest</ServiceName>
     <OperationName>CreateServiceRequest2</OperationName>
     <PathFormat>/orabpel/default/CreateServiceRequest/2/</PathFormat>
   </RequestReply>
   <RequestReply>
-    <InboundTimeStamp>2023-02-24T14:31:04.147Z</InboundTimeStamp>
-    <OutboundTimeStamp>2023-02-24T14:31:04.176Z</OutboundTimeStamp>
+    <InboundTimeStamp>2023-03-01T11:10:06.545Z</InboundTimeStamp>
+    <OutboundTimeStamp>2023-03-01T11:10:06.576Z</OutboundTimeStamp>
     <DelayTimeMs>0</DelayTimeMs>
     <OperationCount>2</OperationCount>
     <TransportType>0</TransportType>
@@ -222,63 +222,25 @@
     <ReplyContentType>application/xml</ReplyContentType>
     <HttpRequestHeaders>Connection: keep-alive&#x0A;Content-Encoding: identity&#x0A;Content-Type: text/xml; charset=utf-8&#x0A;Content-Length: 1828&#x0A;SOAPAction: &quot;process&quot;&#x0A;Host: localhost:7777&#x0A;Accept: text/xml;charset=utf-8&#x0A;Accept-Encoding: identity&#x0A;User-Agent: Mozilla/3.0 (compatible; Indy Library)&#x0A;</HttpRequestHeaders>
     <HttpReplyHeaders></HttpReplyHeaders>
-    <HttpRequestBody>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;&#x0D;&#x0A;&lt;!-- 24/02/2023 15:31:04: Generated with apiUiServer 10.9.1.13323 by janbo --&gt;&#x0D;&#x0A;&lt;soapenv:Envelope&#x0D;&#x0A; xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;&#x0D;&#x0A; xmlns:soapenc=&quot;http://schemas.xmlsoap.org/soap/encoding/&quot;&#x0D;&#x0A; xmlns:soap=&quot;http://schemas.xmlsoap.org/wsdl/soap/&quot;&#x0D;&#x0A; xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot;&#x0D;&#x0A; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&#x0D;&#x0A; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&#x0D;&#x0A; &gt;&#x0D;&#x0A;  &lt;soapenv:Header&gt;&#x0D;&#x0A;    &lt;ns1:JanBoHeader xmlns:ns1=&quot;http://www.JanBo.nl/XMLHeader/10&quot;&gt;&#x0D;&#x0A;      &lt;ns1:HeaderVersion&gt;10&lt;/ns1:HeaderVersion&gt;&#x0D;&#x0A;    &lt;/ns1:JanBoHeader&gt;&#x0D;&#x0A;  &lt;/soapenv:Header&gt;&#x0D;&#x0A;  &lt;soapenv:Body&gt;&#x0D;&#x0A;    &lt;ns1:CreateServiceRequest_Req xmlns:ns1=&quot;http://www.JanBo.nl/CRM/CRMI/CreateServiceRequest/2/Req&quot;&gt;&#x0D;&#x0A;      &lt;ns1:Contact&gt;&#x0D;&#x0A;        &lt;ns1:ContactId&gt;CC&lt;/ns1:ContactId&gt;&#x0D;&#x0A;      &lt;/ns1:Contact&gt;&#x0D;&#x0A;      &lt;ns1:LocalBank&gt;&#x0D;&#x0A;        &lt;ns1:BankCode&gt;122.745&lt;/ns1:BankCode&gt;&#x0D;&#x0A;      &lt;/ns1:LocalBank&gt;&#x0D;&#x0A;      &lt;ns1:ServiceRequest&gt;&#x0D;&#x0A;        &lt;ns1:SourceSystemId&gt;SourceSystemId&lt;/ns1:SourceSystemId&gt;&#x0D;&#x0A;        &lt;ns1:OriginDescriptionCode&gt;OriginDescriptionCode&lt;/ns1:OriginDescriptionCode&gt;&#x0D;&#x0A;        &lt;ns1:TypeCode&gt;TypeCode&lt;/ns1:TypeCode&gt;&#x0D;&#x0A;        &lt;ns1:StatusCode&gt;StatusCode&lt;/ns1:StatusCode&gt;&#x0D;&#x0A;        &lt;ns1:EmployeeReadOnlyFlag&gt;E&lt;/ns1:EmployeeReadOnlyFlag&gt;&#x0D;&#x0A;        &lt;ns1:Description&gt;Description&lt;/ns1:Description&gt;&#x0D;&#x0A;        &lt;ns1:CategoryCode&gt;CategoryCode&lt;/ns1:CategoryCode&gt;&#x0D;&#x0A;        &lt;ns1:MeansOfCommunicationCode&gt;MeansOfCommunicationCode&lt;/ns1:MeansOfCommunicationCode&gt;&#x0D;&#x0A;        &lt;ns1:FulfillmentAreaCode&gt;FulfillmentAreaCode&lt;/ns1:FulfillmentAreaCode&gt;&#x0D;&#x0A;        &lt;ns1:StartDate&gt;2010-12-11T13:30:00.200&lt;/ns1:StartDate&gt;&#x0D;&#x0A;        &lt;ns1:PlannedEndDate&gt;2010-12-11T13:30:00.200&lt;/ns1:PlannedEndDate&gt;&#x0D;&#x0A;      &lt;/ns1:ServiceRequest&gt;&#x0D;&#x0A;    &lt;/ns1:CreateServiceRequest_Req&gt;&#x0D;&#x0A;  &lt;/soapenv:Body&gt;&#x0D;&#x0A;&lt;/soapenv:Envelope&gt;&#x0D;&#x0A;</HttpRequestBody>
+    <HttpRequestBody>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;&#x0D;&#x0A;&lt;!-- 01/03/2023 12:10:06: Generated with apiUiServer 10.9.1.13325 by janbo --&gt;&#x0D;&#x0A;&lt;soapenv:Envelope&#x0D;&#x0A; xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;&#x0D;&#x0A; xmlns:soapenc=&quot;http://schemas.xmlsoap.org/soap/encoding/&quot;&#x0D;&#x0A; xmlns:soap=&quot;http://schemas.xmlsoap.org/wsdl/soap/&quot;&#x0D;&#x0A; xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot;&#x0D;&#x0A; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&#x0D;&#x0A; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&#x0D;&#x0A; &gt;&#x0D;&#x0A;  &lt;soapenv:Header&gt;&#x0D;&#x0A;    &lt;ns1:JanBoHeader xmlns:ns1=&quot;http://www.JanBo.nl/XMLHeader/10&quot;&gt;&#x0D;&#x0A;      &lt;ns1:HeaderVersion&gt;10&lt;/ns1:HeaderVersion&gt;&#x0D;&#x0A;    &lt;/ns1:JanBoHeader&gt;&#x0D;&#x0A;  &lt;/soapenv:Header&gt;&#x0D;&#x0A;  &lt;soapenv:Body&gt;&#x0D;&#x0A;    &lt;ns1:CreateServiceRequest_Req xmlns:ns1=&quot;http://www.JanBo.nl/CRM/CRMI/CreateServiceRequest/2/Req&quot;&gt;&#x0D;&#x0A;      &lt;ns1:Contact&gt;&#x0D;&#x0A;        &lt;ns1:ContactId&gt;CC&lt;/ns1:ContactId&gt;&#x0D;&#x0A;      &lt;/ns1:Contact&gt;&#x0D;&#x0A;      &lt;ns1:LocalBank&gt;&#x0D;&#x0A;        &lt;ns1:BankCode&gt;122.745&lt;/ns1:BankCode&gt;&#x0D;&#x0A;      &lt;/ns1:LocalBank&gt;&#x0D;&#x0A;      &lt;ns1:ServiceRequest&gt;&#x0D;&#x0A;        &lt;ns1:SourceSystemId&gt;SourceSystemId&lt;/ns1:SourceSystemId&gt;&#x0D;&#x0A;        &lt;ns1:OriginDescriptionCode&gt;OriginDescriptionCode&lt;/ns1:OriginDescriptionCode&gt;&#x0D;&#x0A;        &lt;ns1:TypeCode&gt;TypeCode&lt;/ns1:TypeCode&gt;&#x0D;&#x0A;        &lt;ns1:StatusCode&gt;StatusCode&lt;/ns1:StatusCode&gt;&#x0D;&#x0A;        &lt;ns1:EmployeeReadOnlyFlag&gt;E&lt;/ns1:EmployeeReadOnlyFlag&gt;&#x0D;&#x0A;        &lt;ns1:Description&gt;Description&lt;/ns1:Description&gt;&#x0D;&#x0A;        &lt;ns1:CategoryCode&gt;CategoryCode&lt;/ns1:CategoryCode&gt;&#x0D;&#x0A;        &lt;ns1:MeansOfCommunicationCode&gt;MeansOfCommunicationCode&lt;/ns1:MeansOfCommunicationCode&gt;&#x0D;&#x0A;        &lt;ns1:FulfillmentAreaCode&gt;FulfillmentAreaCode&lt;/ns1:FulfillmentAreaCode&gt;&#x0D;&#x0A;        &lt;ns1:StartDate&gt;2010-12-11T13:30:00.200&lt;/ns1:StartDate&gt;&#x0D;&#x0A;        &lt;ns1:PlannedEndDate&gt;2010-12-11T13:30:00.200&lt;/ns1:PlannedEndDate&gt;&#x0D;&#x0A;      &lt;/ns1:ServiceRequest&gt;&#x0D;&#x0A;    &lt;/ns1:CreateServiceRequest_Req&gt;&#x0D;&#x0A;  &lt;/soapenv:Body&gt;&#x0D;&#x0A;&lt;/soapenv:Envelope&gt;&#x0D;&#x0A;</HttpRequestBody>
     <HttpRequestBodyMiM></HttpRequestBodyMiM>
-    <HttpReplyBody>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;&#x0A;&lt;!-- 24-2-23 14:31:04: Generated with apiUiServer 10.9.1.13323 by  --&gt;&#x0A;&lt;soapenv:Envelope&#x0A; xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;&#x0A; xmlns:soapenc=&quot;http://schemas.xmlsoap.org/soap/encoding/&quot;&#x0A; xmlns:soap=&quot;http://schemas.xmlsoap.org/wsdl/soap/&quot;&#x0A; xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot;&#x0A; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&#x0A; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&#x0A; &gt;&#x0A;  &lt;soapenv:Header&gt;&#x0A;    &lt;ns1:JanBoHeader xmlns:ns1=&quot;http://www.JanBo.nl/XMLHeader/10&quot;&gt;&#x0A;      &lt;ns1:HeaderVersion&gt;10&lt;/ns1:HeaderVersion&gt;&#x0A;      &lt;ns1:MessageId&gt;MessageId&lt;/ns1:MessageId&gt;&#x0A;      &lt;ns1:ServiceRequestorDomain&gt;ServiceRequestorDomain&lt;/ns1:ServiceRequestorDomain&gt;&#x0A;      &lt;ns1:ServiceRequestorId&gt;ServiceRequestorId&lt;/ns1:ServiceRequestorId&gt;&#x0A;      &lt;ns1:ServiceProviderDomain&gt;ServiceProviderDomain&lt;/ns1:ServiceProviderDomain&gt;&#x0A;      &lt;ns1:ServiceId&gt;ServiceId&lt;/ns1:ServiceId&gt;&#x0A;      &lt;ns1:ServiceVersion&gt;Ser&lt;/ns1:ServiceVersion&gt;&#x0A;      &lt;ns1:FaultIndication&gt;False&lt;/ns1:FaultIndication&gt;&#x0A;      &lt;ns1:MessageTimestamp&gt;2022-01-28T14:51:32.656&lt;/ns1:MessageTimestamp&gt;&#x0A;    &lt;/ns1:JanBoHeader&gt;&#x0A;  &lt;/soapenv:Header&gt;&#x0A;  &lt;soapenv:Body&gt;&#x0A;    &lt;soapenv:Fault&gt;&#x0A;      &lt;faultcode&gt;aFltCode&lt;/faultcode&gt;&#x0A;      &lt;faultstring&gt;aFltString&lt;/faultstring&gt;&#x0A;      &lt;faultactor&gt;aFltActor&lt;/faultactor&gt;&#x0A;      &lt;detail&gt;&#x0A;        &lt;applicationfaultcode xmlns=&quot;http://www.JanBo.nl/XMLFault/10&quot;&gt;applicationfaultcode&lt;/applicationfaultcode&gt;&#x0A;        &lt;applicationfaulttext xmlns=&quot;http://www.JanBo.nl/XMLFault/10&quot;&gt;applicationfaulttext&lt;/applicationfaulttext&gt;&#x0A;      &lt;/detail&gt;&#x0A;    &lt;/soapenv:Fault&gt;&#x0A;  &lt;/soapenv:Body&gt;&#x0A;&lt;/soapenv:Envelope&gt;&#x0A;</HttpReplyBody>
+    <HttpReplyBody>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;&#x0A;&lt;!-- 1-3-23 11:10:06: Generated with apiUiServer 10.9.1.13325 by  --&gt;&#x0A;&lt;soapenv:Envelope&#x0A; xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;&#x0A; xmlns:soapenc=&quot;http://schemas.xmlsoap.org/soap/encoding/&quot;&#x0A; xmlns:soap=&quot;http://schemas.xmlsoap.org/wsdl/soap/&quot;&#x0A; xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot;&#x0A; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&#x0A; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&#x0A; &gt;&#x0A;  &lt;soapenv:Header&gt;&#x0A;    &lt;ns1:JanBoHeader xmlns:ns1=&quot;http://www.JanBo.nl/XMLHeader/10&quot;&gt;&#x0A;      &lt;ns1:HeaderVersion&gt;10&lt;/ns1:HeaderVersion&gt;&#x0A;      &lt;ns1:MessageId&gt;MessageId&lt;/ns1:MessageId&gt;&#x0A;      &lt;ns1:ServiceRequestorDomain&gt;ServiceRequestorDomain&lt;/ns1:ServiceRequestorDomain&gt;&#x0A;      &lt;ns1:ServiceRequestorId&gt;ServiceRequestorId&lt;/ns1:ServiceRequestorId&gt;&#x0A;      &lt;ns1:ServiceProviderDomain&gt;ServiceProviderDomain&lt;/ns1:ServiceProviderDomain&gt;&#x0A;      &lt;ns1:ServiceId&gt;ServiceId&lt;/ns1:ServiceId&gt;&#x0A;      &lt;ns1:ServiceVersion&gt;Ser&lt;/ns1:ServiceVersion&gt;&#x0A;      &lt;ns1:FaultIndication&gt;False&lt;/ns1:FaultIndication&gt;&#x0A;      &lt;ns1:MessageTimestamp&gt;2022-01-28T14:51:32.656&lt;/ns1:MessageTimestamp&gt;&#x0A;    &lt;/ns1:JanBoHeader&gt;&#x0A;  &lt;/soapenv:Header&gt;&#x0A;  &lt;soapenv:Body&gt;&#x0A;    &lt;soapenv:Fault&gt;&#x0A;      &lt;faultcode&gt;aFltCode&lt;/faultcode&gt;&#x0A;      &lt;faultstring&gt;aFltString&lt;/faultstring&gt;&#x0A;      &lt;faultactor&gt;aFltActor&lt;/faultactor&gt;&#x0A;      &lt;detail&gt;&#x0A;        &lt;applicationfaultcode xmlns=&quot;http://www.JanBo.nl/XMLFault/10&quot;&gt;applicationfaultcode&lt;/applicationfaultcode&gt;&#x0A;        &lt;applicationfaulttext xmlns=&quot;http://www.JanBo.nl/XMLFault/10&quot;&gt;applicationfaulttext&lt;/applicationfaulttext&gt;&#x0A;      &lt;/detail&gt;&#x0A;    &lt;/soapenv:Fault&gt;&#x0A;  &lt;/soapenv:Body&gt;&#x0A;&lt;/soapenv:Envelope&gt;&#x0A;</HttpReplyBody>
     <HttpReplyBodyMiM></HttpReplyBodyMiM>
     <RequestValidated>true</RequestValidated>
     <RequestValidateResult>Number of elements (0) less then minimum (1) for element MessageId&#x0A;Number of elements (0) less then minimum (1) for element ServiceRequestorDomain&#x0A;Number of elements (0) less then minimum (1) for element ServiceRequestorId&#x0A;Number of elements (0) less then minimum (1) for element ServiceProviderDomain&#x0A;Number of elements (0) less then minimum (1) for element ServiceId&#x0A;Number of elements (0) less then minimum (1) for element ServiceVersion&#x0A;Number of elements (0) less then minimum (1) for element FaultIndication&#x0A;Number of elements (0) less then minimum (1) for element MessageTimestamp&#x0A;Value: &quot;122.745&quot; Validate XML Error, reason Value violates TotalDigits constraint (4).&#x0A;The Element &quot;BankCode&quot; failed to parse</RequestValidateResult>
     <ReplyValidated>true</ReplyValidated>
     <ReplyValidateResult></ReplyValidateResult>
-    <Nr>16</Nr>
-    <MessageId>uuid:c117-d29c-b001-eb95</MessageId>
+    <Nr>17</Nr>
+    <MessageId>uuid:0fd8-8445-b4e3-9ea0</MessageId>
     <ServiceName>CreateServiceRequest</ServiceName>
     <OperationName>CreateServiceRequest2</OperationName>
     <PathFormat>/orabpel/default/CreateServiceRequest/2/</PathFormat>
   </RequestReply>
   <RequestReply>
-    <InboundTimeStamp>2023-02-24T14:31:04.181Z</InboundTimeStamp>
-    <OutboundTimeStamp>2023-02-24T14:31:04.196Z</OutboundTimeStamp>
+    <InboundTimeStamp>2023-03-01T11:10:06.584Z</InboundTimeStamp>
+    <OutboundTimeStamp>2023-03-01T11:10:06.599Z</OutboundTimeStamp>
     <DelayTimeMs>0</DelayTimeMs>
     <OperationCount>1</OperationCount>
-    <TransportType>0</TransportType>
-    <StubAction>0</StubAction>
-    <CorrelationId></CorrelationId>
-    <fromRemoteServer>true</fromRemoteServer>
-    <Service>_FreeFormat</Service>
-    <Operation>freeformatOperation</Operation>
-    <Reply>Default</Reply>
-    <Error></Error>
-    <Remarks></Remarks>
-    <Notifications></Notifications>
-    <httpUri>/</httpUri>
-    <httpResponseCode>200</httpResponseCode>
-    <httpCommand>POST</httpCommand>
-    <httpDocument>/</httpDocument>
-    <httpParams></httpParams>
-    <RequestContentType>text/xml; charset=utf-8</RequestContentType>
-    <ReplyContentType>text/xml;charset=utf-8</ReplyContentType>
-    <HttpRequestHeaders>Connection: keep-alive&#x0A;Content-Encoding: identity&#x0A;Content-Type: text/xml; charset=utf-8&#x0A;Content-Length: 4&#x0A;Host: localhost:7777&#x0A;Accept: text/xml;charset=utf-8&#x0A;Accept-Encoding: identity, deflate, gzip&#x0A;User-Agent: Mozilla/3.0 (compatible; Indy Library)&#x0A;</HttpRequestHeaders>
-    <HttpReplyHeaders></HttpReplyHeaders>
-    <HttpRequestBody>ff&#x0D;&#x0A;</HttpRequestBody>
-    <HttpRequestBodyMiM></HttpRequestBodyMiM>
-    <HttpReplyBody>this is a free format response&#x0D;&#x0A;</HttpReplyBody>
-    <HttpReplyBodyMiM></HttpReplyBodyMiM>
-    <RequestValidated>false</RequestValidated>
-    <RequestValidateResult></RequestValidateResult>
-    <ReplyValidated>false</ReplyValidated>
-    <ReplyValidateResult></ReplyValidateResult>
-    <Nr>17</Nr>
-    <MessageId>uuid:c0ce-b20e-5e57-76a1</MessageId>
-    <ServiceName>_FreeFormat</ServiceName>
-    <OperationName>freeformatOperation</OperationName>
-    <PathFormat>/</PathFormat>
-  </RequestReply>
-  <RequestReply>
-    <InboundTimeStamp>2023-02-24T14:31:04.203Z</InboundTimeStamp>
-    <OutboundTimeStamp>2023-02-24T14:31:04.218Z</OutboundTimeStamp>
-    <DelayTimeMs>0</DelayTimeMs>
-    <OperationCount>2</OperationCount>
     <TransportType>0</TransportType>
     <StubAction>0</StubAction>
     <CorrelationId></CorrelationId>
@@ -307,14 +269,52 @@
     <ReplyValidated>false</ReplyValidated>
     <ReplyValidateResult></ReplyValidateResult>
     <Nr>18</Nr>
-    <MessageId>uuid:8696-5bc3-2129-99b0</MessageId>
+    <MessageId>uuid:cdaf-770f-3bee-4f3b</MessageId>
     <ServiceName>_FreeFormat</ServiceName>
     <OperationName>freeformatOperation</OperationName>
     <PathFormat>/</PathFormat>
   </RequestReply>
   <RequestReply>
-    <InboundTimeStamp>2023-02-24T14:31:04.434Z</InboundTimeStamp>
-    <OutboundTimeStamp>2023-02-24T14:31:04.449Z</OutboundTimeStamp>
+    <InboundTimeStamp>2023-03-01T11:10:06.603Z</InboundTimeStamp>
+    <OutboundTimeStamp>2023-03-01T11:10:06.617Z</OutboundTimeStamp>
+    <DelayTimeMs>0</DelayTimeMs>
+    <OperationCount>2</OperationCount>
+    <TransportType>0</TransportType>
+    <StubAction>0</StubAction>
+    <CorrelationId></CorrelationId>
+    <fromRemoteServer>true</fromRemoteServer>
+    <Service>_FreeFormat</Service>
+    <Operation>freeformatOperation</Operation>
+    <Reply>Default</Reply>
+    <Error></Error>
+    <Remarks></Remarks>
+    <Notifications></Notifications>
+    <httpUri>/</httpUri>
+    <httpResponseCode>200</httpResponseCode>
+    <httpCommand>POST</httpCommand>
+    <httpDocument>/</httpDocument>
+    <httpParams></httpParams>
+    <RequestContentType>text/xml; charset=utf-8</RequestContentType>
+    <ReplyContentType>text/xml;charset=utf-8</ReplyContentType>
+    <HttpRequestHeaders>Connection: keep-alive&#x0A;Content-Encoding: identity&#x0A;Content-Type: text/xml; charset=utf-8&#x0A;Content-Length: 4&#x0A;Host: localhost:7777&#x0A;Accept: text/xml;charset=utf-8&#x0A;Accept-Encoding: identity, deflate, gzip&#x0A;User-Agent: Mozilla/3.0 (compatible; Indy Library)&#x0A;</HttpRequestHeaders>
+    <HttpReplyHeaders></HttpReplyHeaders>
+    <HttpRequestBody>ff&#x0D;&#x0A;</HttpRequestBody>
+    <HttpRequestBodyMiM></HttpRequestBodyMiM>
+    <HttpReplyBody>this is a free format response&#x0D;&#x0A;</HttpReplyBody>
+    <HttpReplyBodyMiM></HttpReplyBodyMiM>
+    <RequestValidated>false</RequestValidated>
+    <RequestValidateResult></RequestValidateResult>
+    <ReplyValidated>false</ReplyValidated>
+    <ReplyValidateResult></ReplyValidateResult>
+    <Nr>19</Nr>
+    <MessageId>uuid:5429-5ff5-6389-2016</MessageId>
+    <ServiceName>_FreeFormat</ServiceName>
+    <OperationName>freeformatOperation</OperationName>
+    <PathFormat>/</PathFormat>
+  </RequestReply>
+  <RequestReply>
+    <InboundTimeStamp>2023-03-01T11:10:06.835Z</InboundTimeStamp>
+    <OutboundTimeStamp>2023-03-01T11:10:06.852Z</OutboundTimeStamp>
     <DelayTimeMs>0</DelayTimeMs>
     <OperationCount>1</OperationCount>
     <TransportType>0</TransportType>
@@ -332,9 +332,9 @@
     <httpCommand>POST</httpCommand>
     <httpDocument>/api/customer-documents/document</httpDocument>
     <httpParams></httpParams>
-    <RequestContentType>multipart/form-data; boundary=--------022423153104228; charset=utf-8</RequestContentType>
+    <RequestContentType>multipart/form-data; boundary=--------030123121006621; charset=utf-8</RequestContentType>
     <ReplyContentType>application/json;charset=utf-8</ReplyContentType>
-    <HttpRequestHeaders>Connection: keep-alive&#x0A;Content-Encoding: identity&#x0A;Content-Type: multipart/form-data; boundary=--------022423153104228; charset=utf-8&#x0A;Content-Length: 688&#x0A;Host: localhost:7777&#x0A;Accept: application/json&#x0A;Accept-Encoding: identity&#x0A;User-Agent: Mozilla/3.0 (compatible; Indy Library)&#x0A;</HttpRequestHeaders>
+    <HttpRequestHeaders>Connection: keep-alive&#x0A;Content-Encoding: identity&#x0A;Content-Type: multipart/form-data; boundary=--------030123121006621; charset=utf-8&#x0A;Content-Length: 688&#x0A;Host: localhost:7777&#x0A;Accept: application/json&#x0A;Accept-Encoding: identity&#x0A;User-Agent: Mozilla/3.0 (compatible; Indy Library)&#x0A;</HttpRequestHeaders>
     <HttpReplyHeaders>Location: &#x0A;</HttpReplyHeaders>
     <HttpRequestBody>&#x0A;{ &quot;file&quot;: &quot;cobolcopybookrequest.cob&quot;&#x0A;, &quot;document_source&quot;: &quot;docsrc&quot;&#x0A;, &quot;archive_rule_label&quot;: &quot;archrule&quot;&#x0A;}</HttpRequestBody>
     <HttpRequestBodyMiM></HttpRequestBodyMiM>
@@ -344,15 +344,15 @@
     <RequestValidateResult></RequestValidateResult>
     <ReplyValidated>true</ReplyValidated>
     <ReplyValidateResult></ReplyValidateResult>
-    <Nr>19</Nr>
-    <MessageId>uuid:ef89-f66e-4dca-2f1f</MessageId>
+    <Nr>20</Nr>
+    <MessageId>uuid:bdae-d315-990c-d530</MessageId>
     <ServiceName>/api/customer-documents/document</ServiceName>
     <OperationName>uploadDocument</OperationName>
     <PathFormat>/api/customer-documents/document</PathFormat>
   </RequestReply>
   <RequestReply>
-    <InboundTimeStamp>2023-02-24T14:31:04.684Z</InboundTimeStamp>
-    <OutboundTimeStamp>2023-02-24T14:31:04.698Z</OutboundTimeStamp>
+    <InboundTimeStamp>2023-03-01T11:10:07.820Z</InboundTimeStamp>
+    <OutboundTimeStamp>2023-03-01T11:10:07.102Z</OutboundTimeStamp>
     <DelayTimeMs>0</DelayTimeMs>
     <OperationCount>2</OperationCount>
     <TransportType>0</TransportType>
@@ -370,9 +370,9 @@
     <httpCommand>POST</httpCommand>
     <httpDocument>/api/customer-documents/document</httpDocument>
     <httpParams></httpParams>
-    <RequestContentType>multipart/form-data; boundary=--------022423153104460; charset=utf-8</RequestContentType>
+    <RequestContentType>multipart/form-data; boundary=--------030123121006855; charset=utf-8</RequestContentType>
     <ReplyContentType>application/json;charset=utf-8</ReplyContentType>
-    <HttpRequestHeaders>Connection: keep-alive&#x0A;Content-Encoding: identity&#x0A;Content-Type: multipart/form-data; boundary=--------022423153104460; charset=utf-8&#x0A;Content-Length: 688&#x0A;Host: localhost:7777&#x0A;Accept: application/json&#x0A;Accept-Encoding: identity&#x0A;User-Agent: Mozilla/3.0 (compatible; Indy Library)&#x0A;</HttpRequestHeaders>
+    <HttpRequestHeaders>Connection: keep-alive&#x0A;Content-Encoding: identity&#x0A;Content-Type: multipart/form-data; boundary=--------030123121006855; charset=utf-8&#x0A;Content-Length: 688&#x0A;Host: localhost:7777&#x0A;Accept: application/json&#x0A;Accept-Encoding: identity&#x0A;User-Agent: Mozilla/3.0 (compatible; Indy Library)&#x0A;</HttpRequestHeaders>
     <HttpReplyHeaders></HttpReplyHeaders>
     <HttpRequestBody>&#x0A;{ &quot;file&quot;: &quot;cobolcopybookrequest.cob&quot;&#x0A;, &quot;document_source&quot;: &quot;docsrc&quot;&#x0A;, &quot;archive_rule_label&quot;: &quot;archrule&quot;&#x0A;}</HttpRequestBody>
     <HttpRequestBodyMiM></HttpRequestBodyMiM>
@@ -382,10 +382,48 @@
     <RequestValidateResult></RequestValidateResult>
     <ReplyValidated>true</ReplyValidated>
     <ReplyValidateResult></ReplyValidateResult>
-    <Nr>20</Nr>
-    <MessageId>uuid:e83a-55d4-a542-50db</MessageId>
+    <Nr>21</Nr>
+    <MessageId>uuid:4072-f419-7876-3ea7</MessageId>
     <ServiceName>/api/customer-documents/document</ServiceName>
     <OperationName>uploadDocument</OperationName>
     <PathFormat>/api/customer-documents/document</PathFormat>
+  </RequestReply>
+  <RequestReply>
+    <InboundTimeStamp>2023-03-01T11:10:07.107Z</InboundTimeStamp>
+    <OutboundTimeStamp>2023-03-01T11:10:07.198Z</OutboundTimeStamp>
+    <DelayTimeMs>0</DelayTimeMs>
+    <OperationCount>1</OperationCount>
+    <TransportType>0</TransportType>
+    <StubAction>0</StubAction>
+    <CorrelationId></CorrelationId>
+    <fromRemoteServer>true</fromRemoteServer>
+    <Service>/testfunctions</Service>
+    <Operation>/testfunctions:post</Operation>
+    <Reply>Default</Reply>
+    <Error></Error>
+    <Remarks></Remarks>
+    <Notifications></Notifications>
+    <httpUri>/regressiontest/1/testfunctions</httpUri>
+    <httpResponseCode>200</httpResponseCode>
+    <httpCommand>POST</httpCommand>
+    <httpDocument>/regressiontest/1/testfunctions</httpDocument>
+    <httpParams></httpParams>
+    <RequestContentType>application/json; charset=utf-8</RequestContentType>
+    <ReplyContentType>application/json;charset=utf-8</ReplyContentType>
+    <HttpRequestHeaders>Connection: keep-alive&#x0A;Content-Encoding: identity&#x0A;Content-Type: application/json; charset=utf-8&#x0A;Content-Length: 0&#x0A;Host: localhost:7777&#x0A;Accept: application/json&#x0A;Accept-Encoding: identity&#x0A;User-Agent: Mozilla/3.0 (compatible; Indy Library)&#x0A;</HttpRequestHeaders>
+    <HttpReplyHeaders></HttpReplyHeaders>
+    <HttpRequestBody></HttpRequestBody>
+    <HttpRequestBodyMiM></HttpRequestBodyMiM>
+    <HttpReplyBody>&#x0A;{ &quot;AccordingSchema&quot;: &quot;true&quot;&#x0A;, &quot;AddRemark&quot;: &quot;AddRemark not (yet?) tested&quot;&#x0A;, &quot;Assigned&quot;: &quot;false&quot;&#x0A;, &quot;AsXmlString&quot;: &quot;&quot;&#x0A;, &quot;CharValue&quot;: &quot;66&quot;&#x0A;, &quot;ClearLogs&quot;: &quot;tested elsewhere&quot;&#x0A;, &quot;ClearSnapshots&quot;: &quot;tested elsewhere&quot;&#x0A;, &quot;CreateJUnitReport&quot;: &quot;tested elsewhere&quot;&#x0A;, &quot;CreateSnapshot&quot;: &quot;tested elsewhere&quot;&#x0A;, &quot;CreateSummaryReport&quot;: &quot;tested elsewhere&quot;&#x0A;, &quot;DateTimeToJulianStr&quot;: &quot;2451544.54166667&quot;&#x0A;, &quot;DateTimeToTandemJulianStr&quot;: &quot;2.118134484E17&quot;&#x0A;, &quot;DateTimeToUnix&quot;: &quot;946688400&quot;&#x0A;, &quot;DateTimeToXml&quot;: &quot;2000-01-01T01:00:00.000&quot;&#x0A;, &quot;dbLookUp&quot;: &quot;five&quot;&#x0A;, &quot;DecEnvNumber&quot;: &quot;-2&quot;&#x0A;, &quot;ExecSql&quot;: &quot;tested elsewhere&quot;&#x0A;, &quot;ExecuteOperationScript&quot;: &quot;tested elsewhere&quot;&#x0A;, &quot;ExecuteScript&quot;: &quot;tested elsewhere&quot;&#x0A;, &quot;Exit&quot;: &quot;tbd&quot;&#x0A;, &quot;FetchDefaultDesignMessage&quot;: &quot;not (yet?) tested&quot;&#x0A;, &quot;FormatDate&quot;: &quot;06/feb/02&quot;&#x0A;, &quot;GenerateGUID&quot;: &quot;4FB6E417-24CC-4757-85ED-328E79D22080&quot;&#x0A;, &quot;GetContext&quot;: &quot;testContext&quot;&#x0A;, &quot;GetEnvNumber&quot;: &quot;-2&quot;&#x0A;, &quot;GetEnvNumberDef&quot;: &quot;99&quot;&#x0A;, &quot;GetEnvVar&quot;: &quot;-2&quot;&#x0A;, &quot;GetEnvVarDef&quot;: &quot;defaultvar&quot;&#x0A;, &quot;GetEnvVarDefT&quot;: &quot;drie&quot;&#x0A;, &quot;HostName&quot;: &quot;c04eff67b134&quot;&#x0A;, &quot;ifthen&quot;: &quot;false&quot;&#x0A;, &quot;IncEnvNumber&quot;: &quot;IncEnvNumber&quot;&#x0A;, &quot;Latin1Str&quot;: &quot;????&quot;&#x0A;, &quot;LengthStr&quot;: &quot;3&quot;&#x0A;, &quot;LogsFromRemoteServer&quot;: &quot;tested elsewhere&quot;&#x0A;, &quot;LowercaseStr&quot;: &quot;abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz&quot;&#x0A;, &quot;MatchingEnvVar&quot;: &#x0A;  [ &#x0A;    { &quot;Name&quot;: &quot;Var1&quot;&#x0A;    , &quot;Value&quot;: &quot;1&quot;&#x0A;    }&#x0A;  , &#x0A;    { &quot;Name&quot;: &quot;Var2&quot;&#x0A;    , &quot;Value&quot;: &quot;2&quot;&#x0A;    }&#x0A;  , &#x0A;    { &quot;Name&quot;: &quot;Var3&quot;&#x0A;    , &quot;Value&quot;: &quot;3&quot;&#x0A;    }&#x0A;  , &#x0A;    { &quot;Name&quot;: &quot;Var4&quot;&#x0A;    , &quot;Value&quot;: &quot;4&quot;&#x0A;    }&#x0A;  ]&#x0A;, &quot;MD5&quot;: &quot;d41d8cd98f00b204e9800998ecf8427e&quot;&#x0A;, &quot;MessageName&quot;: &quot;Default&quot;&#x0A;, &quot;MessagingProtocol&quot;: &quot;Http&quot;&#x0A;, &quot;NameCaseStr&quot;: &quot;Name Case String&quot;&#x0A;, &quot;NewDesignMessage&quot;: &quot;not (yet?) tested&quot;&#x0A;, &quot;NewLine&quot;: &quot;\n&quot;&#x0A;, &quot;NowAsStr&quot;: &quot;2023-03-01T11:10:07.182&quot;&#x0A;, &quot;NumberToStr&quot;: &quot;1234.5678&quot;&#x0A;, &quot;Occurrences&quot;: &quot;1&quot;&#x0A;, &quot;OperationCount&quot;: &quot;1&quot;&#x0A;, &quot;OperationName&quot;: &quot;testScriptFunctions&quot;&#x0A;, &quot;PopulateFromXmlString&quot;: &#x0A;  { &quot;string1&quot;: &quot;val1&quot;&#x0A;  , &quot;string2&quot;: &quot;val2&quot;&#x0A;  }&#x0A;, &quot;PromptReply&quot;: &quot;not (yet?) tested&quot;&#x0A;, &quot;PromptRequest&quot;: &quot;not (yet?) tested&quot;&#x0A;, &quot;PushOperationToRemoteServer&quot;: &quot;tested elsewhere&quot;&#x0A;, &quot;PushProjectToRemoteServer&quot;: &quot;tested elsewhere&quot;&#x0A;, &quot;RaiseError&quot;: &quot;RaiseError&quot;&#x0A;, &quot;RaiseHttpFault&quot;: &quot;RaiseHttpFault&quot;&#x0A;, &quot;RaiseSoapFault&quot;: &quot;RaiseSoapFault&quot;&#x0A;, &quot;RaiseWsdlFault&quot;: &quot;RaiseWsdlFault&quot;&#x0A;, &quot;Random&quot;: &quot;1000&quot;&#x0A;, &quot;RegExprMatch&quot;: &#x0A;  [ &quot;zullen&quot;&#x0A;  , &quot;zitten&quot;&#x0A;  ]&#x0A;, &quot;RegExprSafeStr&quot;: &quot;regexp \\\\\\[\\]\\{\\}\\^\\$\\*\\?\\.&quot;&#x0A;, &quot;RemoveDesignMessages&quot;: &quot;RemoveDesignMessages not tested here&quot;&#x0A;, &quot;ReplyAsText&quot;: &quot;ReplyAsText not tested here&quot;&#x0A;, &quot;RequestAsText&quot;: &quot;RequestAsText not tested here&quot;&#x0A;, &quot;RequestOperation&quot;: &quot;RequestOperation not tested here&quot;&#x0A;, &quot;RequestOperationLater&quot;: &quot;RequestOperationLater not tested here&quot;&#x0A;, &quot;ResetEnvVar&quot;: &quot;defvalue&quot;&#x0A;, &quot;ResetEnvVars&quot;: &quot;defvalue&quot;&#x0A;, &quot;ResetOperationCounters&quot;: &quot;ResetOperationCounters not tested here&quot;&#x0A;, &quot;ResetStateMachine&quot;: &quot;ResetStateMachine not tetsed here&quot;&#x0A;, &quot;ResolveAliasses&quot;: &quot;ResolveAliasses not (yet?) tested&quot;&#x0A;, &quot;ReturnString&quot;: &quot;ReturnString&quot;&#x0A;, &quot;Rounded&quot;: &quot;12300&quot;&#x0A;, &quot;SaveLogs&quot;: &quot;SaveLogs not tested here&quot;&#x0A;, &quot;SendOperationRequest&quot;: &quot;Depricated&quot;&#x0A;, &quot;SendOperationRequestLater&quot;: &quot;Depricated&quot;&#x0A;, &quot;SeparatedString&quot;: &#x0A;  [ &quot;er&quot;&#x0A;  , &quot;zullen&quot;&#x0A;  , &quot;wat&quot;&#x0A;  , &quot;matches&quot;&#x0A;  , &quot;in&quot;&#x0A;  , &quot;zitten&quot;&#x0A;  ]&#x0A;, &quot;SeparatedStringN&quot;: &#x0A;  { &quot;n3&quot;: &quot;Three&quot;&#x0A;  , &quot;n4&quot;: &quot;Four&quot;&#x0A;  , &quot;n5&quot;: &quot;&quot;&#x0A;  }&#x0A;, &quot;SeparatedStringT&quot;: &#x0A;  { &quot;t3&quot;: &quot;Three&quot;&#x0A;  , &quot;t4&quot;: &quot;Four&quot;&#x0A;  , &quot;t5&quot;: &quot;Four&quot;&#x0A;  }&#x0A;, &quot;SetContext&quot;: &quot;SetContext not tested here&quot;&#x0A;, &quot;SetEnvNumber&quot;: &quot;1234&quot;&#x0A;, &quot;SetEnvVar&quot;: &quot;EnvVar&quot;&#x0A;, &quot;SetRemoteServerConnectionType&quot;: &quot;SetRemoteServerConnectionType not tested here&quot;&#x0A;, &quot;SHA1&quot;: &quot;dd84ca54b659a76225848c17a36ae581b48ecaf2&quot;&#x0A;, &quot;ShowMessage&quot;: &quot;ShowMessage not (yet?) tested&quot;&#x0A;, &quot;SiebelNowAsStr&quot;: &quot;03/01/2023 11:10:07&quot;&#x0A;, &quot;SiebelTodayAsStr&quot;: &quot;03-01-2023&quot;&#x0A;, &quot;Sleep&quot;: &quot;Sleep not tested here&quot;&#x0A;, &quot;SqlQuotedStr&quot;: &quot;SqlQuotedStr to be delivered&quot;&#x0A;, &quot;SqlSelectResultRow&quot;: &#x0A;  [ &#x0A;    { &quot;col1&quot;: &quot;one&quot;&#x0A;    , &quot;col2&quot;: &quot;1&quot;&#x0A;    , &quot;col3&quot;: &quot;literal&quot;&#x0A;    }&#x0A;  , &#x0A;    { &quot;col1&quot;: &quot;two&quot;&#x0A;    , &quot;col2&quot;: &quot;2&quot;&#x0A;    , &quot;col3&quot;: &quot;literal&quot;&#x0A;    }&#x0A;  , &#x0A;    { &quot;col1&quot;: &quot;three&quot;&#x0A;    , &quot;col2&quot;: &quot;3&quot;&#x0A;    , &quot;col3&quot;: &quot;literal&quot;&#x0A;    }&#x0A;  , &#x0A;    { &quot;col1&quot;: &quot;four&quot;&#x0A;    , &quot;col2&quot;: &quot;4&quot;&#x0A;    , &quot;col3&quot;: &quot;literal&quot;&#x0A;    }&#x0A;  , &#x0A;    { &quot;col1&quot;: &quot;five&quot;&#x0A;    , &quot;col2&quot;: &quot;5&quot;&#x0A;    , &quot;col3&quot;: &quot;literal&quot;&#x0A;    }&#x0A;  ]&#x0A;, &quot;StrFromClipboard&quot;: &quot;StrFromClipboard not (yet?) tested&quot;&#x0A;, &quot;StrHasRegExpr&quot;: &quot;rHasRegEx&quot;&#x0A;, &quot;StrMatchesRegExpr&quot;: &quot;StrMatchesRegExpr&quot;&#x0A;, &quot;StrOfChar&quot;: &quot;StrOfChar&quot;&#x0A;, &quot;StrToDate&quot;: &quot;StrToDate&quot;&#x0A;, &quot;StrToDateTime&quot;: &quot;StrToDateTime&quot;&#x0A;, &quot;StrToFile&quot;: &quot;StrToFile not (yet?)tested&quot;&#x0A;, &quot;StrToNumber&quot;: &quot;StrToNumber&quot;&#x0A;, &quot;SubStr&quot;: &quot;YZabcdefghijklmnopqrstuvwx&quot;&#x0A;, &quot;Tab&quot;: &quot;\t&quot;&#x0A;, &quot;TodayAsStr&quot;: &quot;2023-03-01&quot;&#x0A;, &quot;UppercaseStr&quot;: &quot;ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;&#x0A;, &quot;UserName&quot;: &quot;&quot;&#x0A;}</HttpReplyBody>
+    <HttpReplyBodyMiM></HttpReplyBodyMiM>
+    <RequestValidated>true</RequestValidated>
+    <RequestValidateResult></RequestValidateResult>
+    <ReplyValidated>true</ReplyValidated>
+    <ReplyValidateResult></ReplyValidateResult>
+    <Nr>22</Nr>
+    <MessageId>uuid:29b5-521f-b83d-950e</MessageId>
+    <ServiceName>/testfunctions</ServiceName>
+    <OperationName>testScriptFunctions</OperationName>
+    <PathFormat>/regressiontest/1/testfunctions</PathFormat>
   </RequestReply>
 </WsdlStubCaseMessages>
