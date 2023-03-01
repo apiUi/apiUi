@@ -995,6 +995,14 @@ begin
   result := UnixToDateTime(Trunc(aUnixDateTime));
 end;
 
+function sMD5 (aString: string): string;
+var
+  s: String;
+begin
+  s := MD5(aString);
+  result := Copy (s, 1, 32);
+end;
+
 function RoundedX (aSource, aNumber: Extended): Extended;
 begin
   result := Round(aSource * power (10, aNumber)) / power (10, aNumber);
@@ -4187,7 +4195,7 @@ begin
     BindScriptFunction ('LengthStr', @LengthX, XFS, '(aString)');
     BindScriptFunction ('LowercaseStr', @LowerCaseStr, SFS, '(aString)');
     BindScriptFunction ('MatchingEnvVar', @EnvVarMatchList, SLFOS, '(aRegExpr)');
-    BindScriptFunction ('MD5', @MD5, SFS, '(aString)');
+    BindScriptFunction ('MD5', @sMD5, SFS, '(aString)');
     BindScriptFunction ('MessageName', @wsdlMessageName, SFOV, '()');
     BindScriptFunction ('MessageOfOperation', @OperationMessageList, SLFOS, '(aOperation)');
     BindScriptFunction ('MessagingProtocol', @wsdlMessagingProtocol, SFOV, '()');
@@ -6420,7 +6428,7 @@ begin
     BindStamperFunction ('NameCaseStr', @StrToNameCase, SFS, '(aString)');
     BindStamperFunction ('LengthStr', @LengthX, XFS, '(aString)');
     BindStamperFunction ('LowercaseStr', @LowerCaseStr, SFS, '(aString)');
-    BindStamperFunction ('MD5', @MD5, SFS, '(aString)');
+    BindStamperFunction ('MD5', @sMD5, SFS, '(aString)');
     BindStamperFunction ('NewLine', @xNewLine, SFV, '()');
     BindStamperFunction ('Tab', @xTab, SFV, '()');
     BindStamperFunction ('NumberToStr', @FloatToStr, SFX, '(aNumber)');

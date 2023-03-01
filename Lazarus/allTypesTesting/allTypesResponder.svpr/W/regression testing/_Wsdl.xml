@@ -1,0 +1,4 @@
+  <Wsdl>
+    <Name>regression testing</Name>
+    <WsdlLocation>files\testfunctions.yaml</WsdlLocation>
+  </Wsdl>

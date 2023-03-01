@@ -1,0 +1,196 @@
+  <Message>
+    <Name>script executed on laptop-0l3gn7em</Name>
+    <SequenceNr>10</SequenceNr>
+    <Patterns></Patterns>
+    <Reply>
+      <testScriptFunctions checked__="true">
+        <rspns200 checked__="true">
+          <body checked__="true">
+            <AccordingSchema checked__="true">true</AccordingSchema>
+            <AddRemark checked__="true">AddRemark not (yet?) tested</AddRemark>
+            <AssignAnyType checked__="true"></AssignAnyType>
+            <Assigned checked__="true">false</Assigned>
+            <AsXmlString checked__="true">  &lt;AsXmlString&gt;&#x0D;&#x0A;    &lt;aString1&gt;aString1&lt;/aString1&gt;&#x0D;&#x0A;    &lt;aString2&gt;aString2&lt;/aString2&gt;&#x0D;&#x0A;  &lt;/AsXmlString&gt;&#x0D;&#x0A;</AsXmlString>
+            <CharValue checked__="true">66</CharValue>
+            <ClearLogs checked__="true">tested elsewhere</ClearLogs>
+            <ClearSnapshots checked__="true">tested elsewhere</ClearSnapshots>
+            <CreateJUnitReport checked__="true">tested elsewhere</CreateJUnitReport>
+            <CreateSnapshot checked__="true">tested elsewhere</CreateSnapshot>
+            <CreateSummaryReport checked__="true">tested elsewhere</CreateSummaryReport>
+            <DateTimeToJulianStr checked__="true">2451544,54166667</DateTimeToJulianStr>
+            <DateTimeToTandemJulianStr checked__="true">2,118134484E17</DateTimeToTandemJulianStr>
+            <DateTimeToUnix checked__="true">946688400</DateTimeToUnix>
+            <DateTimeToXml checked__="true">2000-01-01T01:00:00.000</DateTimeToXml>
+            <dbLookUp checked__="true">five</dbLookUp>
+            <DecEnvNumber checked__="true">-2</DecEnvNumber>
+            <ExecSql checked__="true">tested elsewhere</ExecSql>
+            <ExecuteOperationScript checked__="true">tested elsewhere</ExecuteOperationScript>
+            <ExecuteScript checked__="true">tested elsewhere</ExecuteScript>
+            <Exit checked__="true">tbd</Exit>
+            <FetchDefaultDesignMessage checked__="true">not (yet?) tested</FetchDefaultDesignMessage>
+            <FormatDate checked__="true">06/feb/02</FormatDate>
+            <GenerateGUID checked__="true">8143EE55-F954-45BB-B0AB-D210EA08242B</GenerateGUID>
+            <GetContext checked__="true">testContext</GetContext>
+            <GetEnvNumber checked__="true">-2</GetEnvNumber>
+            <GetEnvNumberDef checked__="true">99</GetEnvNumberDef>
+            <GetEnvVar checked__="true">-2</GetEnvVar>
+            <GetEnvVarDef checked__="true">defaultvar</GetEnvVarDef>
+            <GetEnvVarDefT checked__="true">drie</GetEnvVarDefT>
+            <HostName checked__="true">laptop-0l3gn7em</HostName>
+            <ifthen checked__="true">false</ifthen>
+            <IncEnvNumber checked__="true">IncEnvNumber</IncEnvNumber>
+            <Latin1Str checked__="true">eeee</Latin1Str>
+            <LengthStr checked__="true">3</LengthStr>
+            <LogsFromRemoteServer checked__="true">tested elsewhere</LogsFromRemoteServer>
+            <LowercaseStr checked__="true">abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz</LowercaseStr>
+            <MatchingEnvVar checked__="true">
+              <_ checked__="true">
+                <Name checked__="true">Var1</Name>
+                <Value checked__="true">1</Value>
+              </_>
+              <_ checked__="true">
+                <Name checked__="true">Var2</Name>
+                <Value checked__="true">2</Value>
+              </_>
+              <_ checked__="true">
+                <Name checked__="true">Var3</Name>
+                <Value checked__="true">3</Value>
+              </_>
+              <_ checked__="true">
+                <Name checked__="true">Var4</Name>
+                <Value checked__="true">4</Value>
+              </_>
+            </MatchingEnvVar>
+            <MD5 checked__="true">d41d8cd98f00b204e9800998ecf8427e</MD5>
+            <MessageName checked__="true">Default</MessageName>
+            <MessagingProtocol checked__="true">Http</MessagingProtocol>
+            <NameCaseStr checked__="true">Name Case String</NameCaseStr>
+            <NewDesignMessage checked__="true">not (yet?) tested</NewDesignMessage>
+            <NewLine checked__="true">&#x0D;&#x0A;</NewLine>
+            <NowAsStr checked__="true">2023-03-01T16:39:49.953</NowAsStr>
+            <NumberToStr checked__="true">1234.5678</NumberToStr>
+            <Occurrences checked__="true">1</Occurrences>
+            <OperationCount checked__="true">0</OperationCount>
+            <OperationName checked__="true">testScriptFunctions</OperationName>
+            <PopulateFromXmlString checked__="true">
+              <string1 checked__="true">val1</string1>
+              <string2 checked__="true">val2</string2>
+            </PopulateFromXmlString>
+            <PromptReply checked__="true">not (yet?) tested</PromptReply>
+            <PromptRequest checked__="true">not (yet?) tested</PromptRequest>
+            <PushOperationToRemoteServer checked__="true">tested elsewhere</PushOperationToRemoteServer>
+            <PushProjectToRemoteServer checked__="true">tested elsewhere</PushProjectToRemoteServer>
+            <RaiseError checked__="true">RaiseError</RaiseError>
+            <RaiseHttpFault checked__="true">RaiseHttpFault</RaiseHttpFault>
+            <RaiseSoapFault checked__="true">RaiseSoapFault</RaiseSoapFault>
+            <RaiseWsdlFault checked__="true">RaiseWsdlFault</RaiseWsdlFault>
+            <Random checked__="true">1000</Random>
+            <RegExprMatch checked__="true">
+              <_ checked__="true">zullen</_>
+              <_ checked__="true">zitten</_>
+            </RegExprMatch>
+            <RegExprSafeStr checked__="true">regexp \\\[\]\{\}\^\$\*\?\.</RegExprSafeStr>
+            <RemoveDesignMessages checked__="true">RemoveDesignMessages not tested here</RemoveDesignMessages>
+            <ReplyAsText checked__="true">ReplyAsText not tested here</ReplyAsText>
+            <RequestAsText checked__="true">RequestAsText not tested here</RequestAsText>
+            <RequestOperation checked__="true">RequestOperation not tested here</RequestOperation>
+            <RequestOperationLater checked__="true">RequestOperationLater not tested here</RequestOperationLater>
+            <ResetEnvVar checked__="true">defvalue</ResetEnvVar>
+            <ResetEnvVars checked__="true">defvalue</ResetEnvVars>
+            <ResetOperationCounters checked__="true">ResetOperationCounters not tested here</ResetOperationCounters>
+            <ResetStateMachine checked__="true">ResetStateMachine not tetsed here</ResetStateMachine>
+            <ResolveAliasses checked__="true">ResolveAliasses not (yet?) tested</ResolveAliasses>
+            <ReturnString checked__="true">ReturnString</ReturnString>
+            <Rounded checked__="true">12300</Rounded>
+            <SaveLogs checked__="true">SaveLogs not tested here</SaveLogs>
+            <SendOperationRequest checked__="true">Depricated</SendOperationRequest>
+            <SendOperationRequestLater checked__="true">Depricated</SendOperationRequestLater>
+            <SeparatedString checked__="true">
+              <_ checked__="true">er</_>
+              <_ checked__="true">zullen</_>
+              <_ checked__="true">wat</_>
+              <_ checked__="true">matches</_>
+              <_ checked__="true">in</_>
+              <_ checked__="true">zitten</_>
+            </SeparatedString>
+            <SeparatedStringN checked__="true">
+              <n3 checked__="true">Three</n3>
+              <n4 checked__="true">Four</n4>
+              <n5 checked__="true"></n5>
+            </SeparatedStringN>
+            <SeparatedStringT checked__="true">
+              <t3 checked__="true">Three</t3>
+              <t4 checked__="true">Four</t4>
+              <t5 checked__="true">Four</t5>
+            </SeparatedStringT>
+            <SetContext checked__="true">SetContext not tested here</SetContext>
+            <SetEnvNumber checked__="true">1234</SetEnvNumber>
+            <SetEnvVar checked__="true">EnvVar</SetEnvVar>
+            <SetRemoteServerConnectionType checked__="true">SetRemoteServerConnectionType not tested here</SetRemoteServerConnectionType>
+            <SHA1 checked__="true">dd84ca54b659a76225848c17a36ae581b48ecaf2</SHA1>
+            <ShowMessage checked__="true">ShowMessage not (yet?) tested</ShowMessage>
+            <SiebelNowAsStr checked__="true">03/01/2023 16:39:49</SiebelNowAsStr>
+            <SiebelTodayAsStr checked__="true">03/01/2023</SiebelTodayAsStr>
+            <Sleep checked__="true">Sleep not tested here</Sleep>
+            <SqlQuotedStr checked__="true">SqlQuotedStr to be delivered</SqlQuotedStr>
+            <SqlSelectResultRow checked__="true">
+              <_ checked__="true">
+                <col1 checked__="true">one</col1>
+                <col2 checked__="true">1</col2>
+                <col3 checked__="true">literal</col3>
+              </_>
+              <_ checked__="true">
+                <col1 checked__="true">two</col1>
+                <col2 checked__="true">2</col2>
+                <col3 checked__="true">literal</col3>
+              </_>
+              <_ checked__="true">
+                <col1 checked__="true">three</col1>
+                <col2 checked__="true">3</col2>
+                <col3 checked__="true">literal</col3>
+              </_>
+              <_ checked__="true">
+                <col1 checked__="true">four</col1>
+                <col2 checked__="true">4</col2>
+                <col3 checked__="true">literal</col3>
+              </_>
+              <_ checked__="true">
+                <col1 checked__="true">five</col1>
+                <col2 checked__="true">5</col2>
+                <col3 checked__="true">literal</col3>
+              </_>
+            </SqlSelectResultRow>
+            <StrFromClipboard checked__="true">StrFromClipboard not (yet?) tested</StrFromClipboard>
+            <StrHasRegExpr checked__="true">rHasRegEx</StrHasRegExpr>
+            <StrMatchesRegExpr checked__="true">StrMatchesRegExpr</StrMatchesRegExpr>
+            <StrOfChar checked__="true">StrOfChar</StrOfChar>
+            <StrToDate checked__="true">StrToDate</StrToDate>
+            <StrToDateTime checked__="true">StrToDateTime</StrToDateTime>
+            <StrToFile checked__="true">StrToFile not (yet?)tested</StrToFile>
+            <StrToNumber checked__="true">StrToNumber</StrToNumber>
+            <SubStr checked__="true">YZabcdefghijklmnopqrstuvwx</SubStr>
+            <Tab checked__="true">&#x09;</Tab>
+            <TodayAsStr checked__="true">2023-03-01</TodayAsStr>
+            <UppercaseStr checked__="true">ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ</UppercaseStr>
+            <UserName checked__="true">janbo</UserName>
+          </body>
+        </rspns200>
+      </testScriptFunctions>
+    </Reply>
+    <Request>
+      <testScriptFunctions checked__="true">
+        <body checked__="true">
+          <AssignAnyType checked__="true">
+            <aDest checked__="true">aDest</aDest>
+            <aDSrc checked__="true">aDSrc</aDSrc>
+          </AssignAnyType>
+          <AsXmlString checked__="true">
+            <aString1 checked__="true">aString1</aString1>
+            <aString2 checked__="true">aString2</aString2>
+          </AsXmlString>
+        </body>
+      </testScriptFunctions>
+    </Request>
+    <DocumentationEdited>false</DocumentationEdited>
+    <AfterScript></AfterScript>
+  </Message>

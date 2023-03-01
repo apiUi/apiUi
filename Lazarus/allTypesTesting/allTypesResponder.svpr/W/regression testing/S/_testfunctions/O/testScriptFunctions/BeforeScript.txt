@@ -1,0 +1,193 @@
+string ws.abc := 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+
+ExecSQL ('PRAGMA journal_mode=WAL');
+ExecSQL ('drop table if exists digits');
+ExecSQL ('create table digits (name string, character string)');
+ExecSQL ('insert into digits values ("one", "1")');
+ExecSQL ('insert into digits values ("two", "2")');
+ExecSQL ('insert into digits values ("three", "3")');
+ExecSQL ('insert into digits values ("four", "4")');
+ExecSQL ('insert into digits values ("five", "5")');
+
+with Rpy.testScriptFunctions.rspns200.body rpy do
+{
+  with Req.testScriptFunctions.body req do
+  {
+    rpy. := nil;
+    rpy.AccordingSchema := ifthen (AccordingSchema (Req.testScriptFunctions.body), 'true', 'false');
+    rpy.AddRemark := 'AddRemark not (yet?) tested';
+    AssignAnyType (rpy.AssignAnyType, req.AssignAnyType);
+    rpy.Assigned := ifthen (Assigned (rpy.Assigned), 'true', 'false');
+    rpy.AsXmlString := AsXmlString (req.AsXmlString);
+    rpy.CharValue := IntToStr (CharValue (ws.abc, 2));
+    rpy.ClearLogs := 'tested elsewhere';
+    rpy.ClearSnapshots := 'tested elsewhere';
+    rpy.CreateJUnitReport := 'tested elsewhere';
+    rpy.CreateSnapshot := 'tested elsewhere';
+    rpy.CreateSummaryReport := 'tested elsewhere';
+    rpy.DateTimeToJulianStr := DateTimeToJulianStr (StrToDateTime ('2000-01-01T01:00:00.000Z'));
+    rpy.DateTimeToTandemJulianStr := DateTimeToTandemJulianStr (StrToDateTime ('2000-01-01T01:00:00.000Z'));
+    rpy.DateTimeToUnix := NumberToStr (DateTimeToUnix (StrToDateTime ('2000-01-01T01:00:00.000Z')));
+    rpy.DateTimeToXml := DateTimeToXml (StrToDateTime ('2000-01-01T01:00:00.000Z'));
+    rpy.dbLookUp := dbLookUp ('digits', 'name', 'character', '5');
+    ResetEnvVar ('EnvNumber');
+    DecEnvNumber ('EnvNumber');
+    rpy.DecEnvNumber := NumberToStr (DecEnvNumber ('EnvNumber'));
+    rpy.ExecSql := 'tested elsewhere';
+    rpy.ExecuteOperationScript := 'tested elsewhere';
+    rpy.ExecuteScript := 'tested elsewhere';
+    rpy.Exit := 'tbd';
+    rpy.FetchDefaultDesignMessage := 'not (yet?) tested';
+    rpy.FormatDate := FormatDate (StrToDate ('2002-05-06'), '03/feb/01');
+    rpy.GenerateGUID := GenerateGUID ();
+    {
+      string ws.savevalue := SetContext ('testContext');
+      rpy.GetContext := GetContext ();
+      SetContext (ws.savevalue);
+    }
+    rpy.GetEnvNumber := NumberToStr (GetEnvNumber ('EnvNumber'));
+    rpy.GetEnvNumberDef := NumberToStr (GetEnvNumberDef ('nietingebruiknaarikmeenteweten', 99));
+    rpy.GetEnvVar := GetEnvVar ('EnvNumber');
+    rpy.GetEnvVarDef := GetEnvVarDef ('nietingebruiknaarikmeenteweten', 'defaultvar');
+    rpy.GetEnvVarDefT := GetEnvVarDefT ('nietingebruiknaarikmeenteweten', 'een;twee;drie', ';', 4);
+    rpy.HostName := HostName ();
+    rpy.ifthen := ifthen (False, 'true', 'false');
+    rpy.IncEnvNumber := 'IncEnvNumber';
+    rpy.Latin1Str := Latin1Str ('ęěĕē');
+    rpy.LengthStr := NumberToStr (LengthStr('123'));
+    rpy.LogsFromRemoteServer := 'tested elsewhere';
+    rpy.LowercaseStr := LowercaseStr (ws.abc);
+    {
+      string ws.varname;
+      ResetEnvVars ('Var\d+');
+      SetEnvVar ('Var1', '1');
+      SetEnvVar ('Var2', '2');
+      SetEnvVar ('Var3', '3');
+      SetEnvVar ('Var4', '4');
+      for each MatchingEnvVar ('Var\d+') as ws.varname do
+      {
+        with new rpy.MatchingEnvVar._ do
+        {
+          .Name := ws.varname;
+          .Value := GetEnvVar (ws.varname);
+        }
+      }
+    }
+    rpy.MD5 := MD5 ('');
+    rpy.MessageName := MessageName ();
+    {
+      string ws.name;
+      for each MessageOfOperation (OperationName ()) as ws.name do
+      {
+        with new rpy.MessageOfOperation._ do
+        {
+          . := ws.name;
+        }
+      }
+    }
+    rpy.MessagingProtocol := MessagingProtocol ();
+    rpy.NameCaseStr := NameCaseStr ('nAme cAse sTring');
+    rpy.NewDesignMessage := 'not (yet?) tested';
+    rpy.NewLine := NewLine ();
+    rpy.NowAsStr := NowAsStr ();
+    rpy.NumberToStr := '1234.5678';
+    rpy.Occurrences := NumberToStr (Occurrences (Rpy.testScriptFunctions.rspns200));
+    rpy.OperationCount := NumberToStr (OperationCount ());
+    rpy.OperationName := OperationName ();
+    PopulateFromXmlString (rpy.PopulateFromXmlString, '<PopulateFromXmlString><string1>val1</string1><string2>val2</string2></PopulateFromXmlString>');
+    rpy.PromptReply := 'not (yet?) tested';
+    rpy.PromptRequest := 'not (yet?) tested';
+    rpy.PushOperationToRemoteServer := 'tested elsewhere';
+    rpy.PushProjectToRemoteServer := 'tested elsewhere';
+    rpy.RaiseError := 'RaiseError';
+    rpy.RaiseHttpFault := 'RaiseHttpFault';
+    rpy.RaiseSoapFault := 'RaiseSoapFault';
+    rpy.RaiseWsdlFault := 'RaiseWsdlFault';
+    rpy.Random := NumberToStr (Random (1000,1000));
+    {
+      string ws.match;
+      for each RegExprMatch ('er zullen wat matches in zitten', 'z[^ ]*n') as ws.match do
+      {
+        with new rpy.RegExprMatch._ do
+        {
+          . := ws.match;
+        }
+      }
+    }
+    rpy.RegExprSafeStr := RegExprSafeStr ('regexp \[]{}^$*?.');
+    rpy.RemoveDesignMessages := 'RemoveDesignMessages not tested here';
+    rpy.ReplyAsText := 'ReplyAsText not tested here';
+    rpy.RequestAsText := 'RequestAsText not tested here';
+    rpy.RequestOperation := 'RequestOperation not tested here';
+    rpy.RequestOperationLater := 'RequestOperationLater not tested here';
+    SetEnvVar ('EnvVar', 'EnvVar');
+    ResetEnvVar ('EnvVar');
+    rpy.ResetEnvVar := GetEnvVarDef ('EnvVar', 'defvalue');
+    SetEnvVar ('EnvVar1', 'EnvVar1');
+    ResetEnvVars ('EnvVar.*');
+    rpy.ResetEnvVars := GetEnvVarDef ('EnvVar1', 'defvalue');
+    rpy.ResetOperationCounters := 'ResetOperationCounters not tested here';
+    rpy.ResetStateMachine := 'ResetStateMachine not tetsed here';
+    rpy.ResolveAliasses := 'ResolveAliasses not (yet?) tested';
+    rpy.ReturnString := 'ReturnString';
+    rpy.Rounded := NumberToStr (Rounded (12345.678 , -2));
+    rpy.SaveLogs := 'SaveLogs not tested here';
+    rpy.SendOperationRequest := 'Depricated';
+    rpy.SendOperationRequestLater := 'Depricated';
+    {
+      string ws.string;
+      for each SeparatedString ('er zullen wat matches in zitten', ' ') as ws.string do
+      {
+        with new rpy.SeparatedString._ do
+        {
+          . := ws.string;
+        }
+      }
+    }
+    rpy.SeparatedStringN.n3 := SeparatedStringN ('One;Two;Three;Four', ';', 3);
+    rpy.SeparatedStringN.n4 := SeparatedStringN ('One;Two;Three;Four', ';', 4);
+    rpy.SeparatedStringN.n5 := SeparatedStringN ('One;Two;Three;Four', ';', 5);
+    rpy.SeparatedStringT.t3 := SeparatedStringT ('One;Two;Three;Four', ';', 3);
+    rpy.SeparatedStringT.t4 := SeparatedStringT ('One;Two;Three;Four', ';', 4);
+    rpy.SeparatedStringT.t5 := SeparatedStringT ('One;Two;Three;Four', ';', 5);
+    rpy.SetContext := 'SetContext not tested here';
+    SetEnvNumber ('EnvNumber', 1234);
+    rpy.SetEnvNumber := NumberToStr (GetEnvNumber ('EnvNumber'));
+    SetEnvVar ('EnvVar', 'EnvVar');
+    rpy.SetEnvVar := GetEnvVar ('EnvVar');
+    rpy.SetRemoteServerConnectionType := 'SetRemoteServerConnectionType not tested here';
+    rpy.SHA1 := SHA1 (ws.abc);
+    rpy.ShowMessage := 'ShowMessage not (yet?) tested';
+    rpy.SiebelNowAsStr := SiebelNowAsStr ();
+    rpy.SiebelTodayAsStr := SiebelTodayAsStr ();
+    rpy.Sleep := 'Sleep not tested here';
+    rpy.SqlQuotedStr := 'SqlQuotedStr to be delivered';
+    {
+      string ws.row;
+      for each SqlSelectResultRow ('select name, character, "literal" from digits') as ws.row do
+      {
+        with new rpy.SqlSelectResultRow._ do
+        {
+          .col1 := SeparatedStringN (ws.row, Tab (), 1);
+          .col2 := SeparatedStringN (ws.row, Tab (), 2);
+          .col3 := SeparatedStringN (ws.row, Tab (), 3);
+        }
+      }
+    }
+    rpy.StrFromClipboard := 'StrFromClipboard not (yet?) tested';
+    rpy.StrHasRegExpr := StrHasRegExpr ('StrHasRegExpr', 'r.*x');
+    rpy.StrMatchesRegExpr := 'StrMatchesRegExpr';
+    rpy.StrOfChar := 'StrOfChar';
+    rpy.StrToDate := 'StrToDate';
+    rpy.StrToDateTime := 'StrToDateTime';
+    rpy.StrToFile := 'StrToFile not (yet?)tested';
+    rpy.StrToNumber := 'StrToNumber';
+    rpy.SubStr := SubStr (ws.abc, 25, 26);
+    rpy.Tab := Tab ();
+    rpy.TodayAsStr := TodayAsStr ();
+ // rpy.UnixToDateTime := DateTimeToStr (UnixToDateTime (DateTimeToUnix (StrToDateTime ('2000-01-01T01:00:00.000Z'))));
+    rpy.UppercaseStr := UppercaseStr (ws.abc);
+    rpy.UserName := UserName ();
+  }
+}
+

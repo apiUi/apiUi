@@ -20,7 +20,7 @@
       <Enabled>true</Enabled>
       <Address>${Address}</Address>
       <type>
-        <WireMock></WireMock>
+        <apiUi></apiUi>
       </type>
       <allowedActions>
         <pushDesign>true</pushDesign>
@@ -36,9 +36,9 @@
         </versionInfo>
         <SaveRelativeFileNames>true</SaveRelativeFileNames>
         <projectFolders>
-          <current>Current</current>
-          <reference>Reference</reference>
-          <reports>Current</reports>
+          <current>Logs\Current</current>
+          <reference>Logs\Reference</reference>
+          <reports>Logs\Current</reports>
         </projectFolders>
       </General>
       <Log>
@@ -78,6 +78,11 @@
           </inboundReplies>
         </schemaValidation>
       </OperationDefaults>
+      <DatabaseConnection>
+        <Enabled>true</Enabled>
+        <Type>SQLite3</Type>
+        <DatabaseName>:memory:</DatabaseName>
+      </DatabaseConnection>
     </projectOptions>
     <CompareLogOrderBy>0</CompareLogOrderBy>
   </WsdlStubCase>

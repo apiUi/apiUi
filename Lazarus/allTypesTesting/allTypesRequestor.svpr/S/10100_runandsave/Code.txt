@@ -1,5 +1,6 @@
+ClearLogs ();
 {
-  string ws.context := SetContext ('apiuiserver');
+  string ws.context := SetContext ('localhostapiui');
   string ws.rsct := SetRemoteServerConnectionType ('apiUi');
   RequestOperation ('cobol');
   RequestOperation ('cobol');
@@ -11,11 +12,15 @@
   RequestOperation ('freeformatOperation');
   RequestOperation ('uploadDocument');
   RequestOperation ('uploadDocument');
+  RequestOperation ('testScriptFunctions');
+  CreateSnapshot ('apiuiFromClient');
+  LogsFromRemoteServer ()
+  CreateSnapshot ('apiuiFromServer');
   SetContext (ws.context);
   SetRemoteServerConnectionType (ws.rsct);
 }
 {
-  string ws.context := SetContext ('wiremock');
+  string ws.context := SetContext ('localwiremock');
   string ws.rsct := SetRemoteServerConnectionType ('WireMock');
   RequestOperation ('CreateActivities');
   RequestOperation ('CreateActivities');
@@ -23,6 +28,10 @@
   RequestOperation ('CreateServiceRequest2');
   RequestOperation ('uploadDocument');
   RequestOperation ('uploadDocument');
+  RequestOperation ('testScriptFunctions');
+  CreateSnapshot ('wiremockFromClient');
+  LogsFromRemoteServer ()
+  CreateSnapshot ('wiremockFromServer');
   SetContext (ws.context);
   SetRemoteServerConnectionType (ws.rsct);
 }

@@ -13,3 +13,11 @@ lib
 files
 /Lazarus/Utils/a2bStringList/backup/*.bak
 *.bak
+/Lazarus/Xml/_unit1.lfm
+/Lazarus/Xml/_unit1.pas
+/Lazarus/Xml/project1.exe
+/Lazarus/Xml/project1.ico
+/Lazarus/Xml/project1.lpi
+/Lazarus/Xml/project1.lpr
+/Lazarus/Xml/project1.lps
+/Lazarus/Xml/project1.res

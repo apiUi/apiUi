@@ -1,0 +1,9 @@
+  <Script>
+    <Name>runScriptFunctions</Name>
+    <Invoke>
+      <requestInfo>true</requestInfo>
+      <operations>
+        <name>testScriptFunctions</name>
+      </operations>
+    </Invoke>
+  </Script>
