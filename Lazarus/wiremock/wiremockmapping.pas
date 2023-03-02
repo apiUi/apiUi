@@ -273,7 +273,7 @@ begin
       begin
         with TIdUri.Create(aOperation.SoapAddress) do
         try
-          AddXml (TXml.CreateAsString('urlPath', Path));
+          AddXml (TXml.CreateAsString('urlPath', Path + Document));
         finally
           free;
         end;
